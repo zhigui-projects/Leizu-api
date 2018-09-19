@@ -1,3 +1,3 @@
-# dashboard
+# Dashboard
 
 Ledger Management Dashboard
