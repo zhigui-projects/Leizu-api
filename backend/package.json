@@ -4,8 +4,30 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "clear": "0.0.1",
+    "es6-error": "^4.0.2",
+    "eslint": "^4.14.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "gulp": "^3.9.1",
+    "gulp-apidoc": "^0.2.6",
+    "gulp-livereload": "^3.8.1",
+    "gulp-nodemon": "^2.2.1",
+    "jsonwebtoken": "^7.4.0",
+    "knex": "^0.13.0",
+    "koa": "^2.2.0",
+    "koa-body": "^2.3.0",
+    "koa-cors": "0.0.16",
+    "koa-router": "^7.1.1",
+    "koa-static": "^3.0.0",
+    "koa-validate": "^1.0.7",
+    "pg": "^6.1.5",
+    "sha1": "^1.1.1"
+  }
 }
