@@ -20,5 +20,6 @@
 
 ## 动态增加一个节点的过程
 
-- xxx
-- xxx
+- register and enroll tls
+- register and enroll msp
+- execute the peer node start command
