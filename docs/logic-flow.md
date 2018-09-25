@@ -3,8 +3,9 @@
 
 ## 动态创建一个组织的步骤
 
-- xxx
-- xxx
+- deploy root ca
+- deploy intermediate ca 
+- register and enroll the intermediate ca with root ca
 
 ## 在通道配置中增加一个组织的流程
 
