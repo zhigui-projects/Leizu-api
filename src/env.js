@@ -8,13 +8,6 @@ module.exports = {
     expiresIn: 36000
   },
   database: {
-    connection: {
-      host: 'localhost',
-      user: 'root',
-      password: 'passw0rd',
-      database: 'ledgerdb'
-    },
-    pool: { min: 0, max: 7 },
-    debug: false
+    url: 'mongodb://admin:password@127.0.0.1:27017/zigdb'
   }
 }
