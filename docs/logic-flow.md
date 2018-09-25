@@ -6,6 +6,17 @@
 - xxx
 - xxx
 
+## 在通道配置中增加一个组织的流程
+
+- fetch the configuration block
+- add the new organization into protocol buffer object
+- sign the protocol buffer object
+- submit the channel update request
+
+## 将组织下的节点加入到通道的步骤
+
+- fetch the channel genesis block
+- submit the join channel request
 
 ## 动态增加一个节点的过程
 
