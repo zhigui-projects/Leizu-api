@@ -9,3 +9,8 @@
 3. 如何支持modules and plugins?
 
 
+4. error messages i18n?
+
+
+
+

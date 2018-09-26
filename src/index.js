@@ -10,19 +10,6 @@ const app = new Koa();
 // enable cors
 app.use(cors());
 
-// static files
-app.use(require('koa-static')('./public'));
-
-// request parameters parser
-app.use(require('koa-body')({
-  formidable: {
-    uploadDir: `${__dirname}/public/uploads`, // This is where the files will be uploaded
-    keepExtensions: true
-  },
-  multipart: true,
-  urlencoded: true,
-}));
-
 // error handler
 app.use(errorHandler);
 
@@ -36,6 +23,6 @@ fs.readdirSync('./app').filter(file => fs.statSync(path.join('./app', file)).isD
   })
 });
 
-app.listen(config.server.port, () => {
-  console.log(`API listening on port ${config.server.port}`)
-})
+app.port = config.server.port;
+
+module.exports = app;

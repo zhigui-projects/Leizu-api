@@ -28,5 +28,10 @@
     "koa-validate": "^1.0.7",
     "mongoose": "^5.2.8",
     "sha1": "^1.1.1"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "should": "^13.2.3",
+    "supertest": "^3.3.0"
   }
 }
