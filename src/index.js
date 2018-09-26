@@ -17,9 +17,10 @@ app.use(errorHandler);
 require('koa-validate')(app);
 
 // set routes
-fs.readdirSync('./app').filter(file => fs.statSync(path.join('./app', file)).isDirectory()).map((moduleName) => {
-  fs.readdirSync(`./app/${moduleName}`).filter(file => fs.statSync(path.join(`./app/${moduleName}`, file)).isFile()).map((route) => {
-    app.use(require(`./app/${moduleName}/${route}`).routes());
+var appDirectory = path.join(__dirname,"app");
+fs.readdirSync(appDirectory).filter(file => fs.statSync(path.join(appDirectory, file)).isDirectory()).map((moduleName) => {
+  fs.readdirSync(`${appDirectory}/${moduleName}`).filter(file => fs.statSync(path.join(`${appDirectory}/${moduleName}`, file)).isFile()).map((route) => {
+    app.use(require(`${appDirectory}/${moduleName}/${route}`).routes());
   })
 });
 

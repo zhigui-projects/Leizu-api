@@ -4,21 +4,17 @@
   "description": "ledger management dashboard",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp"
+    "test": "node test/app-test.js",
+    "start": "node index.js"
   },
   "author": "zhigui",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.ziggurat.cn/zhigui/dashboard-api.git"
+  },
   "dependencies": {
-    "clear": "0.0.1",
-    "es6-error": "^4.0.2",
-    "eslint": "^4.14.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "gulp": "^4.0.0",
-    "gulp-apidoc": "^0.2.6",
-    "gulp-livereload": "^4.0.0",
-    "gulp-nodemon": "^2.2.1",
+    "es6-error": "^4.1.1",
     "jsonwebtoken": "^8.3.0",
     "koa": "^2.2.0",
     "koa-body": "^2.3.0",
