@@ -1,13 +1,16 @@
 module.exports = {
-  server: {
-    port: 3000,
-    url: 'http://localhost:3000'
-  },
-  jwt: {
-    secret: '`yGE[RniLYCX6rCni>DKG_(3#si&zvA$WPmgrb2P',
-    expiresIn: 36000
-  },
-  database: {
-    url: 'mongodb://admin:password@127.0.0.1:27017/zigdb'
-  }
-}
+    server: {
+        port: 3000,
+        url: 'http://localhost:3000'
+    },
+    jwt: {
+        secret: '`yGE[RniLYCX6rCni>DKG_(3#si&zvA$WPmgrb2P',
+        expiresIn: 36000
+    },
+    database: {
+        url: 'mongodb://admin:password@127.0.0.1:27017/zigdb'
+    },
+    docker: {
+        port: 2375
+    }
+};

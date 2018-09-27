@@ -14,10 +14,11 @@
     "url": "http://gitlab.ziggurat.cn/zhigui/dashboard-api.git"
   },
   "dependencies": {
+    "dockerode": "^2.5.7",
     "es6-error": "^4.1.1",
     "jsonwebtoken": "^8.3.0",
     "koa": "^2.2.0",
-    "koa-body": "^2.3.0",
+    "koa-bodyparser": "^4.2.1",
     "koa-cors": "0.0.16",
     "koa-router": "^7.1.1",
     "koa-static": "^3.0.0",

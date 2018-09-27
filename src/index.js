@@ -1,17 +1,16 @@
 const Koa = require('koa');
 const fs = require('fs');
 const path = require('path');
-const errorHandler = require('./libraries/error_handler')
-const cors = require('koa-cors')
-const config = require('./env')
+const errorHandler = require('./libraries/error_handler');
+const cors = require('koa-cors');
+const bodyParser = require('koa-bodyparser');
+const config = require('./env');
 
 const app = new Koa();
 
-// enable cors
 app.use(cors());
-
-// error handler
 app.use(errorHandler);
+app.use(bodyParser());
 
 // validator
 require('koa-validate')(app);
