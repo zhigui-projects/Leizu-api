@@ -1,6 +1,6 @@
 const Client = require('fabric-client');
-const fs = require("fs");
-const path = require("path");
+//const fs = require("fs");
+//const path = require("path");
 
 const channelName = "adminconfig";
 var networkConfig = {
