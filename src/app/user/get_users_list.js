@@ -6,7 +6,8 @@ router.get('/users', async (ctx) => {
 });
 
 router.get("/demo",async (ctx) =>{
-    ctx.body = {code:200,status:"success",msg:"hello world"};
+  ctx.response.type = 'json';
+  ctx.body = {code:200,status:"success",msg:"hello world"};
 });
 
 module.exports = router;
