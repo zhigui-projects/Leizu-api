@@ -1,5 +1,4 @@
+const http = require('http');
 const app = require("./src");
-
-app.listen(app.port, () => {
-  console.log(`API listening on port ${app.port}`)
-})
+const port = 8080;
+http.createServer(app.callback()).listen(port);

@@ -1,13 +1,15 @@
 const Koa = require('koa');
 const fs = require('fs');
 const path = require('path');
-const errorHandler = require('./libraries/error_handler');
 const cors = require('koa-cors');
+const logger = require("koa-logger");
 const bodyParser = require('koa-bodyparser');
+const errorHandler = require('./libraries/error_handler');
 const config = require('./env');
 
 const app = new Koa();
-
+app.config = config;
+app.use(logger());
 app.use(cors());
 app.use(errorHandler);
 app.use(bodyParser());
@@ -26,7 +28,5 @@ fs.readdirSync(appDirectory)
                 app.use(require(`${appDirectory}/${moduleName}/${route}`).routes());
             })
     });
-
-app.port = config.server.port;
 
 module.exports = app;
