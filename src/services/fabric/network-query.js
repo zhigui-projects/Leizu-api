@@ -43,3 +43,25 @@ module.exports.getClientKeyAndCert = async function(caConfig){
         );
     });
 };
+
+module.exports.getChannelConfigFromOrderer = async function(orderConfig,caConfig){
+    let client = new Client();
+    client.setAdminSigningIdentity(orderConfig.adminKey, orderConfig.adminCert, orderConfig.mspid);
+    let tlsInfo = await module.exports.getClientKeyAndCert(caConfig);
+    let sysChannel = client.newChannel(orderConfig.sysChannel);
+
+    let options = {
+        pem: orderConfig.pem,
+        'clientCert': tlsInfo.certificate,
+        'clientKey': tlsInfo.key,
+        'ssl-target-name-override': 'orderer.example.com'
+    };
+    let orderer = client.newOrderer(
+        orderConfig.url,
+        options
+    );
+
+    sysChannel.addOrderer(orderer);
+    let configEnvelope = await sysChannel.getChannelConfigFromOrderer();
+    return configEnvelope;
+};
