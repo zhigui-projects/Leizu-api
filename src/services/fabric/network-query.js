@@ -65,3 +65,38 @@ module.exports.getChannelConfigFromOrderer = async function(orderConfig,caConfig
     let configEnvelope = await sysChannel.getChannelConfigFromOrderer();
     return configEnvelope;
 };
+
+
+module.exports.discover = async function(networkConfig,peerConfig){
+    let client = Client.loadFromConfig(networkConfig);
+    client.setConfigSetting('initialize-with-discovery', true);
+    await client.initCredentialStores();
+    await module.exports.getTlsCACerts(client);
+    let options = {
+        pem: peerConfig.pem,
+        'ssl-target-name-override': peerConfig['server-hostname'],
+        name: peerConfig.name
+    };
+    let discoveryPeer = client.newPeer(peerConfig.url,options);
+    let channel = client.newChannel(peerConfig.channelName);
+    let request = {
+        'initialize-with-discovery': true,
+        'target': discoveryPeer,
+    };
+    await channel.initialize(request);
+    return channel.getDiscoveryResults()
+};
+
+module.exports.getTlsCACerts = async function(client){
+    const caService = client.getCertificateAuthority();
+    const request = {
+        enrollmentID: 'admin',
+        enrollmentSecret: 'adminpw',
+        profile: 'tls'
+    };
+    const enrollment = await caService.enroll(request);
+    const key = enrollment.key.toBytes();
+    const cert = enrollment.certificate;
+    client.setTlsClientCertAndKey(cert, key);
+    return;
+};
