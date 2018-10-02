@@ -4,7 +4,11 @@ const channelSchema = new mongoose.Schema({
     name: String,
     peers: [mongoose.Schema.ObjectId],
     orgs: [mongoose.Schema.ObjectId],
-    date: Date
+    consortium_id: mongoose.Schema.ObjectId,
+    date: {
+        type: Date,
+        default: Date.now()
+    }
 });
 
-module.exports = mongoose.model("Channel",channelSchema);
+module.exports = mongoose.model("Channel",channelSchema,"channel");
