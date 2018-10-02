@@ -2,11 +2,10 @@ const Docker = require('dockerode');
 const Router = require('koa-router');
 const config = require('../../env');
 
-const router = new Router();
-const BASE_URL = `/api/docker`;
+const router = new Router({prefix: '/docker'});
 const DEFAULT_PORT = config.docker.port;
 
-router.get(`${BASE_URL}/info`, async (ctx) => {
+router.get(`/info`, async (ctx) => {
     const docker = new Docker({host: ctx.query['host'], port: DEFAULT_PORT});
 
     await docker.info().then((info) => {
@@ -16,7 +15,7 @@ router.get(`${BASE_URL}/info`, async (ctx) => {
     });
 });
 
-router.get(`${BASE_URL}/containers/json`, async (ctx) => {
+router.get(`/containers/json`, async (ctx) => {
     const docker = new Docker({host: ctx.query['host'], port: DEFAULT_PORT});
 
     await docker.listContainers({all: true}).then(containers => {
@@ -26,7 +25,7 @@ router.get(`${BASE_URL}/containers/json`, async (ctx) => {
     });
 });
 
-router.post(`${BASE_URL}/containers/create`, async (ctx) => {
+router.post(`/containers/create`, async (ctx) => {
     const docker = new Docker({host: ctx.query['host'], port: DEFAULT_PORT});
     let payload = ctx.request.body;
     let portBindings = {};
@@ -51,7 +50,7 @@ router.post(`${BASE_URL}/containers/create`, async (ctx) => {
     });
 });
 
-router.post(`${BASE_URL}/containers/:id/start`, async (ctx) => {
+router.post(`/containers/:id/start`, async (ctx) => {
     const docker = new Docker({host: ctx.query['host'], port: DEFAULT_PORT});
     const container = docker.getContainer(ctx.params.id);
 
