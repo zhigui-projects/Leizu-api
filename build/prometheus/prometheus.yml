@@ -1,7 +1,19 @@
 scrape_configs:
 - job_name: cadvisor
   scrape_interval: 5s
-  file_sd_configs:
-  - files:
-    - targets.json
-    refresh_interval: 1m
+
+#  static configuration for targets
+#  static_configs:
+#  - targets:
+#    - 172.20.252.131:8000
+#    - 172.20.252.130:8080
+
+#  file based service discovery
+#  file_sd_configs:
+#  - files:
+#    - targets.json
+#    refresh_interval: 1m
+
+#  consul based service discovery
+  consul_sd_configs:
+    - server: '172.20.252.131:8500'
