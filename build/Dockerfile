@@ -1,11 +1,8 @@
-
 FROM node:8.10
 
 MAINTAINER dashboard "info@ziggurat.cn"
 
 RUN apt-get update && apt-get -y install vim
-
-
 
 ENV WORK_DIR /usr/src/app
 RUN mkdir -p ${WORK_DIR}
