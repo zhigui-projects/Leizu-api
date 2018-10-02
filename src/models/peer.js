@@ -1,14 +1,17 @@
 const mongoose = require('mongoose')
 const peerSchema = new mongoose.Schema({
-  uuid: String,
-  name: String,
-  location: String,
-  event_hub_location: String,
-  org_id: mongoose.Schema.ObjectId,
-  server_crt_path: String,
-  client_cert_path: String,
-  client_key_path: String,
-  date: Date
+    uuid: String,
+    name: String,
+    location: String,
+    event_hub_location: String,
+    org_id: mongoose.Schema.ObjectId,
+    server_crt_path: String,
+    client_cert_path: String,
+    client_key_path: String,
+    date: {
+        type: Date,
+        default: Date.now()
+    }
 });
 
-module.exports = mongoose.model('Peer',peerSchema);
+module.exports = mongoose.model('Peer',peerSchema,'peer');
