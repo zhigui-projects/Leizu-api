@@ -29,7 +29,7 @@ fs.readdirSync(appDirectory)
         fs.readdirSync(`${appDirectory}/${moduleName}`)
             .filter(file => fs.statSync(path.join(`${appDirectory}/${moduleName}`, file)).isFile())
             .forEach((route) => {
-                app.use(require(`${appDirectory}/${moduleName}/${route}`).routes());
+                app.use(require(`${appDirectory}/${moduleName}/${route}`).prefix('/api/v1').routes());
             })
     });
 
