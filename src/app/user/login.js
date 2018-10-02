@@ -19,7 +19,7 @@ router.post('/login', async (ctx) => {
   if (!user) throw new Unauthorized('Invalid Credentials');
   
   ctx.body = {
-    id: user.id,
+    id: user._id,
     name: user.name,
     token: jwt.encode({ id: user.id }),
   };
