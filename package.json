@@ -30,7 +30,8 @@
     "log4js": "^3.0.5",
     "mongoose": "^5.2.8",
     "nodemon": "^1.18.4",
-    "sha1": "^1.1.1"
+    "sha1": "^1.1.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "mocha": "^5.2.0",

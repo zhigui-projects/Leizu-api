@@ -1,4 +1,5 @@
 module.exports = {
+    koaLogger: true,
     jwt: {
         secret: '`yGE[RniLYCX6rCni>DKG_(3#si&zvA$WPmgrb2P',
         expiresIn: 36000

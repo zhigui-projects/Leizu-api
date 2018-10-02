@@ -1,9 +1,4 @@
 const router = require('koa-router')();
-const User = require('../../models/user');
-
-router.get('/users', async (ctx) => {
-  ctx.body = await User.getList();
-});
 
 router.get("/demo",async (ctx) =>{
   ctx.response.type = 'json';

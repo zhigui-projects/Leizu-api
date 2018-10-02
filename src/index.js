@@ -2,14 +2,18 @@ const Koa = require('koa');
 const fs = require('fs');
 const path = require('path');
 const cors = require('@koa/cors');
-const logger = require("koa-logger");
 const bodyParser = require('koa-bodyparser');
 const errorHandler = require('./libraries/error_handler');
 const config = require('./env');
 
 const app = new Koa();
 app.config = config;
-app.use(logger());
+app.mongoose = require("./libraries/db");
+if(config.koaLogger){
+    const logger = require("koa-logger");
+    app.use(logger());
+}
+
 app.use(cors());
 app.use(errorHandler);
 app.use(bodyParser());
