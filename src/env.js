@@ -4,7 +4,8 @@ module.exports = {
         expiresIn: 36000
     },
     database: {
-        url: 'mongodb://127.0.0.1:27017/zigdb'
+        url: 'mongodb://127.0.0.1:27017/zigdb',
+        debug: false
     },
     docker: {
         port: 2375

@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const config = require('../env').database;
+
 const options = {
   useNewUrlParser: true,
   autoIndex: false, // Don't build indexes
@@ -11,6 +13,10 @@ const options = {
   socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
   family: 4 // Use IPv4, skip trying IPv6
 };
-const connection = require('mongoose').connect(config.url,options);
 
-module.exports = connection;
+mongoose.connect(config.url,options);
+if(config.debug){
+  mongoose.set('debug', true);
+}
+
+module.exports = mongoose;
