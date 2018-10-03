@@ -1,4 +1,6 @@
-const mongoose = require('mongoose')
+"use strict";
+
+const mongoose = require('mongoose');
 const peerSchema = new mongoose.Schema({
     uuid: String,
     name: String,

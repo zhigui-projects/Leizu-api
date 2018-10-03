@@ -1,4 +1,6 @@
-const mongoose = require('mongoose')
+"use strict";
+
+const mongoose = require('mongoose');
 const ordererSchema = new mongoose.Schema({
   uuid: String,
   name: String,
@@ -7,7 +9,10 @@ const ordererSchema = new mongoose.Schema({
   client_cert_path: String,
   client_key_path: String,
   org_id: mongoose.Schema.ObjectId,
-  date: Date
+  date: {
+    type: Date,
+    default: Date.now()
+  }
 });
 
-module.exports = mongoose.model('Orderer',ordererSchema);
+module.exports = mongoose.model('Orderer',ordererSchema,"orderer");

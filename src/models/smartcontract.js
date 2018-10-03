@@ -1,3 +1,5 @@
+"use strict";
+
 const mongoose = require("mongoose");
 const smartContractSchema = new mongoose.Schema({
     uuid: String,

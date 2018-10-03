@@ -1,11 +1,16 @@
-const mongoose = require('mongoose')
+"use strict";
+
+const mongoose = require('mongoose');
 const organizationSchema = new mongoose.Schema({
   uuid: String,
   name: String,
   tls: Boolean,
   msp_id: String,
-  league_id: mongoose.Schema.ObjectId,
-  date: Date
+  consortium_id: mongoose.Schema.ObjectId,
+  date: {
+    type: Date,
+    default: Date.now()
+  }
 });
 
-module.exports = mongoose.model('Organization',organizationSchema);
+module.exports = mongoose.model('Organization',organizationSchema,"organization");

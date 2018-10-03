@@ -1,3 +1,5 @@
+"use strict";
+
 const mongoose = require("mongoose");
 const certificateAuthoritySchema = new mongoose.Schema({
     uuid: String,
