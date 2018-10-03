@@ -5,22 +5,24 @@ const Channel = require("../../models/channel");
 const common = require("../../libraries/common");
 
 router.get("/channel", async ctx => {
-    try{
-        let channels = Channel.find();
-        ctx.body = channels;
-    }catch(err){
-        ctx.body = common.error([],err.message);
-    }
+    Channel.find({},(err,docs) =>{
+        if(err){
+            ctx.body = common.error([],err.message);
+        }else{
+            ctx.body = common.success(docs,common.SUCCESS);
+        }            
+    });
 });
 
 router.get("/channel/:id", async ctx => {
     let id = ctx.params.id;
-    try{
-        let channel = await Channel.findById(id);
-        ctx.body = channel;
-    }catch(err){
-        ctx.body = common.error({},err.message);
-    }
+    Channel.findById(id, (err,doc) => {
+        if(err){
+            ctx.body = common.error({},err.message);
+        }else{
+            ctx.body = common.success(doc,common.SUCCESS);
+        }
+    });
 });
 
 module.exports = router;

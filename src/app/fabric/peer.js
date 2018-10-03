@@ -5,22 +5,24 @@ const Peer = require("../../models/peer");
 const common = require("../../libraries/common");
 
 router.get("/peer", async ctx => {
-    try{
-        let peers = Peer.find();
-        ctx.body = peers;
-    }catch(err){
-        ctx.body = common.error([],err.message);
-    }
+    Peer.find({},(err,docs) =>{
+        if(err){
+            ctx.body = common.error([],err.message);
+        }else{
+            ctx.body = common.success(docs,common.SUCCESS);
+        }            
+    });
 });
 
 router.get("/peer/:id", async ctx => {
     let id = ctx.params.id;
-    try{
-        let peer = await Peer.findById(id);
-        ctx.body = peer;
-    }catch(err){
-        ctx.body = common.error({},err.message);
-    }
+    Peer.findById(id, (err,doc) => {
+        if(err){
+            ctx.body = common.error({},err.message);
+        }else{
+            ctx.body = common.success(doc,common.SUCCESS);
+        }
+    });
 });
 
 module.exports = router;

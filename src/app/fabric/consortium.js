@@ -1,19 +1,31 @@
 'use strict';
+
 const router = require("koa-router")();
 const uuid = require("uuid/v1");
 const logger = require("../../libraries/log4js");
 const Consortium = require("../../models/consortium");
+const common = require("../../libraries/common");
 
 router.get("/consortium",async ctx => {
-    let consortiums = await Consortium.find();
-    ctx.body = consortiums;
+    Consortium.find({},(err,docs) =>{
+        if(err){
+            ctx.body = common.error([],err.message);
+        }else{
+            ctx.body = common.success(docs,common.SUCCESS);
+        }            
+    });
 });
 
 router.get("/consortium/:id", async ctx => {
     let id = ctx.params.id;
     logger.debug("the query id is %d",id);
-    let consortium = await Consortium.findById(id);
-    ctx.body = consortium;
+    Consortium.findById(id, (err,doc) => {
+        if(err){
+            ctx.body = common.error({},err.message);
+        }else{
+            ctx.body = common.success(doc,common.SUCCESS);
+        }
+    });
 });
 
 router.post("/consortium",async ctx => {
