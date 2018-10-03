@@ -1,3 +1,16 @@
+'use strict';
+
+/**
+ * Use fabric sdk to query the blockchain network data
+ * channel query: an array of channel;
+ * discover query:
+ *   - msp map
+ *   - orderer map
+ *   - peers map
+ * channel config query: config block
+ * 
+ */
+
 const Client = require("fabric-client");
 const Peer = require('fabric-client/lib/Peer.js');
 const FabricCAServices = require('fabric-ca-client');
