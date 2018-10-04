@@ -10,7 +10,8 @@ module.exports.syncFabric = async networkConfig => {
     let caConfig = generateCAConfig(networkConfig);
     let channels = await query.getChannels(peerConfig,caConfig);
     await utils.asyncForEach(channels,fabricService.saveChannel);
-    let results = await query.discover(networkConfig,peerConfig);
+    let rawResults = await query.discover(networkConfig,peerConfig);
+    let results = processDiscoveryResults(rawResults);
     return fabricService.handleDiscoveryResults(results);
 };
 
@@ -20,5 +21,15 @@ function generatePeerConfig(networkConfig) {
 
 function generateCAConfig(networkConfig) {
     return {};
+}
+
+function processDiscoveryResults(rawResults){
+    let results = {
+        orderers: [],
+        peers: [],
+        organizations: []
+    };
+    
+    return results
 }
 
