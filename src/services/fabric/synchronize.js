@@ -9,7 +9,7 @@ module.exports.syncFabric = async networkConfig => {
     let peerConfig = generatePeerConfig(networkConfig);
     let caConfig = generateCAConfig(networkConfig);
     let channels = await query.getChannels(peerConfig,caConfig);
-    await utils.asyncForEach(channels,fabricService.saveChannel);
+    await utils.asyncForEach(channels,fabricService.addChannel);
     let rawResults = await query.discover(networkConfig,peerConfig);
     let results = processDiscoveryResults(rawResults);
     return fabricService.handleDiscoveryResults(results);
@@ -29,6 +29,27 @@ function processDiscoveryResults(rawResults){
         peers: [],
         organizations: []
     };
+    
+    if(rawResults.msps){
+        let msps = Object.keys(rawResults.msps);
+        msps.forEach((key,index) =>{
+            results.organizations.push(rawResults.msps[key]);
+        });
+    }
+    
+    if(rawResults.orderers){
+		for (let mspid in rawResults.orderers) {
+			for (let index in rawResults.orderers[mspid].endpoint) {
+				results.orderers.push(rawResults.orderers[mspid].endpoint[index]);
+			}
+		}        
+    }
+    
+    if(rawResults.peers_by_org){
+		for (let mspid in rawResults.peers_by_org) {
+			results.peers = results.peers.concat(rawResults.peers_by_org[mspid].peers);
+		}
+    }
     
     return results
 }
