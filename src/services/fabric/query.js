@@ -29,7 +29,7 @@ module.exports.getChannels = async function(peerConfig,caConfig){
 
     let peer = new Peer(peerConfig.url,options);
 
-    return client.queryChannels(peer);
+    return client.queryChannels(peer,true);
 };
 
 module.exports.getClientKeyAndCert = async function(caConfig){
