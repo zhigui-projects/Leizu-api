@@ -19,16 +19,13 @@ module.exports.getChannels = async function(peerConfig,caConfig){
     let client = new Client();
     client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
     let tlsInfo = await module.exports.getClientKeyAndCert(caConfig);
-
     let options =  {
         pem: peerConfig.pem,
         'clientCert': tlsInfo.certificate,
         'clientKey': tlsInfo.key,
         'ssl-target-name-override': peerConfig['server-hostname']
     };
-
     let peer = new Peer(peerConfig.url,options);
-
     return client.queryChannels(peer,true);
 };
 
@@ -62,7 +59,7 @@ module.exports.getChannelConfigFromOrderer = async function(orderConfig,caConfig
     client.setAdminSigningIdentity(orderConfig.adminKey, orderConfig.adminCert, orderConfig.mspid);
     let tlsInfo = await module.exports.getClientKeyAndCert(caConfig);
     let sysChannel = client.newChannel(orderConfig.sysChannel);
-
+    client.setTlsClientCertAndKey(tlsInfo.certificate,tlsInfo.key);
     let options = {
         pem: orderConfig.pem,
         'clientCert': tlsInfo.certificate,
@@ -73,12 +70,10 @@ module.exports.getChannelConfigFromOrderer = async function(orderConfig,caConfig
         orderConfig.url,
         options
     );
-
     sysChannel.addOrderer(orderer);
     let configEnvelope = await sysChannel.getChannelConfigFromOrderer();
     return configEnvelope;
 };
-
 
 module.exports.discover = async function(networkConfig,peerConfig){
     let client = Client.loadFromConfig(networkConfig);

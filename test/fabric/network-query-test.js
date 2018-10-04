@@ -48,6 +48,8 @@ const caConfig = {
 }
 
 const orderConfig = {
+    mspid: "OrdererMSP",
+    sysChannel: "testchainid",
     url: "grpcs://localhost:7050",
     pem: '-----BEGIN CERTIFICATE-----\n' +
         'MIICNDCCAdqgAwIBAgIRAIBOtq8vZiC0+uLSi2MIS4swCgYIKoZIzj0EAwIwZjEL\n' +
@@ -64,23 +66,23 @@ const orderConfig = {
         'RMSXlLIoAiB2glBl0wM/ITn5+tnHOnq2wrIGuYIiNbLK5oq2zf+gtA==\n' +
         '-----END CERTIFICATE-----',
     adminKey: '-----BEGIN PRIVATE KEY-----\n' +
-             'MIGHAgEBMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgS0L+WeTBa4vdUW4j\n' +
-             'rogLu8JmLSjda0YcA2TWOfaR+8yhRANCAAQO41JsWQE2pt2UZ/DBdIcpa/inDZ4U\n' +
-             '54P5VcIdXgISsEqdRcGLBz+cvvrpTNedaeyNRSndk5LMIJ/npw2Qua/p\n' +
-             '-----END PRIVATE KEY-----',
-    adminCert:'-----BEGIN CERTIFICATE-----\n' +
-            'MIICKjCCAdGgAwIBAgIQIVQ6HvVnJP1qZ5YKfh50hzAKBggqhkjOPQQDAjBwMQsw\n' +
-            'CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy\n' +
-            'YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEZMBcGA1UEAxMQb3Jn\n' +
-            'MS5leGFtcGxlLmNvbTAeFw0xNzA0MjIxMjAyNTZaFw0yNzA0MjAxMjAyNTZaMFsx\n' +
-            'CzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4g\n' +
-            'RnJhbmNpc2NvMR8wHQYDVQQDDBZBZG1pbkBvcmcxLmV4YW1wbGUuY29tMFkwEwYH\n' +
-            'KoZIzj0CAQYIKoZIzj0DAQcDQgAEDuNSbFkBNqbdlGfwwXSHKWv4pw2eFOeD+VXC\n' +
-            'HV4CErBKnUXBiwc/nL766UzXnWnsjUUp3ZOSzCCf56cNkLmv6aNiMGAwDgYDVR0P\n' +
-            'AQH/BAQDAgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMBMAwGA1UdEwEB/wQCMAAwKwYD\n' +
-            'VR0jBCQwIoAgoi2vNWsqq1eS6lPjX2b8zvHX8aorOiuS2/v5akSOomowCgYIKoZI\n' +
-            'zj0EAwIDRwAwRAIgbEqKoKrFuYQG0ndiX7dT7GKGlF17Skf8DYil9cqbp00CID5T\n' +
-            'URQPp0/vJ3tldK0z9xjFvsSecj8aqnDvZvGz07/v\n' +
+            'MIGHAgEBMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgKi/7SbU0tzemhB4/\n' +
+            'gZY1pts4cjYsrMTL7SSGkDSpSkahRANCAASkearIgWkEsdLMtSv+xBaQSQ3lTwun\n' +
+            'C236iI47aLLjHzTYw61UfV/LPnTy3lm1D+aiZlpxNZGfydFsk56kWygN\n' +
+            '-----END PRIVATE KEY-----',
+    adminCert: '-----BEGIN CERTIFICATE-----\n' +
+            'MIICHDCCAcOgAwIBAgIRAOVchZuZsk52YC0d82t2qj0wCgYIKoZIzj0EAwIwZjEL\n' +
+            'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
+            'cmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRQwEgYDVQQDEwtleGFtcGxl\n' +
+            'LmNvbTAeFw0xNzA0MjIxMjAyNTZaFw0yNzA0MjAxMjAyNTZaMFYxCzAJBgNVBAYT\n' +
+            'AlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2Nv\n' +
+            'MRowGAYDVQQDDBFBZG1pbkBleGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49\n' +
+            'AwEHA0IABKR5qsiBaQSx0sy1K/7EFpBJDeVPC6cLbfqIjjtosuMfNNjDrVR9X8s+\n' +
+            'dPLeWbUP5qJmWnE1kZ/J0WyTnqRbKA2jYjBgMA4GA1UdDwEB/wQEAwIFoDATBgNV\n' +
+            'HSUEDDAKBggrBgEFBQcDATAMBgNVHRMBAf8EAjAAMCsGA1UdIwQkMCKAIOqt5ZCH\n' +
+            'xtl/zzUOlPN62fLGkrtm8YIUjOWJQN5wrenOMAoGCCqGSM49BAMCA0cAMEQCIEkj\n' +
+            'Aoe3iCG+7t2BYDRmZgF/6jUZVDjHrNaRsabLzvXTAiA6PM/0GLppYtIcGQDA7qeJ\n' +
+            'VfRO4IGE/M3rSnpBrQCodA==\n' +
             '-----END CERTIFICATE-----'
 }
 
@@ -88,4 +90,11 @@ query.getChannels(peerConfig,caConfig).then(response => {
 	for (let i = 0; i < response.channels.length; i++) {
 		console.log('channel id: ' + response.channels[i].channel_id);
 	}
+});
+
+var configBlock = query.getChannelConfigFromOrderer(orderConfig,caConfig);
+configBlock.then(function(result){
+        console.log(result);
+    },function(err){
+        console.error(err);
 });
