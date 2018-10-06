@@ -18,16 +18,38 @@ const FabricCAServices = require('fabric-ca-client');
 module.exports.getChannels = async function(peerConfig,caConfig){
     let client = new Client();
     client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
-    let tlsInfo = await module.exports.getClientKeyAndCert(caConfig);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
     let options =  {
         pem: peerConfig.pem,
-        'clientCert': tlsInfo.certificate,
-        'clientKey': tlsInfo.key,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
         'ssl-target-name-override': peerConfig['server-hostname']
     };
     let peer = new Peer(peerConfig.url,options);
     return client.queryChannels(peer,true);
 };
+
+module.exports.serviceDiscovery = async function(channelName,peerConfig,caConfig){
+    let client = new Client();
+    client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+
+    let options =  {
+        pem: peerConfig.pem,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+
+    let discoveryPeer = client.newPeer(peerConfig.url,options);
+    let channel = client.newChannel(channelName);
+	let results = await channel._discover({
+		target: discoveryPeer,
+		config: true
+	});
+	
+	return results;
+}
 
 module.exports.getClientKeyAndCert = async function(caConfig){
     return new Promise(function (resolve, reject) {
@@ -57,13 +79,13 @@ module.exports.getClientKeyAndCert = async function(caConfig){
 module.exports.getChannelConfigFromOrderer = async function(orderConfig,caConfig){
     let client = new Client();
     client.setAdminSigningIdentity(orderConfig.adminKey, orderConfig.adminCert, orderConfig.mspid);
-    let tlsInfo = await module.exports.getClientKeyAndCert(caConfig);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
     let sysChannel = client.newChannel(orderConfig.sysChannel);
-    client.setTlsClientCertAndKey(tlsInfo.certificate,tlsInfo.key);
+    client.setTlsClientCertAndKey(enrollment.certificate,enrollment.key);
     let options = {
         pem: orderConfig.pem,
-        'clientCert': tlsInfo.certificate,
-        'clientKey': tlsInfo.key,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
         'ssl-target-name-override': 'orderer.example.com'
     };
     let orderer = client.newOrderer(
