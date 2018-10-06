@@ -2,25 +2,31 @@
 
 const query = require("./query");
 const FabricService = require("../db/fabric");
-const utils = require("../../libraries/utils");
+//const utils = require("../../libraries/utils");
 
 module.exports.syncFabric = async networkConfig => {
+    let syncResults = [];
     let fabricService = new FabricService();
     let peerConfig = generatePeerConfig(networkConfig);
     let caConfig = generateCAConfig(networkConfig);
     let channels = await query.getChannels(peerConfig,caConfig);
-    await utils.asyncForEach(channels,fabricService.addChannel);
-    let rawResults = await query.discover(networkConfig,peerConfig);
-    let results = processDiscoveryResults(rawResults);
-    return fabricService.handleDiscoveryResults(results);
+    for(let i=0; i < channels.length; i++){
+        let channel = channels[i];
+        await fabricService.addChannel(channel);
+        let rawResults = await query.serviceDiscovery(channel.name,peerConfig,caConfig);
+        let results = processDiscoveryResults(rawResults);
+        let dbResult = fabricService.handleDiscoveryResults(results);
+        syncResults.push(dbResult);
+    }
+    return syncResults;
 };
 
 function generatePeerConfig(networkConfig) {
-    return {};
+    return networkConfig.peerConfig;
 }
 
 function generateCAConfig(networkConfig) {
-    return {};
+    return networkConfig.caConfig;
 }
 
 function processDiscoveryResults(rawResults){
