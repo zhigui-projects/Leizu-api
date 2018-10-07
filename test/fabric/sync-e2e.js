@@ -10,5 +10,6 @@ request(app.callback())
     .end(function(err,response){
         if(err) console.error(err);
         console.log(response.body);
+        app.mongoose.disconnect();
     });
 
