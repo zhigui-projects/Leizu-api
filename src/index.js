@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser');
-const errorHandler = require('./libraries/error_handler');
+const errorHandler = require('./libraries/error-handler');
 const config = require('./env');
 
 const app = new Koa();
