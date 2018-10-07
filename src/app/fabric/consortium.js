@@ -7,25 +7,31 @@ const Consortium = require("../../models/consortium");
 const common = require("../../libraries/common");
 
 router.get("/consortium",async ctx => {
-    Consortium.find({},(err,docs) =>{
+    await Consortium.find({},(err,docs) =>{
         if(err){
             ctx.body = common.error([],err.message);
         }else{
             ctx.body = common.success(docs,common.SUCCESS);
         }            
-    });
+    }).catch(err =>{
+        ctx.status = 400;
+        ctx.body = common.error([],err.message);
+    });;
 });
 
 router.get("/consortium/:id", async ctx => {
     let id = ctx.params.id;
     logger.debug("the query id is %d",id);
-    Consortium.findById(id, (err,doc) => {
+    await Consortium.findById(id, (err,doc) => {
         if(err){
             ctx.body = common.error({},err.message);
         }else{
             ctx.body = common.success(doc,common.SUCCESS);
         }
-    });
+    }).catch(err =>{
+        ctx.status = 400;
+        ctx.body = common.error([],err.message);
+    });;
 });
 
 router.post("/consortium",async ctx => {
@@ -34,13 +40,16 @@ router.post("/consortium",async ctx => {
     consortium.name = name;
     consortium.uuid = uuid();
     consortium.network_config = JSON.stringify(ctx.body.config);
-    consortium.save(function(err,doc){
+    await consortium.save(function(err,doc){
         if(err){
             ctx.body = err;
         }else{
             ctx.body = doc;
         }
-    });
+    }).catch(err =>{
+        ctx.status = 400;
+        ctx.body = common.error({},err.message);
+    });;
 });
 
 module.exports = router;
