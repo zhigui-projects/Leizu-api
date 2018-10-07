@@ -11,21 +11,11 @@ router.post("/fabric/sync/:id", async ctx => {
     let consortiumId = ctx.params.id;
     logger.debug("The consortium id is %d",consortiumId);
     try{
-        /*
-        Consortium.findById(consortiumId, (err,doc) => {
-            if(err){
-                ctx.body = common.error([],err.message);
-                logger.debug(ctx.body);
-            }else{
-                let result = syncService.syncFabric(doc.network_config);
-                ctx.body = common.success(result,common.SYNC_SUCCESS);                
-            }
-        });
-        */
         let consortium =  await Consortium.findById(consortiumId);
         let result = await syncService.syncFabric(consortium.network_config);
-        ctx.body = common.success(result,common.SYNC_SUCCESS); 
+        ctx.body = common.success(result,common.SYNC_SUCCESS);
     }catch(err){
+        ctx.response.status = 400;
         ctx.body = common.error([],err.message);
     }
 });
