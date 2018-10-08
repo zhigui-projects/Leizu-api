@@ -1,9 +1,10 @@
-#!/usr/bin/env node;
+#!/usr/bin/env mongo;
 
 /**
  * initialize default admin user
- *  - use mongoose to insert the user;
  *  - use the mongo client to add the user
+ *  - use mongoose to insert the user;
+ * 
  * */
  
  use zigdb;
