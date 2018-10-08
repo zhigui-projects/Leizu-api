@@ -35,6 +35,7 @@ router.get("/consortium/:id", async ctx => {
 });
 
 router.post("/consortium",async ctx => {
+    logger.info(ctx.body);
     let name = ctx.body.name;
     let consortium = new Consortium();
     consortium.name = name;
