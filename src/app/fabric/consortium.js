@@ -35,22 +35,18 @@ router.get("/consortium/:id", async ctx => {
 });
 
 router.post("/consortium",async ctx => {
-    logger.info(ctx.body);
-    let name = ctx.body.name;
+    let name = ctx.request.body.name;
     let consortium = new Consortium();
     consortium.name = name;
     consortium.uuid = uuid();
-    consortium.network_config = JSON.stringify(ctx.body.config);
-    await consortium.save(function(err,doc){
-        if(err){
-            ctx.body = err;
-        }else{
-            ctx.body = doc;
-        }
-    }).catch(err =>{
+    consortium.network_config = JSON.stringify(ctx.request.body.config);
+    try{
+       await consortium.save(); 
+       ctx.body = consortium;
+    }catch(err){
         ctx.status = 400;
         ctx.body = common.error({},err.message);
-    });;
+    }
 });
 
 module.exports = router;
