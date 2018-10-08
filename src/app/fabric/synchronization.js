@@ -9,10 +9,10 @@ const common = require("../../libraries/common");
 router.post("/fabric/sync/:id", async ctx => {
     ctx.response.type = 'json';
     let consortiumId = ctx.params.id;
-    logger.debug("The consortium id is %d",consortiumId);
+    logger.debug("The consortium id is %s",consortiumId);
     try{
         let consortium =  await Consortium.findById(consortiumId);
-        let result = await syncService.syncFabric(consortium.network_config);
+        let result = await syncService.syncFabric(JSON.parse(consortium.network_config));
         ctx.body = common.success(result,common.SYNC_SUCCESS);
     }catch(err){
         ctx.response.status = 400;
