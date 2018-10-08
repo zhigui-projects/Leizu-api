@@ -5,3 +5,7 @@
  *  - use mongoose to insert the user;
  *  - use the mongo client to add the user
  * */
+ 
+ use zigdb;
+ 
+ db.user.insert({name:'admin',password:'3bf15982a73a5a949559676cb8a272cbd6bd5459'});
