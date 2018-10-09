@@ -2,13 +2,16 @@ FROM node:8.12-alpine
 
 LABEL maintainer="info@ziggurat.cn"
 
-RUN apt-get update && apt-get -y install vim
+WORKDIR /usr/src/app
 
-ENV WORK_DIR /usr/src/app
+COPY package*.json ./
 
-COPY . ${WORK_DIR}
-WORKDIR ${WORK_DIR}
 RUN npm install
+
+# If you are building your code for production
+# RUN npm install --only=production
+
+COPY . .
 
 EXPOSE 8080
 
