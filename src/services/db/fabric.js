@@ -3,7 +3,6 @@
 const uuid = require("uuid/v1");
 const logger = require("../../libraries/log4js");
 const common = require("../../libraries/common");
-const utils = require("../../libraries/utils");
 const Channel = require("../../models/channel");
 const Organization = require("../../models/organization");
 const Orderer = require("../../models/orderer");
@@ -45,12 +44,13 @@ module.exports = class FabricService {
         let organization = new Organization();
         organization.uuid = uuid();
         organization.name = dto.id;
+        organization.consortium_id = this.consortiumId;
         try{
-            await organization.save();
-            return true;
+            organization = await organization.save();
+            return organization;
         }catch(err){
             logger.error(err);
-            return false;
+            return null;
         }
     }
     
@@ -59,11 +59,11 @@ module.exports = class FabricService {
         orderer.uuid = uuid();
         orderer.location = dto.host + dto.port;
         try{
-            await orderer.save();
-            return true;
+            orderer = await orderer.save();
+            return orderer;
         }catch(err){
             logger.error(err);
-            return false;
+            return null;
         }
     }
     
@@ -73,20 +73,35 @@ module.exports = class FabricService {
         peer.name = dto.endpoint.slice(0,dto.endpoint.indexOf(common.SEPARATOR_DOT));
         peer.location = dto.endpoint;
         try{
-            await peer.save();
-            return true;
+            peer = await peer.save();
+            return peer;
         }catch(err){
             logger.error(err);
-            return false;
+            return null;
         }
     }
     
     async handleDiscoveryResults(channelId, results) {
+        this.channelId = channelId;
+        let result = {
+            organizations: [],
+            orderers: [],
+            peers: [],
+        };
         if(results){
-            await utils.asyncForEach(results.organizations, this.addOrganization);
-            await utils.asyncForEach(results.orderers, this.addOrderer);
-            await utils.asyncForEach(results.peers, this.addPeer);
+            for(let index=0; index < results.organizations.length; index++){
+                let organization = await this.addOrganization(results.organizations[index])
+                result.organizations.push(organization);
+            }
+            for(let index=0; index < results.orderers.length; index++){
+                let orderer = await this.addOrderer(results.orderers[index])
+                result.orderers.push(orderer);
+            }
+            for(let index=0; index < results.peers.length; index++){
+                let peer = await this.addPeer(results.peers[index])
+                result.peers.push(peer);
+            }            
         }
-        return true;
+        return result;
     }
 }

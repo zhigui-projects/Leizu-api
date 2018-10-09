@@ -5,7 +5,6 @@ const peerSchema = new mongoose.Schema({
     uuid: String,
     name: String,
     location: String,
-    event_hub_location: String,
     org_id: mongoose.Schema.ObjectId,
     server_crt_path: String,
     client_cert_path: String,
