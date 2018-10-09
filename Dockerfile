@@ -1,4 +1,4 @@
-FROM node:8.12-alpine
+FROM node:8.12
 
 LABEL maintainer="info@ziggurat.cn"
 
