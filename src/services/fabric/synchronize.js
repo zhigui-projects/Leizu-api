@@ -2,7 +2,6 @@
 
 const query = require("./query");
 const FabricService = require("../db/fabric");
-//const utils = require("../../libraries/utils");
 
 module.exports.syncFabric = async (consortiumId,networkConfig) => {
     let syncResults = [];
@@ -12,10 +11,11 @@ module.exports.syncFabric = async (consortiumId,networkConfig) => {
     let channels = await query.getChannels(peerConfig,caConfig);
     for(let i=0; i < channels.length; i++){
         let channel = channels[i];
-        await fabricService.addChannel(channel);
+        let channelDb = await fabricService.addChannel(channel);
+        let channelId = channelDb._id;
         let rawResults = await query.serviceDiscovery(channel.name,peerConfig,caConfig);
-        let results = processDiscoveryResults(rawResults);
-        let dbResult = fabricService.handleDiscoveryResults(results);
+        let results = module.exports.processDiscoveryResults(rawResults);
+        let dbResult = await fabricService.handleDiscoveryResults(channelId,results);
         syncResults.push(dbResult);
     } 
     return syncResults;
@@ -29,7 +29,7 @@ function generateCAConfig(networkConfig) {
     return networkConfig.caConfig;
 }
 
-function processDiscoveryResults(rawResults){
+module.exports.processDiscoveryResults = function processDiscoveryResults(rawResults){
     let results = {
         orderers: [],
         peers: [],

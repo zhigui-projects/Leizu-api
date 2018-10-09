@@ -3,6 +3,7 @@
 const uuid = require("uuid/v1");
 const logger = require("../../libraries/log4js");
 const common = require("../../libraries/common");
+const utils = require("../../libraries/utils");
 const Channel = require("../../models/channel");
 const Organization = require("../../models/organization");
 const Orderer = require("../../models/orderer");
@@ -13,6 +14,17 @@ module.exports = class FabricService {
     constructor(consortiumId) {
         this.isFabric = true;
         this.consortiumId = consortiumId;
+    }
+    
+    async findChannel(filter){
+        let condition = filter || {};
+        try{
+            let channel = await Channel.findOne(condition);
+            return channel;
+        }catch(err){
+            logger.error(err);
+            return null;
+        }        
     }
     
     async addChannel(dto) {
@@ -69,11 +81,11 @@ module.exports = class FabricService {
         }
     }
     
-    async handleDiscoveryResults(results) {
+    async handleDiscoveryResults(channelId, results) {
         if(results){
-            await common.asyncForEach(results.organizations, this.addOrganization);
-            await common.asyncForEach(results.orderers, this.addOrderer);
-            await common.asyncForEach(results.peers, this.addPeer);
+            await utils.asyncForEach(results.organizations, this.addOrganization);
+            await utils.asyncForEach(results.orderers, this.addOrderer);
+            await utils.asyncForEach(results.peers, this.addPeer);
         }
         return true;
     }
