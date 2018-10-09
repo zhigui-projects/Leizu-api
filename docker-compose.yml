@@ -1,0 +1,38 @@
+version: "3"
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    restart: always
+    volumes:
+    - ./nginx/nginx.conf.raw:/etc/nginx/nginx.conf.raw
+    - /etc/letsencrypt:/etc/nginx/cert
+    env_file: .env
+    ports:
+    - "80:80"
+    - "443:443"
+    links:
+    - dashboard
+    command: /bin/sh -c "envsubst '$$DOMAIN_NAME' < /etc/nginx/nginx.conf.raw > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+
+  dashboard:
+    image: dashboard
+    container_name: dashboard-api
+    env_file: .env
+    volumes:
+    - ./:/usr/src/app
+    links:
+    - mongodb
+    ports:
+    - "8080:8080"
+    command: /bin/sh -c "cd /usr/src/app  && npm start"
+
+  mongodb:
+    image: mongo
+    container_name: dashboard-mongo
+    ports:
+    - "27017:27017"
+    volumes:
+    - dbdata:/data/db
+volumes:
+  dbdata: {}
