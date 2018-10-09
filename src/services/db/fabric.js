@@ -10,8 +10,9 @@ const Peer = require("../../models/peer");
 
 module.exports = class FabricService {
     
-    constructor() {
+    constructor(consortiumId) {
         this.isFabric = true;
+        this.consortiumId = consortiumId;
     }
     
     async addChannel(dto) {

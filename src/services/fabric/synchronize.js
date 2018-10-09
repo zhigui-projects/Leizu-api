@@ -4,9 +4,9 @@ const query = require("./query");
 const FabricService = require("../db/fabric");
 //const utils = require("../../libraries/utils");
 
-module.exports.syncFabric = async networkConfig => {
+module.exports.syncFabric = async (consortiumId,networkConfig) => {
     let syncResults = [];
-    let fabricService = new FabricService();
+    let fabricService = new FabricService(consortiumId);
     let peerConfig = generatePeerConfig(networkConfig);
     let caConfig = generateCAConfig(networkConfig);
     let channels = await query.getChannels(peerConfig,caConfig);
@@ -17,7 +17,7 @@ module.exports.syncFabric = async networkConfig => {
         let results = processDiscoveryResults(rawResults);
         let dbResult = fabricService.handleDiscoveryResults(results);
         syncResults.push(dbResult);
-    }
+    } 
     return syncResults;
 };
 
