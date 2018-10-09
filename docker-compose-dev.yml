@@ -4,8 +4,6 @@ services:
     build: .
     container_name: dashboard-api
     env_file: .env
-    volumes:
-    - ./:/usr/src/app
     links:
     - mongodb
     ports:
