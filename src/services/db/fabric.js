@@ -19,12 +19,13 @@ module.exports = class FabricService {
         let channel = new Channel();
         channel.uuid = uuid();
         channel.name = dto.name;
+        channel.consortium_id = this.consortiumId;
         try{
-            await channel.save();
-            return true;
+            channel = await channel.save();
+            return channel;
         }catch(err){
             logger.error(err);
-            return false;
+            return null;
         }
     }
 
