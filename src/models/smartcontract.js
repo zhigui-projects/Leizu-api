@@ -8,7 +8,10 @@ const smartContractSchema = new mongoose.Schema({
     path: String,
     version: String,
     channel_id: mongoose.Schema.ObjectId,
-    date: Date
+    date: {
+        type: Date,
+        default: Date.now()
+    }
 });
 
-module.exports = mongoose.model("SmartContract",smartContractSchema);
+module.exports = mongoose.model("SmartContract",smartContractSchema,'smartcontract');
