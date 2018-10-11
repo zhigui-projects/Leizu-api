@@ -29,11 +29,11 @@
     "koa-validate": "^1.0.7",
     "log4js": "^3.0.5",
     "mongoose": "^5.2.8",
-    "nodemon": "^1.18.4",
     "sha1": "^1.1.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "nodemon": "^1.18.4",
     "mocha": "^5.2.0",
     "should": "^13.2.3",
     "supertest": "^3.3.0"
