@@ -21,7 +21,7 @@ router.post('/login', async (ctx) => {
   ctx.body = {
     id: user._id,
     name: user.name,
-    token: jwt.encode({ id: user.id }),
+    token: jwt.encode({ id: user._id }),
   };
 });
 

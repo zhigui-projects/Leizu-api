@@ -5,11 +5,12 @@ const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser');
 const errorHandler = require('./libraries/error-handler');
 const config = require('./env');
+const auth = require('./middlewares/auth');
 
 const app = new Koa();
 app.config = config;
 app.mongoose = require("./libraries/db");
-if(config.koaLogger){
+if (config.koaLogger) {
     const logger = require("koa-logger");
     app.use(logger());
 }
@@ -17,6 +18,23 @@ if(config.koaLogger){
 app.use(cors());
 app.use(errorHandler);
 app.use(bodyParser());
+
+const publicUrls = [
+    /^\/api\/v1\/?$/,
+    /^\/api\/v1\/login\/?$/,
+];
+
+app.use(async (ctx, next) => {
+    try {
+        if (publicUrls.find(pattern => ctx.url.match(pattern))) {
+            return next();
+        }
+
+        await auth(ctx, next);
+    } catch (e) {
+        ctx.throw(401, e);
+    }
+});
 
 // validator
 require('koa-validate')(app);
