@@ -70,3 +70,6 @@ Swagger UI version visit [localhost:8080](localhost:8080).
 
 JSON version see `curl localhost:8080/api-docs`.
 
+* Start in docker way
+
+Just one click `docker-compose -f docker-compose-dev.yml up --build -d`.
