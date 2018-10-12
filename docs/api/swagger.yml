@@ -50,30 +50,11 @@ paths:
         200:
           description: OK
           schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                example: 200
-              status:
-                type: string
-                example: success
-              msg:
-                type: string
-                example: hello world
+            $ref: "demo.yml#/definitions/HelloWorld"
         401:
           description: Unauthorized
           schema:
-            type: object
-            properties:
-              errors:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Token Expired
+            $ref: "demo.yml#/definitions/Error"
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey
