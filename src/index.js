@@ -7,6 +7,9 @@ const errorHandler = require('./libraries/error-handler');
 const config = require('./env');
 const auth = require('./middlewares/auth');
 
+const swagger = require('swagger2');
+const {ui} = require('swagger2-koa');
+
 const app = new Koa();
 app.config = config;
 app.mongoose = require("./libraries/db");
@@ -18,6 +21,12 @@ if (config.koaLogger) {
 app.use(cors());
 app.use(errorHandler);
 app.use(bodyParser());
+
+const document = swagger.loadDocumentSync('docs/swagger.yml');
+if (!swagger.validateDocument(document)) {
+    throw Error(`swagger.yml does not conform to the Swagger 2.0 schema`);
+}
+app.use(ui(document, '/', ['/api/v1']));
 
 const publicUrls = [
     /^\/api\/v1\/?$/,
