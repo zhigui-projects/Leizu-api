@@ -1,3 +1,5 @@
+'use strict';
+
 const router = require('koa-router')();
 const User = require('../../models/user');
 const jwt = require('../../libraries/jwt');
