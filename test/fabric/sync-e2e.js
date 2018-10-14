@@ -3,7 +3,7 @@
 const request = require("supertest");
 const app = require("../../src/index");
 
-var consortiumId = '5bbbee8f688a5d09ba13299c';
+var consortiumId = '5bc2a57c05ce040f0559a369';
 
 request(app.callback())
     .post("/api/v1/fabric/sync/" + consortiumId)

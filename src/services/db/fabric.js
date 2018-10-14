@@ -29,7 +29,7 @@ module.exports = class FabricService {
     async addChannel(dto) {
         let channel = new Channel();
         channel.uuid = uuid();
-        channel.name = dto.name;
+        channel.name = dto.channel_id;
         channel.consortium_id = this.consortiumId;
         try{
             channel = await channel.save();

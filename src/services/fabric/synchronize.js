@@ -8,12 +8,13 @@ module.exports.syncFabric = async (consortiumId,networkConfig) => {
     let fabricService = new FabricService(consortiumId);
     let peerConfig = generatePeerConfig(networkConfig);
     let caConfig = generateCAConfig(networkConfig);
-    let channels = await query.getChannels(peerConfig,caConfig);
+    let channelResult = await query.getChannels(peerConfig,caConfig);
+    let channels = channelResult.channels || [];
     for(let i=0; i < channels.length; i++){
         let channel = channels[i];
         let channelDb = await fabricService.addChannel(channel);
         let channelId = channelDb._id;
-        let rawResults = await query.serviceDiscovery(channel.name,peerConfig,caConfig);
+        let rawResults = await query.serviceDiscovery(channel.channel_id,peerConfig,caConfig);
         let results = module.exports.processDiscoveryResults(rawResults);
         let dbResult = await fabricService.handleDiscoveryResults(channelId,results);
         syncResults.push(dbResult);
