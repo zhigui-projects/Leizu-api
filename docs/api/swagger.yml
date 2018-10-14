@@ -50,13 +50,85 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "demo.yml#/definitions/HelloWorld"
+            $ref: "#/definitions/HelloWorld"
         401:
           description: Unauthorized
           schema:
-            $ref: "demo.yml#/definitions/Error"
+            $ref: "#/definitions/Error"
+  /login:
+    post:
+      tags:
+      - user
+      summary: User login
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        description: User object for login
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/LoginResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/Error"
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey
     in: header
     name: Authorization
+
+# TODO: extract the model definition into separate files
+definitions:
+  HelloWorld:
+    type: object
+    properties:
+      code:
+        type: integer
+        example: 200
+      status:
+        type: string
+        example: success
+      msg:
+        type: string
+        example: hello world
+  Error:
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Token Expired
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+        example: admin
+      password:
+        type: string
+        example: pasw0rd
+  LoginResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 5bbeea345d46ac0ba215518b
+      name:
+        type: string
+        example: admin
+      token:
+        type: string
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViYmVlYTM0NWQ0NmFjMGJhMjE1NTE4YiIsImlhdCI6MTUzOTMxMzEyOCwiZXhwIjoxNTM5MzQ5MTI4fQ.Q5YuMsK7ABbQS4ZlmvQHmpenDu9_zCFAI-SLA7sYkiQ
