@@ -20,7 +20,7 @@ module.exports.getChannels = async function(peerConfig,caConfig){
     client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
     let enrollment = await module.exports.getClientKeyAndCert(caConfig);
     let options =  {
-        pem: peerConfig.pem,
+        pem: enrollment.rootCertificate,
         'clientCert': enrollment.certificate,
         'clientKey': enrollment.key,
         'ssl-target-name-override': peerConfig['server-hostname']
@@ -35,7 +35,7 @@ module.exports.serviceDiscovery = async function(channelName,peerConfig,caConfig
     let enrollment = await module.exports.getClientKeyAndCert(caConfig);
 
     let options =  {
-        pem: peerConfig.pem,
+        pem: enrollment.rootCertificate,
         'clientCert': enrollment.certificate,
         'clientKey': enrollment.key,
         'ssl-target-name-override': peerConfig['server-hostname']
@@ -60,8 +60,8 @@ module.exports.getClientKeyAndCert = async function(caConfig){
         };
         let caService = new FabricCAServices(fabricCAEndpoint, tlsOptions, caConfig.name);
         let req = {
-            enrollmentID: 'admin',
-            enrollmentSecret: 'adminpw',
+            enrollmentID: caConfig.enrollId,
+            enrollmentSecret: caConfig.enrollSecret,
             profile: 'tls'
         };
         caService.enroll(req).then(
@@ -83,7 +83,8 @@ module.exports.getChannelConfigFromOrderer = async function(orderConfig,caConfig
     let sysChannel = client.newChannel(orderConfig.sysChannel);
     client.setTlsClientCertAndKey(enrollment.certificate,enrollment.key);
     let options = {
-        pem: orderConfig.pem,
+        //pem: orderConfig.pem,
+        pem: enrollment.rootCertificate,
         'clientCert': enrollment.certificate,
         'clientKey': enrollment.key,
         'ssl-target-name-override': 'orderer.example.com'

@@ -44,7 +44,9 @@ const peerConfig = {
 
 const caConfig = {
     url: "https://localhost:7054",
-    name: "ca-org1"
+    name: "ca-org1",
+    enrollId: "admin",
+    enrollSecret: "adminpw"
 }
 
 const orderConfig = {
