@@ -24,7 +24,8 @@ app.use(errorHandler);
 app.use(bodyParser());
 
 app.use(serve("docs/api"));
-const document = swagger.loadDocumentSync(`docs/api/swagger.yml`);
+const swaggerYml = path.join(__dirname, "../docs/api/swagger.yml");
+const document = swagger.loadDocumentSync(swaggerYml);
 if (!swagger.validateDocument(document)) {
     throw Error(`swagger.yml does not conform to the Swagger 2.0 schema`);
 }
@@ -41,7 +42,6 @@ app.use(async (ctx, next) => {
         if (publicUrls.find(pattern => ctx.url.match(pattern))) {
             return next();
         }
-
         await auth(ctx, next);
     } catch (e) {
         ctx.throw(401, e);
