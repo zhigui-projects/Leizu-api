@@ -12,8 +12,11 @@ const parseDoc = async () => {
     };
     const location = "docs/api/index.yml";
     await JsonRefs.resolveRefsAt(location, options).then((results) => {
-        const res = YAML.safeDump(results.resolved, {noRefs: true});
-        fs.writeFileSync('dist/swagger.yml', res);
+        const dir = 'dist';
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+        fs.writeFileSync(`${dir}/swagger.yml`, YAML.safeDump(results.resolved, {noRefs: true}));
     }).catch((err) => {
         console.error('parse api yaml failed with error: ', err);
     });
