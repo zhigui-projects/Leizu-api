@@ -66,6 +66,8 @@ An error message asks for token should be returned as below:
 
 * Check api docs
 
+> Run `npm run doc` before start the server.
+
 Swagger UI version visit [localhost:8080](localhost:8080).
 
 JSON version see `curl localhost:8080/api-docs`.
