@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser');
-const serve = require('koa-static');
 const errorHandler = require('./libraries/error-handler');
 const config = require('./env');
 const auth = require('./middlewares/auth');
@@ -23,16 +22,15 @@ app.use(cors());
 app.use(errorHandler);
 app.use(bodyParser());
 
-app.use(serve("docs/api"));
-const swaggerYml = path.join(__dirname, "../docs/api/swagger.yml");
-const document = swagger.loadDocumentSync(swaggerYml);
+const document = swagger.loadDocumentSync("dist/swagger.yml");
 if (!swagger.validateDocument(document)) {
     throw Error(`swagger.yml does not conform to the Swagger 2.0 schema`);
 }
 app.use(ui(document, '/', ['/api/v1']));
 
 const publicUrls = [
-    /^docs\/api/,
+    /^\/$/,
+    /^\/api-docs\/?$/,
     /^\/api\/v1\/?$/,
     /^\/api\/v1\/login\/?$/,
 ];

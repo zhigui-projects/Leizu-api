@@ -1,25 +1,23 @@
-definitions:
-  HelloWorld:
-    type: object
-    properties:
-      code:
-        type: integer
-        example: 200
-      status:
-        type: string
-        example: success
-      msg:
-        type: string
-        example: hello world
-
-  Error:
-    type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Token Expired
+HelloWorld:
+  type: object
+  properties:
+    code:
+      type: integer
+      example: 200
+    status:
+      type: string
+      example: success
+    msg:
+      type: string
+      example: hello world
+Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+            example: Token Expired

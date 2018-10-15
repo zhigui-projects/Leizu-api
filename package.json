@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node test/app-test.js",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "doc": "node scripts/json-refs.js"
   },
   "author": "zhigui",
   "license": "MIT",
@@ -20,6 +21,8 @@
     "es6-error": "^4.1.1",
     "fabric-ca-client": "~1.2.2",
     "fabric-client": "~1.2.2",
+    "js-yaml": "^3.12.0",
+    "json-refs": "^3.0.12",
     "jsonwebtoken": "^8.3.0",
     "koa": "^2.2.0",
     "koa-bodyparser": "^4.2.1",
