@@ -16,8 +16,18 @@ tags:
     url: https://docs.docker.com/engine/api/v1.37
 - name: user
   description: Operations about user
-- name: fabric
-  description: Operations about user
+- name: peer
+  description: Operations about peer
+- name: organization
+  description: Operations about orgranization
+- name: chaincode
+  description: Operations about chaincode
+- name: channel
+  description: Operations about channel
+- name: consortium
+  description: Operations about consortium
+- name: TODO
+  description: API work in progress
 schemes:
 - http
 - https
@@ -80,6 +90,20 @@ paths:
           description: Unauthorized
           schema:
             $ref: "user.yml#/Error"
+  /logout:
+    post:
+      tags:
+      - user
+      - TODO
+      summary: User logout
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey
