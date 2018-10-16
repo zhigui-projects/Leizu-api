@@ -45,6 +45,7 @@
   "nodemonConfig": {
     "watch": [
       "docs",
+      "dist",
       "src"
     ],
     "ext": "js,json,yml"
