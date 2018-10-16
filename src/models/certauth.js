@@ -9,4 +9,4 @@ const certificateAuthoritySchema = new mongoose.Schema({
     date: Date
 });
 
-module.exports = mongoose.model("CertAuth",certificateAuthoritySchema);
+module.exports = mongoose.model("CertAuth", certificateAuthoritySchema);

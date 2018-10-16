@@ -32,7 +32,7 @@ const publicUrls = [
     /^\/$/,
     /^\/api-docs\/?$/,
     /^\/api\/v1\/?$/,
-    /^\/api\/v1\/login\/?$/,
+    /^\/api\/v1\/user\/login\/?$/,
 ];
 
 app.use(async (ctx, next) => {

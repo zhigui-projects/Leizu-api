@@ -5,7 +5,7 @@ const fs = require('fs');
 const parseDoc = async () => {
     const options = {
         loaderOptions: {
-            processContent: function (res, callback) {
+            processContent: (res, callback) => {
                 callback(undefined, YAML.safeLoad(res.text));
             }
         }

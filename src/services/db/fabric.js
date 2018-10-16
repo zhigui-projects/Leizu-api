@@ -9,32 +9,32 @@ const Orderer = require("../../models/orderer");
 const Peer = require("../../models/peer");
 
 module.exports = class FabricService {
-    
+
     constructor(consortiumId) {
         this.isFabric = true;
         this.consortiumId = consortiumId;
     }
-    
-    async findChannel(filter){
+
+    async findChannel(filter) {
         let condition = filter || {};
-        try{
+        try {
             let channel = await Channel.findOne(condition);
             return channel;
-        }catch(err){
+        } catch (err) {
             logger.error(err);
             return null;
-        }        
+        }
     }
-    
+
     async addChannel(dto) {
         let channel = new Channel();
         channel.uuid = uuid();
         channel.name = dto.channel_id;
         channel.consortium_id = this.consortiumId;
-        try{
+        try {
             channel = await channel.save();
             return channel;
-        }catch(err){
+        } catch (err) {
             logger.error(err);
             return null;
         }
@@ -45,42 +45,42 @@ module.exports = class FabricService {
         organization.uuid = uuid();
         organization.name = dto.id;
         organization.consortium_id = this.consortiumId;
-        try{
+        try {
             organization = await organization.save();
             return organization;
-        }catch(err){
+        } catch (err) {
             logger.error(err);
             return null;
         }
     }
-    
+
     async addOrderer(dto) {
         let orderer = new Orderer();
         orderer.uuid = uuid();
         orderer.location = dto.host + dto.port;
-        try{
+        try {
             orderer = await orderer.save();
             return orderer;
-        }catch(err){
+        } catch (err) {
             logger.error(err);
             return null;
         }
     }
-    
-    async addPeer(dto){
+
+    async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
-        peer.name = dto.endpoint.slice(0,dto.endpoint.indexOf(common.SEPARATOR_DOT));
+        peer.name = dto.endpoint.slice(0, dto.endpoint.indexOf(common.SEPARATOR_DOT));
         peer.location = dto.endpoint;
-        try{
+        try {
             peer = await peer.save();
             return peer;
-        }catch(err){
+        } catch (err) {
             logger.error(err);
             return null;
         }
     }
-    
+
     async handleDiscoveryResults(channelId, results) {
         this.channelId = channelId;
         let result = {
@@ -88,20 +88,20 @@ module.exports = class FabricService {
             orderers: [],
             peers: [],
         };
-        if(results){
-            for(let index=0; index < results.organizations.length; index++){
+        if (results) {
+            for (let index = 0; index < results.organizations.length; index++) {
                 let organization = await this.addOrganization(results.organizations[index])
                 result.organizations.push(organization);
             }
-            for(let index=0; index < results.orderers.length; index++){
+            for (let index = 0; index < results.orderers.length; index++) {
                 let orderer = await this.addOrderer(results.orderers[index])
                 result.orderers.push(orderer);
             }
-            for(let index=0; index < results.peers.length; index++){
+            for (let index = 0; index < results.peers.length; index++) {
                 let peer = await this.addPeer(results.peers[index])
                 result.peers.push(peer);
-            }            
+            }
         }
         return result;
     }
-}
+};

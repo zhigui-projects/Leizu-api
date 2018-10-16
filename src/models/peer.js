@@ -15,4 +15,4 @@ const peerSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Peer',peerSchema,'peer');
+module.exports = mongoose.model('Peer', peerSchema, 'peer');

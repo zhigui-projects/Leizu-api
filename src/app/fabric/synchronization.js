@@ -8,27 +8,27 @@ const common = require("../../libraries/common");
 
 router.post("/fabric/sync/:id", async ctx => {
     let consortiumId = ctx.params.id;
-    logger.debug("The consortium id is %s",consortiumId);
-    try{
+    logger.debug("The consortium id is %s", consortiumId);
+    try {
         let consortium = await Consortium.findById(consortiumId);
-        if(consortium){
-            if(consortium.synced){
-                ctx.body = common.success([],common.SYNC_SUCCESS);
-            }else{
+        if (consortium) {
+            if (consortium.synced) {
+                ctx.body = common.success([], common.SYNC_SUCCESS);
+            } else {
                 let network_config = JSON.parse(consortium.network_config);
-                let result = await syncService.syncFabric(consortiumId,network_config);
-                consortium = await Consortium.findByIdAndUpdate(consortiumId,{synced: true});
+                let result = await syncService.syncFabric(consortiumId, network_config);
+                consortium = await Consortium.findByIdAndUpdate(consortiumId, {synced: true});
                 consortium.synced = true;
                 result.push(consortium);
-                ctx.body = common.success(result,common.SYNC_SUCCESS);                
+                ctx.body = common.success(result, common.SYNC_SUCCESS);
             }
-        }else{
+        } else {
             ctx.response.status = 400;
-            ctx.body = common.error([],"The consortium does not exist.");
+            ctx.body = common.error([], "The consortium does not exist.");
         }
-    }catch(err){
+    } catch (err) {
         ctx.response.status = 400;
-        ctx.body = common.error([],err.message);
+        ctx.body = common.error([], err.message);
     }
 });
 

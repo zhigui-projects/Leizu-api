@@ -65,7 +65,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: "demo.yml#/Error"
-  /login:
+  /user/login:
     post:
       tags:
       - user
@@ -90,7 +90,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: "user.yml#/Error"
-  /logout:
+  /user/logout:
     post:
       tags:
       - user

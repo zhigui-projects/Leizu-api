@@ -1,10 +1,8 @@
 const Docker = require('dockerode');
-const Router = require('koa-router');
 const config = require('../../env');
-
-const router = new Router({prefix: '/docker'});
 const DEFAULT_PORT = config.docker.port;
 
+const router = require('koa-router')({prefix: '/docker'});
 router.get(`/info`, async (ctx) => {
     const docker = new Docker({host: ctx.query['host'], port: DEFAULT_PORT});
 
