@@ -1,16 +1,16 @@
 "use strict";
 
 const Docker = require('dockerode');
-const env = {
+const connectOptions = {
     protocol: 'http',
     host: "59.110.164.211",
     port: 7060
 };
 
-var docker = new Docker(env);
+var docker = new Docker(connectOptions);
 
-docker.listImages({all: true}).then(containers => {
-        console.log(containers);
-      }).catch(err => {
-        console.error(err);
-    });
+docker.info().then(function(info){
+    console.log(info);
+},function(err){
+    console.error(err);
+});
