@@ -103,7 +103,311 @@ paths:
       responses:
         200:
           description: OK
-
+  /peer:
+    get:
+      tags:
+      - peer
+      - TODO
+      summary: List all peers
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+    post:
+      tags:
+      - peer
+      - TODO
+      summary: Create peer
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /peer/join:
+    post:
+      tags:
+      - peer
+      - TODO
+      summary: Peer join channel
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /peer/{peerId}:
+    get:
+      tags:
+      - peer
+      - TODO
+      summary: Show peer details
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: peerId
+        in: path
+        description: Peer id
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+  /organization:
+    get:
+      tags:
+      - organization
+      - TODO
+      summary: List all organizations
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+    post:
+      tags:
+      - organization
+      - TODO
+      summary: Create organization
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /organization/join:
+    post:
+      tags:
+      - organization
+      - TODO
+      summary: Organization join channel
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /organization/{organizationId}:
+    get:
+      tags:
+      - organization
+      - TODO
+      summary: Show organization details
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: organizationId
+        in: path
+        description: Organization id
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+  /channel:
+    get:
+      tags:
+      - channel
+      - TODO
+      summary: List all channels
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+    post:
+      tags:
+      - channel
+      - TODO
+      summary: Create channel
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /channel/{channelId}:
+    get:
+      tags:
+      - channel
+      - TODO
+      summary: Show channel details
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: channelId
+        in: path
+        description: Channel id
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+  /chaincode:
+    get:
+      tags:
+      - chaincode
+      - TODO
+      summary: List all chaincodes
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /chaincode/{chaincodeId}:
+    get:
+      tags:
+      - chaincode
+      - TODO
+      summary: Show chaincode details
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: chaincodeId
+        in: path
+        description: Chaincode id
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+  /chaincode/install:
+    post:
+      tags:
+      - chaincode
+      - TODO
+      summary: Install chaincode
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /chaincode/instantiate:
+    post:
+      tags:
+      - chaincode
+      - TODO
+      summary: Instantiate chaincode
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /chaincode/upgrade:
+    post:
+      tags:
+      - chaincode
+      - TODO
+      summary: Upgrade chaincode
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /chaincode/invoke:
+    post:
+      tags:
+      - chaincode
+      - TODO
+      summary: Invoke chaincode
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /chaincode/query:
+    get:
+      tags:
+      - chaincode
+      - TODO
+      summary: Query chaincode
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /consortium:
+    get:
+      tags:
+      - consortium
+      - TODO
+      summary: List all consortiums
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+    post:
+      tags:
+      - consortium
+      - TODO
+      summary: Create consortium
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /consortium/{consortiumId}:
+    get:
+      tags:
+      - consortium
+      - TODO
+      summary: Show consortium details
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+    post:
+      tags:
+      - consortium
+      - TODO
+      summary: Synchronize consortium information
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey
