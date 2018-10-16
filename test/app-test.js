@@ -1,18 +1,16 @@
 'use strict';
 
 require('should');
-const app = require('../src/index');
-const server = app.listen(8080);
-const request = require('supertest').agent(server);
+"use strict";
 
-describe('Application Tests', function() {
-  after(function() {
-    server.close();
-  });
-  it('GET request', function(done) {
-    request
+const request = require("supertest");
+const app = require("../src/index");
+
+request(app.callback())
     .get('/')
     .expect(200)
-    .expect('[]', done);
-  });
-});
+    .end(function(err,response){
+        if(err) console.error(err);
+        console.log(response.body);
+        app.mongoose.disconnect();
+    });
