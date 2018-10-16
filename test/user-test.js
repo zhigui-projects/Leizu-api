@@ -1,13 +1,13 @@
 'use strict';
 
-const request = require("supertest");
-const app = require("../src/index");
+const request = require('supertest');
+const app = require('../src/index');
 const user = {
-    name: "admin",
-    password: "pasw0rd"
-}
+    name: 'admin',
+    password: 'pasw0rd'
+};
 request(app.callback())
-    .post("/api/v1/login")
+    .post('/api/v1/login')
     .send(user)
     .end(function(err,response){
         if(err) console.error(err);

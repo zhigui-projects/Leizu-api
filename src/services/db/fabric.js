@@ -1,12 +1,12 @@
 'use strict';
 
-const uuid = require("uuid/v1");
-const logger = require("../../libraries/log4js");
-const common = require("../../libraries/common");
-const Channel = require("../../models/channel");
-const Organization = require("../../models/organization");
-const Orderer = require("../../models/orderer");
-const Peer = require("../../models/peer");
+const uuid = require('uuid/v1');
+const logger = require('../../libraries/log4js');
+const common = require('../../libraries/common');
+const Channel = require('../../models/channel');
+const Organization = require('../../models/organization');
+const Orderer = require('../../models/orderer');
+const Peer = require('../../models/peer');
 
 module.exports = class FabricService {
 
@@ -90,15 +90,15 @@ module.exports = class FabricService {
         };
         if (results) {
             for (let index = 0; index < results.organizations.length; index++) {
-                let organization = await this.addOrganization(results.organizations[index])
+                let organization = await this.addOrganization(results.organizations[index]);
                 result.organizations.push(organization);
             }
             for (let index = 0; index < results.orderers.length; index++) {
-                let orderer = await this.addOrderer(results.orderers[index])
+                let orderer = await this.addOrderer(results.orderers[index]);
                 result.orderers.push(orderer);
             }
             for (let index = 0; index < results.peers.length; index++) {
-                let peer = await this.addPeer(results.peers[index])
+                let peer = await this.addPeer(results.peers[index]);
                 result.peers.push(peer);
             }
         }

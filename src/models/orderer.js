@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const mongoose = require('mongoose');
 const ordererSchema = new mongoose.Schema({
@@ -15,4 +15,4 @@ const ordererSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Orderer', ordererSchema, "orderer");
+module.exports = mongoose.model('Orderer', ordererSchema, 'orderer');

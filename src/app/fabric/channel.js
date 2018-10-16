@@ -1,10 +1,10 @@
 'use strict';
 
-const Channel = require("../../models/channel");
-const common = require("../../libraries/common");
+const Channel = require('../../models/channel');
+const common = require('../../libraries/common');
 
-const router = require("koa-router")({prefix: '/channel'});
-router.get("/", async ctx => {
+const router = require('koa-router')({prefix: '/channel'});
+router.get('/', async ctx => {
     await Channel.find({}, (err, docs) => {
         if (err) {
             ctx.body = common.error([], err.message);
@@ -17,7 +17,7 @@ router.get("/", async ctx => {
     });
 });
 
-router.get("/:id", async ctx => {
+router.get('/:id', async ctx => {
     let id = ctx.params.id;
     await Channel.findById(id, (err, doc) => {
         if (err) {

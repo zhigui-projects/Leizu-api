@@ -2,9 +2,9 @@ const Client = require('fabric-client');
 //const fs = require("fs");
 //const path = require("path");
 
-const channelName = "adminconfig";
+const channelName = 'adminconfig';
 var networkConfig = {
-    version: "1.0",
+    version: '1.0',
     channels: {
         adminconfig: {
             orderers: ['orderer.example.com'],
@@ -18,7 +18,7 @@ var networkConfig = {
     },
     orderers:{
         'orderer.example.com': {
-            url: "grpcs://localhost:7050",
+            url: 'grpcs://localhost:7050',
             grpcOptions: {
                 'ssl-target-name-override': 'orderer.example.com'
             },
@@ -41,14 +41,14 @@ var networkConfig = {
         }
     },
     peers:{
-       'peer0.org1.example.com':{
-           url: "grpcs://localhost:7051",
-           eventUrl: "grpcs://localhost:7053",
-           grpcOptions:{
-               'ssl-target-name-override': "peer0.org1.example.com"
-           },
-           tlsCACerts:{
-               pem: '-----BEGIN CERTIFICATE-----\n' +
+        'peer0.org1.example.com':{
+            url: 'grpcs://localhost:7051',
+            eventUrl: 'grpcs://localhost:7053',
+            grpcOptions:{
+                'ssl-target-name-override': 'peer0.org1.example.com'
+            },
+            tlsCACerts:{
+                pem: '-----BEGIN CERTIFICATE-----\n' +
                     'MIICSDCCAe6gAwIBAgIRAPnKpS42wlgtHsddm6q+kYcwCgYIKoZIzj0EAwIwcDEL\n' +
                     'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
                     'cmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xGTAXBgNVBAMTEG9y\n' +
@@ -63,14 +63,14 @@ var networkConfig = {
                     'q5kNqOUxgHwBa2KTi/zJBR9L3IsTRDjJo8ECICf1xiDgKqZKrAMh0OCebskYwf53\n' +
                     'dooG04HBoqBLvB8Q\n' +
                     '-----END CERTIFICATE-----'
-           }
-       } 
+            }
+        } 
     },
     organizations:{
         Org1:{
-            mspid: "Org1MSP",
-            peers: ["peer0.org1.example.com"],
-            certificateAuthorities: ["ca-org1"],
+            mspid: 'Org1MSP',
+            peers: ['peer0.org1.example.com'],
+            certificateAuthorities: ['ca-org1'],
             adminPrivateKey:{
                 pem: '-----BEGIN PRIVATE KEY-----\n' +
                      'MIGHAgEBMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgS0L+WeTBa4vdUW4j\n' +
@@ -98,7 +98,7 @@ var networkConfig = {
     },
     certificateAuthorities: {
         'ca-org1':{
-            url: "https://localhost:7054",
+            url: 'https://localhost:7054',
             httpOptions: {
                 verify: false
             },
@@ -129,29 +129,29 @@ var networkConfig = {
         }
     },
     client:{
-      organization: "Org1",
-      connection:{
-        timeout:{
-          peer:{
-            endorser: 120,
-            eventHub: 60,
-            eventReg: 3
-          },
-          orderer: 30
+        organization: 'Org1',
+        connection:{
+            timeout:{
+                peer:{
+                    endorser: 120,
+                    eventHub: 60,
+                    eventReg: 3
+                },
+                orderer: 30
+            }
+        },
+        credentialStore:{
+            path: '/tmp/hfc-kvs/org1',
+            cryptoStore:{
+                path: '/tmp/hfc-cvs/org1'
+            }
         }
-      },
-      credentialStore:{
-        path: "/tmp/hfc-kvs/org1",
-        cryptoStore:{
-          path: "/tmp/hfc-cvs/org1"
-        }
-      }
     }
 };
 
 var client = Client.loadFromConfig(networkConfig);
 client.setConfigSetting('initialize-with-discovery', true);
-var peerUrl = "grpcs://localhost:7051";
+var peerUrl = 'grpcs://localhost:7051';
 //var data = fs.readFileSync(path.join(__dirname,'org1.example.com-cert.pem'));
 //var pem = Buffer.from(data).toString();
 var pem = '-----BEGIN CERTIFICATE-----\n' +
@@ -171,18 +171,18 @@ var pem = '-----BEGIN CERTIFICATE-----\n' +
     '-----END CERTIFICATE-----';
 var options = {pem, 'ssl-target-name-override': 'peer0.org1.example.com', name: 'peer0.org1.example.com'};
 async function getTlsCACerts(client) {
-	const caService = client.getCertificateAuthority();
-	const request = {
-		enrollmentID: 'admin',
-		enrollmentSecret: 'adminpw',
-		profile: 'tls'
-	};
-	const enrollment = await caService.enroll(request);
-	const key = enrollment.key.toBytes();
-	const cert = enrollment.certificate;
-	client.setTlsClientCertAndKey(cert, key);
-	return;
-};
+    const caService = client.getCertificateAuthority();
+    const request = {
+        enrollmentID: 'admin',
+        enrollmentSecret: 'adminpw',
+        profile: 'tls'
+    };
+    const enrollment = await caService.enroll(request);
+    const key = enrollment.key.toBytes();
+    const cert = enrollment.certificate;
+    client.setTlsClientCertAndKey(cert, key);
+    return;
+}
 
 async function fectchResult( client){
     await client.initCredentialStores();
@@ -191,11 +191,11 @@ async function fectchResult( client){
 
     let channel = client.newChannel(channelName);
     var request = {
-       'initialize-with-discovery': true,
-       'target': discoveryPeer,
+        'initialize-with-discovery': true,
+        'target': discoveryPeer,
     };
     await channel.initialize(request);
-    return channel.getDiscoveryResults()
+    return channel.getDiscoveryResults();
 }
 
 fectchResult(client).then(result => {

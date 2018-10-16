@@ -12,9 +12,9 @@ const {ui} = require('swagger2-koa');
 
 const app = new Koa();
 app.config = config;
-app.mongoose = require("./libraries/db");
+app.mongoose = require('./libraries/db');
 if (config.koaLogger) {
-    const logger = require("koa-logger");
+    const logger = require('koa-logger');
     app.use(logger());
 }
 
@@ -22,9 +22,9 @@ app.use(cors());
 app.use(errorHandler);
 app.use(bodyParser());
 
-const document = swagger.loadDocumentSync("dist/swagger.yml");
+const document = swagger.loadDocumentSync('dist/swagger.yml');
 if (!swagger.validateDocument(document)) {
-    throw Error(`swagger.yml does not conform to the Swagger 2.0 schema`);
+    throw Error('swagger.yml does not conform to the Swagger 2.0 schema');
 }
 app.use(ui(document, '/', ['/api/v1']));
 
@@ -50,7 +50,7 @@ app.use(async (ctx, next) => {
 require('koa-validate')(app);
 
 // set routes
-const appDirectory = path.join(__dirname, "app");
+const appDirectory = path.join(__dirname, 'app');
 fs.readdirSync(appDirectory)
     .filter(file => fs.statSync(path.join(appDirectory, file)).isDirectory())
     .forEach((moduleName) => {
@@ -58,7 +58,7 @@ fs.readdirSync(appDirectory)
             .filter(file => fs.statSync(path.join(`${appDirectory}/${moduleName}`, file)).isFile())
             .forEach((route) => {
                 app.use(require(`${appDirectory}/${moduleName}/${route}`).prefix('/api/v1').routes());
-            })
+            });
     });
 
 module.exports = app;

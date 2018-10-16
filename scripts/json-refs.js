@@ -10,7 +10,7 @@ const parseDoc = async () => {
             }
         }
     };
-    const location = "docs/api/index.yml";
+    const location = 'docs/api/index.yml';
     await JsonRefs.resolveRefsAt(location, options).then((results) => {
         const dir = 'dist';
         if (!fs.existsSync(dir)) {

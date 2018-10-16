@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const mongoose = require('mongoose');
 const organizationSchema = new mongoose.Schema({
@@ -13,4 +13,4 @@ const organizationSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Organization', organizationSchema, "organization");
+module.exports = mongoose.model('Organization', organizationSchema, 'organization');

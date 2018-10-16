@@ -1,7 +1,7 @@
 'use strict';
 
-const query = require("./query");
-const FabricService = require("../db/fabric");
+const query = require('./query');
+const FabricService = require('../db/fabric');
 
 module.exports.syncFabric = async (consortiumId, networkConfig) => {
     let syncResults = [];
@@ -39,7 +39,7 @@ module.exports.processDiscoveryResults = (rawResults) => {
 
     if (rawResults.msps) {
         let msps = Object.keys(rawResults.msps);
-        msps.forEach((key, index) => {
+        msps.forEach((key) => {
             results.organizations.push(rawResults.msps[key]);
         });
     }
@@ -58,6 +58,6 @@ module.exports.processDiscoveryResults = (rawResults) => {
         }
     }
 
-    return results
+    return results;
 };
 

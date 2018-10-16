@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
@@ -9,4 +9,4 @@ const userSchema = new mongoose.Schema({
     date: Date
 });
 
-module.exports = mongoose.model('User', userSchema, "user");
+module.exports = mongoose.model('User', userSchema, 'user');

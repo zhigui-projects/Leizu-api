@@ -1,10 +1,10 @@
 'use strict';
 
 require('should');
-"use strict";
+'use strict';
 
-const request = require("supertest");
-const app = require("../src/index");
+const request = require('supertest');
+const app = require('../src/index');
 
 request(app.callback())
     .get('/')

@@ -2,8 +2,8 @@
 
 var config = {
     peerConfig: {
-        mspid: "Org1MSP",
-        url: "grpcs://localhost:7051",
+        mspid: 'Org1MSP',
+        url: 'grpcs://localhost:7051',
         'server-hostname': 'peer0.org1.example.com',
         pem: '-----BEGIN CERTIFICATE-----\n' +
         'MIICSDCCAe6gAwIBAgIRAPnKpS42wlgtHsddm6q+kYcwCgYIKoZIzj0EAwIwcDEL\n' +
@@ -41,15 +41,15 @@ var config = {
                 '-----END CERTIFICATE-----'
     },
     caConfig: {
-        url: "https://localhost:7054",
-        name: "ca-org1",
-        enrollId: "admin",
-        enrollSecret: "adminpw"
+        url: 'https://localhost:7054',
+        name: 'ca-org1',
+        enrollId: 'admin',
+        enrollSecret: 'adminpw'
     },
     orderConfig: {
-        mspid: "OrdererMSP",
-        sysChannel: "testchainid",
-        url: "grpcs://localhost:7050",
+        mspid: 'OrdererMSP',
+        sysChannel: 'testchainid',
+        url: 'grpcs://localhost:7050',
         pem: '-----BEGIN CERTIFICATE-----\n' +
             'MIICNDCCAdqgAwIBAgIRAIBOtq8vZiC0+uLSi2MIS4swCgYIKoZIzj0EAwIwZjEL\n' +
             'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
@@ -84,7 +84,7 @@ var config = {
                 'VfRO4IGE/M3rSnpBrQCodA==\n' +
                 '-----END CERTIFICATE-----'
     }    
-}
+};
 
 module.exports = {
     name: 'sample-consortium',

@@ -1,10 +1,10 @@
 'use strict';
 
-const Peer = require("../../models/peer");
-const common = require("../../libraries/common");
+const Peer = require('../../models/peer');
+const common = require('../../libraries/common');
 
-const router = require("koa-router")({prefix: '/peer'});
-router.get("/", async ctx => {
+const router = require('koa-router')({prefix: '/peer'});
+router.get('/', async ctx => {
     await Peer.find({}, (err, docs) => {
         if (err) {
             ctx.body = common.error([], err.message);
@@ -17,7 +17,7 @@ router.get("/", async ctx => {
     });
 });
 
-router.get("/:id", async ctx => {
+router.get('/:id', async ctx => {
     let id = ctx.params.id;
     await Peer.findById(id, (err, doc) => {
         if (err) {

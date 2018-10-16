@@ -1,12 +1,12 @@
 'use strict';
 
 //constant variables
-module.exports.SUCCESS = "success";
-module.exports.ERROR = "error";
-module.exports.SYNC_SUCCESS = "synchronize successfully";
+module.exports.SUCCESS = 'success';
+module.exports.ERROR = 'error';
+module.exports.SYNC_SUCCESS = 'synchronize successfully';
 
-module.exports.SEPARATOR_DOT = ".";
-module.exports.SEPARATOR_HYPHEN = "-";
+module.exports.SEPARATOR_DOT = '.';
+module.exports.SEPARATOR_HYPHEN = '-';
 
 module.exports.success = (data, msg) => {
     return {

@@ -1,10 +1,10 @@
 'use strict';
 
-const Orderer = require("../../models/orderer");
-const common = require("../../libraries/common");
+const Orderer = require('../../models/orderer');
+const common = require('../../libraries/common');
 
-const router = require("koa-router")({prefix: '/orderer'});
-router.get("/", async ctx => {
+const router = require('koa-router')({prefix: '/orderer'});
+router.get('/', async ctx => {
     await Orderer.find({}, (err, docs) => {
         if (err) {
             ctx.body = common.error([], err.message);
@@ -17,7 +17,7 @@ router.get("/", async ctx => {
     });
 });
 
-router.get("/:id", async ctx => {
+router.get('/:id', async ctx => {
     let id = ctx.params.id;
     await Orderer.findById(id, (err, doc) => {
         if (err) {

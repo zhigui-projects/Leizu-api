@@ -1,10 +1,10 @@
 'use strict';
 
-const query = require("../src/services/fabric/network-query");
+const query = require('../src/services/fabric/network-query');
 
 const peerConfig = {
-    mspid: "Org1MSP",
-    url: "grpcs://localhost:7051",
+    mspid: 'Org1MSP',
+    url: 'grpcs://localhost:7051',
     'server-hostname': 'peer0.org1.example.com',
     pem: '-----BEGIN CERTIFICATE-----\n' +
     'MIICSDCCAe6gAwIBAgIRAPnKpS42wlgtHsddm6q+kYcwCgYIKoZIzj0EAwIwcDEL\n' +
@@ -40,19 +40,19 @@ const peerConfig = {
             'zj0EAwIDRwAwRAIgbEqKoKrFuYQG0ndiX7dT7GKGlF17Skf8DYil9cqbp00CID5T\n' +
             'URQPp0/vJ3tldK0z9xjFvsSecj8aqnDvZvGz07/v\n' +
             '-----END CERTIFICATE-----'
-}
+};
 
 const caConfig = {
-    url: "https://localhost:7054",
-    name: "ca-org1",
-    enrollId: "admin",
-    enrollSecret: "adminpw"
-}
+    url: 'https://localhost:7054',
+    name: 'ca-org1',
+    enrollId: 'admin',
+    enrollSecret: 'adminpw'
+};
 
 const orderConfig = {
-    mspid: "OrdererMSP",
-    sysChannel: "testchainid",
-    url: "grpcs://localhost:7050",
+    mspid: 'OrdererMSP',
+    sysChannel: 'testchainid',
+    url: 'grpcs://localhost:7050',
     pem: '-----BEGIN CERTIFICATE-----\n' +
         'MIICNDCCAdqgAwIBAgIRAIBOtq8vZiC0+uLSi2MIS4swCgYIKoZIzj0EAwIwZjEL\n' +
         'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
@@ -86,17 +86,17 @@ const orderConfig = {
             'Aoe3iCG+7t2BYDRmZgF/6jUZVDjHrNaRsabLzvXTAiA6PM/0GLppYtIcGQDA7qeJ\n' +
             'VfRO4IGE/M3rSnpBrQCodA==\n' +
             '-----END CERTIFICATE-----'
-}
+};
 
 query.getChannels(peerConfig,caConfig).then(response => {
-	for (let i = 0; i < response.channels.length; i++) {
-		console.log('channel id: ' + response.channels[i].channel_id);
-	}
+    for (let i = 0; i < response.channels.length; i++) {
+        console.log('channel id: ' + response.channels[i].channel_id);
+    }
 });
 
 var configBlock = query.getChannelConfigFromOrderer(orderConfig,caConfig);
 configBlock.then(function(result){
-        console.log(result);
-    },function(err){
-        console.error(err);
+    console.log(result);
+},function(err){
+    console.error(err);
 });

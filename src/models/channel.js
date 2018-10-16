@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const channelSchema = new mongoose.Schema({
     uuid: String,
     name: String,
@@ -13,4 +13,4 @@ const channelSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Channel", channelSchema, "channel");
+module.exports = mongoose.model('Channel', channelSchema, 'channel');

@@ -11,7 +11,7 @@
  *
  */
 
-const Client = require("fabric-client");
+const Client = require('fabric-client');
 const Peer = require('fabric-client/lib/Peer.js');
 const FabricCAServices = require('fabric-ca-client');
 
@@ -160,7 +160,7 @@ module.exports.discover = async (networkConfig, peerConfig) => {
         'target': discoveryPeer,
     };
     await channel.initialize(request);
-    return channel.getDiscoveryResults()
+    return channel.getDiscoveryResults();
 };
 
 module.exports.getTlsCACerts = async (client) => {

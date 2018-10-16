@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const certificateAuthoritySchema = new mongoose.Schema({
     uuid: String,
     name: String,
@@ -9,4 +9,4 @@ const certificateAuthoritySchema = new mongoose.Schema({
     date: Date
 });
 
-module.exports = mongoose.model("CertAuth", certificateAuthoritySchema);
+module.exports = mongoose.model('CertAuth', certificateAuthoritySchema);

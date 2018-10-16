@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const stringUtil = require("../src/libraries/string");
+const stringUtil = require('../src/libraries/string');
 
-const password = "pasw0rd";
+const password = 'pasw0rd';
 
 var hashedPassword = stringUtil.generatePasswordHash(password);
 

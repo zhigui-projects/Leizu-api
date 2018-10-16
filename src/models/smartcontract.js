@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const smartContractSchema = new mongoose.Schema({
     uuid: String,
     name: String,
@@ -14,4 +14,4 @@ const smartContractSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("SmartContract", smartContractSchema, 'smartcontract');
+module.exports = mongoose.model('SmartContract', smartContractSchema, 'smartcontract');
