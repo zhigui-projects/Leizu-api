@@ -11,14 +11,17 @@ async function createContainer(docker){
     try{
         let parameters = {
             Image: 'hyperledger/fabric-ca',
-            Cmd: ['/bin/bash', '-c', 'scripts/start-root-ca.sh 2>&1'],
+            Cmd: ['/bin/bash', '-c', 'fabric-ca-server start -b admin:adminpw -d'],
             Env: [
-                'FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca',
                 'GODEBUG=netdns=go',
+                'FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server',
                 'FABRIC_CA_SERVER_CA_NAME=rca-org3',
                 'FABRIC_CA_SERVER_CSR_HOSTS=rca-org3',
-                'BOOTSTRAP_USER_PASS=rca-org3-admin:rca-org3-adminpw',
-                'START_PORT=7062'
+                'FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server/ca-cert.pem',
+                'FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server/ca-key.pem',
+                'FABRIC_CA_SERVER_TLS_ENABLED=true',
+                'FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server/ca-cert.pem',
+                'FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server/ca-key.pem'
             ],
         };
         let result = await docker.createContainer(parameters);
