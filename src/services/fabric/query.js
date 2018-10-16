@@ -15,6 +15,51 @@ const Client = require("fabric-client");
 const Peer = require('fabric-client/lib/Peer.js');
 const FabricCAServices = require('fabric-ca-client');
 
+module.exports.getBlockChainInfo = async function(channelName,peerConfig,caConfig){
+    let client = new Client();
+    client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+
+    let options =  {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+
+    let peer = client.newPeer(peerConfig.url,options);
+    let channel = client.newChannel(channelName);
+	let result = await channel.queryInfo(peer,true);
+	return result;
+}
+
+module.exports.getBlockByFilter = async function(filter,channelName,peerConfig,caConfig){
+    let condition = filter || {};
+    let result = {};
+    let client = new Client();
+    client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+
+    let options =  {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+
+    let peer = client.newPeer(peerConfig.url,options);
+    let channel = client.newChannel(channelName);
+    
+    if(condition.queryBlockByHash){
+        result = await channel.queryBlockByHash(condition.blockHash, peer,true);
+    }else if(condition.queryBlockByNumber){
+        result = await channel.queryBlockByNumber(condition.blockNumber, peer,true);
+    }else if(condition.queryBlockByTxID){
+        result = await channel.queryBlockByTxID(condition.txId, peer,true);
+    }
+    return result;
+}
+
 module.exports.getChannels = async function(peerConfig,caConfig){
     let client = new Client();
     client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
