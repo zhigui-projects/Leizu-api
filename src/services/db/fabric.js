@@ -14,6 +14,11 @@ module.exports = class FabricService {
         this.isFabric = true;
         this.consortiumId = consortiumId;
     }
+    
+    static getInstance(consortiumId){
+        let fabricService = new FabricService(consortiumId);
+        return fabricService;
+    }
 
     async findChannel(filter) {
         let condition = filter || {};
