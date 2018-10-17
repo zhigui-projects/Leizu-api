@@ -160,6 +160,38 @@ paths:
       responses:
         200:
           description: OK
+  /orderer:
+    get:
+      tags:
+      - orderer
+      - TODO
+      summary: List all orderers
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+  /orderer/{ordererId}:
+    get:
+      tags:
+      - orderer
+      - TODO
+      summary: Show orderer details
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: ordererId
+        in: path
+        description: Orderer id
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
   /organization:
     get:
       tags:
