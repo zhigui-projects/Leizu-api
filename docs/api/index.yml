@@ -166,6 +166,8 @@ paths:
       - organization
       - TODO
       summary: List all organizations
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
