@@ -31,4 +31,14 @@ router.get('/:id', async ctx => {
     });
 });
 
+
+/**
+ * fn: add the peer into channel by join request
+ * 
+ */ 
+ 
+router.put("/:id",async ctx => {
+    ctx.body = "todo";
+});
+
 module.exports = router;

@@ -31,4 +31,23 @@ router.get('/:id', async ctx => {
     });
 });
 
+/**
+ * fn: add the new channel into fabric network 
+ *
+ */ 
+
+router.post("/new",async ctx =>{
+    ctx.body = "todo";
+});
+
+/**
+ * fn: update existing channel's configuration
+ * 
+ */ 
+
+router.put("/:id",async ctx =>{
+    ctx.body = "todo"
+});
+
+
 module.exports = router;
