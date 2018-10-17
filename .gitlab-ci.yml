@@ -11,7 +11,7 @@ services:
 
 variables:
   CI_DEBUG_SERVICES: trace
-  MONGODB_URI=mongodb://mongo:27017/zigdb
+  MONGODB_URI: mongodb://mongo:27017/zigdb
   
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
