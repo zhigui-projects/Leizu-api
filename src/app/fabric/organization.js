@@ -2,6 +2,7 @@
 
 const Organization = require('../../models/organization');
 const common = require('../../libraries/common');
+const FabricService = require('../../services/db/fabric');
 
 const router = require('koa-router')({prefix: '/organization'});
 router.get('/', async ctx => {
@@ -31,4 +32,18 @@ router.get('/:id', async ctx => {
     });
 });
 
+router.post("/", async ctx => {
+    let orgDto = {
+        name: ctx.request.body.name,
+    }
+    try{
+        // call the docker service to start one remote ca daemon process
+        let fabricService = new FabricService();
+        let organization = await fabricService.addOrganization(orgDto);
+        ctx.body = common.success(organization, common.SUCCESS);
+    }catch(err){
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }
+});
 module.exports = router;
