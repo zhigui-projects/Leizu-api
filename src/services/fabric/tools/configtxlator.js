@@ -1,7 +1,6 @@
 'use strict';
 
 const request = require('request');
-var rp = require('request-promise-native');
 var log4js = require('log4js');
 var logger = log4js.getLogger('Configtxlator');
 
@@ -18,22 +17,22 @@ var Configtxlator = class {
     encode(message, proto_name) {
         var url = this.endpoint.concat('/protolator/encode/', proto_name);
         logger.debug('Encode proto name: %s, request url: %s', proto_name, url);
-
-        return rp.post({
-            url: url,
-            body: message,
-            encoding: null,
-            resolveWithFullResponse: true
-        }).then((response) => {
-            logger.debug(proto_name, 'encode response:', response.statusCode);
-            if (response.statusCode === 200) {
-                return Promise.resolve(response.body);
-            } else {
-                return Promise.reject(response);
-            }
-        }, (err) => {
-            logger.error(proto_name, 'encode failed, error:', err);
-            return Promise.reject(err);
+        return new Promise((resolve, reject) => {
+            request({
+                url: url,
+                method: "POST",
+                body: message,
+                encoding: null,
+                resolveWithFullResponse: true
+            }, (error, response, body) => {
+                if (!error && response.statusCode === 200) {
+                    resolve(body);
+                } else if (error) {
+                    reject(error);
+                } else {
+                    reject(response);
+                }
+            });
         });
     }
 
@@ -41,21 +40,22 @@ var Configtxlator = class {
         var url = this.endpoint.concat('/protolator/decode/', proto_name);
         logger.debug('Encode proto name: %s, request url: %s', proto_name, url);
 
-        return rp.post({
-            url: url,
-            body: block,
-            encoding: null,
-            resolveWithFullResponse: true
-        }).then((response) => {
-            logger.info(proto_name, 'decode response:', response.statusCode);
-            if (response.statusCode === 200) {
-                return Promise.resolve(response.body.toString('utf8'));
-            } else {
-                return Promise.reject(response);
-            }
-        }, (err) => {
-            logger.error(proto_name, 'decode failed, error:', err);
-            return Promise.reject(err);
+        return new Promise((resolve, reject) => {
+            request({
+                url: url,
+                method: "POST",
+                body: block,
+                encoding: null,
+                resolveWithFullResponse: true
+            }, (error, response, body) => {
+                if (!error && response.statusCode === 200) {
+                    resolve(body);
+                } else if (error) {
+                    reject(error);
+                } else {
+                    reject(response);
+                }
+            });
         });
     }
 

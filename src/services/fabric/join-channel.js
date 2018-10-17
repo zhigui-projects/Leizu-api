@@ -71,7 +71,7 @@ var joinChannel = async function (channel_name, config) {
         let join_promise = channel.joinChannel(join_request);
         promises.push(join_promise);
         let results = await Promise.all(promises);
-        logger.debug(util.format('Join Channel R E S P O N S E : %j', results));
+        logger.debug(util.format('Join channel response: %j', results));
 
         // lets check the results of sending to the peers which is
         // last in the results array
@@ -79,7 +79,7 @@ var joinChannel = async function (channel_name, config) {
         // then each peer results
         for (let i in peers_results) {
             let peer_result = peers_results[i];
-            if (peer_result.response && peer_result.response.status == 200) {
+            if (peer_result.response && peer_result.response.status === 200) {
                 logger.info('Successfully joined peer to the channel %s', channel_name);
             } else {
                 let message = util.format('Failed to joined peer to the channel %s', channel_name);

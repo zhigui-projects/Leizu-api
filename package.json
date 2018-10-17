@@ -33,7 +33,6 @@
     "koa-validate": "^1.0.7",
     "log4js": "^3.0.5",
     "mongoose": "^5.2.8",
-    "request-promise-native": "^1.0.5",
     "sha1": "^1.1.1",
     "swagger2-koa": "^1.0.2",
     "uuid": "^3.3.2"
