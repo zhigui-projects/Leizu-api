@@ -1,5 +1,7 @@
 # Dashboard
 
+[![pipeline status](http://gitlab.ziggurat.cn/zhigui/dashboard-api/badges/master/pipeline.svg)](http://gitlab.ziggurat.cn/zhigui/dashboard-api/commits/master)
+
 Ledger Management Dashboard
 
 ## Pre-requisitions

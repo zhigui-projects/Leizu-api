@@ -8,6 +8,10 @@ image: node:8.12
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
 services:
   - mongo:latest
+
+variables:
+  CI_DEBUG_SERVICES: trace
+  MONGODB_URI: mongodb://mongo:27017/zigdb
   
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache

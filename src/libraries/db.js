@@ -14,7 +14,7 @@ const options = {
     family: 4 // Use IPv4, skip trying IPv6
 };
 
-mongoose.connect(config.url, options);
+mongoose.connect(process.env.MONGODB_URI || config.url, options);
 if (config.debug) {
     mongoose.set('debug', true);
 }
