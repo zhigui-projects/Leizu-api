@@ -1,35 +1,32 @@
 'use strict';
 
-const Channel = require('../../models/channel');
 const common = require('../../libraries/common');
+const logger = require('../../libraries/log4js');
 const ChannelService = require("../../services/fabric/channel");
+const DbService = require("../../services/db/dao");
 const router = require('koa-router')({prefix: '/channel'});
 
 router.get('/', async ctx => {
-    await Channel.find({}, (err, docs) => {
-        if (err) {
-            ctx.body = common.error([], err.message);
-        } else {
-            ctx.body = common.success(docs, common.SUCCESS);
-        }
-    }).catch(err => {
+    try{
+        let channels = await DbService.getChannels();
+        ctx.body = common.success(channels, common.SUCCESS);
+    }catch(err){
+        logger.error(err);
         ctx.status = 400;
-        ctx.body = common.error([], err.message);
-    });
+        ctx.body = common.error([], err.message); 
+    }
 });
 
 router.get('/:id', async ctx => {
     let id = ctx.params.id;
-    await Channel.findById(id, (err, doc) => {
-        if (err) {
-            ctx.body = common.error({}, err.message);
-        } else {
-            ctx.body = common.success(doc, common.SUCCESS);
-        }
-    }).catch(err => {
+    try{
+        let channel = await DbService.getChannelById(id);
+        ctx.body = common.success(channel, common.SUCCESS);
+    }catch(err){
+        logger.error(err);
         ctx.status = 400;
-        ctx.body = common.error({}, err.message);
-    });
+        ctx.body = common.error({}, err.message);        
+    }
 });
 
 /**
@@ -46,6 +43,7 @@ router.post("/",async ctx =>{
         let channel = channelService.addChannelIntoDb(dto);
         ctx.body = common.success(channel, common.SUCCESS);
     }catch(err){
+        logger.error(err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
@@ -64,8 +62,9 @@ router.put("/:id",async ctx =>{
         await channelService.updateChannel(id,params);
         ctx.body = common.success({id:id}, common.SUCCESS);
     }catch(err){
-       ctx.status = 400;
-       ctx.body = common.error({}, err.message); 
+        logger.error(err);
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message); 
     }
 });
 
