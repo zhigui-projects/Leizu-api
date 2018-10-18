@@ -34,5 +34,12 @@ services:
     - "27017:27017"
     volumes:
     - dbdata:/data/db
+
+  configtxlator:
+    image: zhigui/configtxlator
+    container_name: dashboard-configtxlator
+    ports:
+    - "7059:7059"
+
 volumes:
   dbdata: {}
