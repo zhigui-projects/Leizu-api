@@ -1,4 +1,4 @@
-"use strict"
+'use strict';
 
 const uuid = require('uuid/v1');
 const Channel = require('../../models/channel');
@@ -55,7 +55,12 @@ module.exports = class DbService {
         let peer = await Peer.findById(id);
         return peer;
     }
-    
+
+    static async findPeersByOrgId(orgId){
+        let peers = await Peer.find({org_id: orgId});
+        return peers;
+    }
+
     static async findOrganizations(){
         let organizations = Organization.find();
         return organizations;
@@ -74,4 +79,4 @@ module.exports = class DbService {
         organization = await organization.save();
         return organization;
     }
-}
+};
