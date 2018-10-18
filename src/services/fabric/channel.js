@@ -19,7 +19,4 @@ module.exports = class ChannelService {
         
     }
     
-    async addChannelIntoDb(dto){
-        
-    }
 }
