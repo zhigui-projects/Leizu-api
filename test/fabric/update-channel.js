@@ -1,7 +1,3 @@
-/**
- * Created by zhanhtailin on 2018/10/2.
- */
-
 let handler = require('../../src/services/fabric/update-channel');
 
 var config = {
