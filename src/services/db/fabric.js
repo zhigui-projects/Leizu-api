@@ -72,6 +72,20 @@ module.exports = class FabricService {
         }
     }
 
+    async addOrdererPeer(dto) {
+        let peer = new Peer();
+        peer.uuid = uuid();
+        peer.location = dto.host + dto.port;
+        peer.type = 1;
+        try {
+            peer = await peer.save();
+            return peer;
+        } catch (err) {
+            logger.error(err);
+            return null;
+        }
+    }
+
     async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
@@ -99,7 +113,7 @@ module.exports = class FabricService {
                 result.organizations.push(organization);
             }
             for (let index = 0; index < results.orderers.length; index++) {
-                let orderer = await this.addOrderer(results.orderers[index]);
+                let orderer = await this.addOrdererPeer(results.orderers[index]);
                 result.orderers.push(orderer);
             }
             for (let index = 0; index < results.peers.length; index++) {
@@ -107,6 +121,35 @@ module.exports = class FabricService {
                 result.peers.push(peer);
             }
         }
+        await this.updateChannel(channelId, result);
         return result;
+    }
+    
+    async updateChannel(channelId, mapData){
+        let peerIds = [];
+        let orgIds = [];
+        
+        if(mapData.peers){
+            for(let peer of mapData.peers){
+                peerIds.push(peer._id);
+            }
+        }
+        
+        if(mapData.orderers){
+            for(let orderer of mapData.orderers){
+                peerIds.push(orderer._id);
+            }
+        }
+        
+        if(mapData.organizations){
+            for(let organization of mapData.organizations){
+                orgIds.push(organization._id);
+            }
+        }
+        let updateItems = {
+            peers: peerIds,
+            orgs: orgIds
+        }
+        await Channel.findByIdAndUpdate(channelId,updateItems);
     }
 };
