@@ -3,7 +3,6 @@
 const uuid = require('uuid/v1');
 const Channel = require('../../models/channel');
 const Organization = require('../../models/organization');
-const Orderer = require('../../models/orderer');
 const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 
@@ -47,4 +46,32 @@ module.exports = class DbService {
         return consortium;
     }
     
+    static async findPeers(){
+        let peers = await Peer.find();
+        return peers;
+    }
+    
+    static async findPeerById(id){
+        let peer = await Peer.findById(id);
+        return peer;
+    }
+    
+    static async findOrganizations(){
+        let organizations = Organization.find();
+        return organizations;
+    }
+    
+    static async findOrganizationById(id){
+        let organization = Organization.findById(id);
+        return organization;
+    }
+    
+    static async addOrganization(dto){
+        let organization = new Organization();
+        organization.uuid = uuid();
+        organization.name = dto.name;
+        organization.consortium_id = dto.consortiumId;
+        organization = await organization.save();
+        return organization;
+    }
 }

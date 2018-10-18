@@ -1,35 +1,29 @@
 'use strict';
 
-const Peer = require('../../models/peer');
 const common = require('../../libraries/common');
 const PeerService = require('../../services/fabric/peer');
+const DbService = require("../../services/db/dao");
 const router = require('koa-router')({prefix: '/peer'});
 
 router.get('/', async ctx => {
-    await Peer.find({}, (err, docs) => {
-        if (err) {
-            ctx.body = common.error([], err.message);
-        } else {
-            ctx.body = common.success(docs, common.SUCCESS);
-        }
-    }).catch(err => {
+    try{
+        let peers = await DbService.findPeers();
+        ctx.body = common.success(peers, common.SUCCESS);
+    }catch(err){
         ctx.status = 400;
-        ctx.body = common.error([], err.message);
-    });
+        ctx.body = common.error([], err.message);        
+    }
 });
 
 router.get('/:id', async ctx => {
     let id = ctx.params.id;
-    await Peer.findById(id, (err, doc) => {
-        if (err) {
-            ctx.body = common.error({}, err.message);
-        } else {
-            ctx.body = common.success(doc, common.SUCCESS);
-        }
-    }).catch(err => {
+    try{
+        let peer = await DbService.findPeerById(id);
+        ctx.body = common.success(peer, common.SUCCESS);
+    }catch(err){
         ctx.status = 400;
-        ctx.body = common.error({}, err.message);
-    });
+        ctx.body = common.error({}, err.message);        
+    }
 });
 
 
