@@ -2,8 +2,9 @@
 
 const Peer = require('../../models/peer');
 const common = require('../../libraries/common');
-
+const PeerService = require('../../services/fabric/peer');
 const router = require('koa-router')({prefix: '/peer'});
+
 router.get('/', async ctx => {
     await Peer.find({}, (err, docs) => {
         if (err) {
@@ -34,11 +35,20 @@ router.get('/:id', async ctx => {
 
 /**
  * fn: add the peer into channel by join request
+ * parameters: to-be-specified
  * 
  */ 
- 
 router.put("/:id",async ctx => {
-    ctx.body = "todo";
+    let id = ctx.params.id;
+    let params = ctx.request.body;
+    try{
+        let peerService = new PeerService();
+        await peerService.joinChannel(id,params);
+        ctx.body = common.success({id:id}, common.SUCCESS);
+    }catch(err){
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }
 });
 
 module.exports = router;

@@ -4,8 +4,8 @@ const Organization = require('../../models/organization');
 const common = require('../../libraries/common');
 const FabricService = require('../../services/db/fabric');
 const DockerClient = require('../../services/docker/client')
-
 const router = require('koa-router')({prefix: '/organization'});
+
 router.get('/', async ctx => {
     await Organization.find({}, (err, docs) => {
         if (err) {
@@ -50,4 +50,5 @@ router.post("/", async ctx => {
         ctx.body = common.error({}, err.message);
     }
 });
+
 module.exports = router;
