@@ -2,47 +2,41 @@
 
 const uuid = require('uuid/v1');
 const logger = require('../../libraries/log4js');
-const Consortium = require('../../models/consortium');
 const common = require('../../libraries/common');
-
+const DbService = require("../../services/db/dao");
 const router = require('koa-router')({prefix: '/consortium'});
+
 router.get('/', async ctx => {
-    await Consortium.find({}, (err, docs) => {
-        if (err) {
-            ctx.body = common.error([], err.message);
-        } else {
-            ctx.body = common.success(docs, common.SUCCESS);
-        }
-    }).catch(err => {
+    try{
+        let consortiums = await DbService.getConsortiums();
+        ctx.body = common.success(consortiums, common.SUCCESS);
+    }catch(err){
+        logger.error(err);
         ctx.status = 400;
-        ctx.body = common.error([], err.message);
-    });
+        ctx.body = common.error([], err.message);        
+    }
 });
 
 router.get('/:id', async ctx => {
     let id = ctx.params.id;
     logger.debug('the query id is %d', id);
-    await Consortium.findById(id, (err, doc) => {
-        if (err) {
-            ctx.body = common.error({}, err.message);
-        } else {
-            ctx.body = common.success(doc, common.SUCCESS);
-        }
-    }).catch(err => {
+    try{
+        let consortium = await DbService.getConsortiumById(id);
+        ctx.body = common.success(consortium, common.SUCCESS);
+    }catch(err){
         ctx.status = 400;
-        ctx.body = common.error([], err.message);
-    });
+        ctx.body = common.error([], err.message);        
+    }
 });
 
 router.post('/', async ctx => {
-    let name = ctx.request.body.name;
-    let consortium = new Consortium();
-    consortium.name = name;
-    consortium.uuid = uuid();
-    consortium.network_config = JSON.stringify(ctx.request.body.config);
+    let dto = {
+        name: ctx.request.body.name,
+        config: ctx.request.body.config
+    }
     try {
-        await consortium.save();
-        ctx.body = consortium;
+        let consortium = await DbService.addConsortium(dto);
+        ctx.body = common.success(consortium, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
