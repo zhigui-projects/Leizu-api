@@ -160,7 +160,7 @@ paths:
       responses:
         200:
           description: OK
-  /organization:
+  /organization?channelId=channelId:
     get:
       tags:
       - organization
@@ -172,6 +172,12 @@ paths:
       - application/json
       produces:
       - application/json
+      parameters:
+      - name: channelId
+        in: query
+        description: Channel id
+        required: false
+        type: string
       responses:
         200:
           description: OK
