@@ -263,6 +263,12 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: "channel.yml#/ChannelListResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "channel.yml#/Error"
     post:
       tags:
       - channel
@@ -295,6 +301,12 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: "channel.yml#/ChannelResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "channel.yml#/Error"
   /chaincode:
     get:
       tags:

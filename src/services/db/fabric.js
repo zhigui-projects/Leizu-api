@@ -15,7 +15,7 @@ module.exports = class FabricService {
         this.consortiumId = consortiumId;
     }
 
-    static getInstance(consortiumId){
+    static getInstance(consortiumId) {
         let fabricService = new FabricService(consortiumId);
         return fabricService;
     }
@@ -36,12 +36,8 @@ module.exports = class FabricService {
         channel.uuid = uuid();
         channel.name = dto;
         channel.consortium_id = this.consortiumId;
-        for (let org of result.organizations) {
-            channel.orgs.push(org._id);
-        }
-        for (let peer of result.peers) {
-            channel.peers.push(peer._id);
-        }
+        channel.orgs = result.organizations.map(org => org._id);
+        channel.peers = result.peers.map(peer => peer._id);
         try {
             channel = await channel.save();
             return channel;
@@ -133,31 +129,31 @@ module.exports = class FabricService {
         return result;
     }
 
-    async updateChannel(channelId, mapData){
+    async updateChannel(channelId, mapData) {
         let peerIds = [];
         let orgIds = [];
 
-        if(mapData.peers){
-            for(let peer of mapData.peers){
+        if (mapData.peers) {
+            for (let peer of mapData.peers) {
                 peerIds.push(peer._id);
             }
         }
 
-        if(mapData.orderers){
-            for(let orderer of mapData.orderers){
+        if (mapData.orderers) {
+            for (let orderer of mapData.orderers) {
                 peerIds.push(orderer._id);
             }
         }
 
-        if(mapData.organizations){
-            for(let organization of mapData.organizations){
+        if (mapData.organizations) {
+            for (let organization of mapData.organizations) {
                 orgIds.push(organization._id);
             }
         }
         let updateItems = {
             peers: peerIds,
             orgs: orgIds
-        }
-        await Channel.findByIdAndUpdate(channelId,updateItems);
+        };
+        await Channel.findByIdAndUpdate(channelId, updateItems);
     }
 };
