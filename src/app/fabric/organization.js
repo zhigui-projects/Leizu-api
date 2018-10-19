@@ -7,6 +7,7 @@ const common = require('../../libraries/common');
 const mongoose = require('mongoose');
 
 const router = require('koa-router')({prefix: '/organization'});
+
 router.get('/', async ctx => {
     let channelId = ctx.query.channelId;
     let where = {};
@@ -77,16 +78,33 @@ router.get('/', async ctx => {
 
 router.get('/:id', async ctx => {
     let id = ctx.params.id;
-    await Organization.findById(id, (err, doc) => {
-        if (err) {
-            ctx.body = common.error({}, err.message);
-        } else {
-            ctx.body = common.success(doc, common.SUCCESS);
+    try{
+        let organization = DbService.findOrganizationById(id);
+        ctx.body = common.success(organization, common.SUCCESS);
+    }catch(err){
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);        
+    }
+});
+
+router.post("/", async ctx => {
+    let orgDto = {
+        name: ctx.request.body.name,
+        domainName: ctx.request.body.domainName
+    }
+    let isSupported = false;
+    try{
+        if(isSupported){
+            let connectOptions = {};
+            let parameters = {};
+            await DockerClient.getInstance(connectOptions).createContainer(parameters);
         }
-    }).catch(err => {
+        let organization = await DbService.addOrganization(orgDto);
+        ctx.body = common.success(organization, common.SUCCESS);
+    }catch(err){
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
-    });
+    }
 });
 
 module.exports = router;

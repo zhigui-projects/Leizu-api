@@ -15,6 +15,11 @@ module.exports = class FabricService {
         this.consortiumId = consortiumId;
     }
 
+    static getInstance(consortiumId) {
+        let fabricService = new FabricService(consortiumId);
+        return fabricService;
+    }
+
     async findChannel(filter) {
         let condition = filter || {};
         try {
@@ -26,11 +31,13 @@ module.exports = class FabricService {
         }
     }
 
-    async addChannel(dto) {
+    async addChannel(dto, result) {
         let channel = new Channel();
         channel.uuid = uuid();
-        channel.name = dto.channel_id;
+        channel.name = dto;
         channel.consortium_id = this.consortiumId;
+        channel.orgs = result.organizations.map(org => org._id);
+        channel.peers = result.peers.map(peer => peer._id);
         try {
             channel = await channel.save();
             return channel;
@@ -67,6 +74,20 @@ module.exports = class FabricService {
         }
     }
 
+    async addOrdererPeer(dto) {
+        let peer = new Peer();
+        peer.uuid = uuid();
+        peer.location = dto.host + dto.port;
+        peer.type = 1;
+        try {
+            peer = await peer.save();
+            return peer;
+        } catch (err) {
+            logger.error(err);
+            return null;
+        }
+    }
+
     async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
@@ -81,8 +102,7 @@ module.exports = class FabricService {
         }
     }
 
-    async handleDiscoveryResults(channelId, results) {
-        this.channelId = channelId;
+    async handleDiscoveryResults(channelName, results) {
         let result = {
             organizations: [],
             orderers: [],
@@ -94,7 +114,7 @@ module.exports = class FabricService {
                 result.organizations.push(organization);
             }
             for (let index = 0; index < results.orderers.length; index++) {
-                let orderer = await this.addOrderer(results.orderers[index]);
+                let orderer = await this.addOrdererPeer(results.orderers[index]);
                 result.orderers.push(orderer);
             }
             for (let index = 0; index < results.peers.length; index++) {
@@ -102,6 +122,38 @@ module.exports = class FabricService {
                 result.peers.push(peer);
             }
         }
+        let channelDb = await this.addChannel(channelName, result);
+        result.channel_id = channelDb._id;
+        await this.updateChannel(channelDb._id, result);
+
         return result;
+    }
+
+    async updateChannel(channelId, mapData) {
+        let peerIds = [];
+        let orgIds = [];
+
+        if (mapData.peers) {
+            for (let peer of mapData.peers) {
+                peerIds.push(peer._id);
+            }
+        }
+
+        if (mapData.orderers) {
+            for (let orderer of mapData.orderers) {
+                peerIds.push(orderer._id);
+            }
+        }
+
+        if (mapData.organizations) {
+            for (let organization of mapData.organizations) {
+                orgIds.push(organization._id);
+            }
+        }
+        let updateItems = {
+            peers: peerIds,
+            orgs: orgIds
+        };
+        await Channel.findByIdAndUpdate(channelId, updateItems);
     }
 };
