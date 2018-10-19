@@ -13,17 +13,17 @@ router.get('/', async ctx => {
         const cpuMetrics = await promClient.queryCpuUsage();
         const memoryMetrics = await promClient.queryMemoryUsage();
 
-        peers.forEach((peer) => {
+        const peerDetails = peers.map((peer) => {
             const org = organizations.find(org => peer.org_id === org._id);
-            if (org) {
-                peer.organizationName = org.name;
-            }
-            peer.channelNames = channels.filter(channel => channel.peers.includes(peer._id))
-                .map(channel => channel.name).join(',');
-            peer.cpu = cpuMetrics.find(data => data.metric.instance === peer.location).value[1];
-            peer.memory = memoryMetrics.find(data => data.metric.instance === peer.location).value[1];
+
+            let organizationName = org && org.name;
+            let channelNames = channels.filter(channel => channel.peers.includes(peer._id))
+                .map(channel => channel.name);
+            let cpu = cpuMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
+            let memory = memoryMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
+            return {...peer.toJSON(), organizationName, channelNames, cpu, memory};
         });
-        ctx.body = common.success(peers, common.SUCCESS);
+        ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
         ctx.body = common.error([], ex);
     }
