@@ -14,7 +14,7 @@ module.exports = class FabricService {
         this.isFabric = true;
         this.consortiumId = consortiumId;
     }
-    
+
     static getInstance(consortiumId){
         let fabricService = new FabricService(consortiumId);
         return fabricService;
@@ -31,11 +31,17 @@ module.exports = class FabricService {
         }
     }
 
-    async addChannel(dto) {
+    async addChannel(dto, result) {
         let channel = new Channel();
         channel.uuid = uuid();
-        channel.name = dto.channel_id;
+        channel.name = dto;
         channel.consortium_id = this.consortiumId;
+        for (let org of result.organizations) {
+            channel.orgs.push(org._id);
+        }
+        for (let peer of result.peers) {
+            channel.peers.push(peer._id);
+        }
         try {
             channel = await channel.save();
             return channel;
@@ -100,8 +106,7 @@ module.exports = class FabricService {
         }
     }
 
-    async handleDiscoveryResults(channelId, results) {
-        this.channelId = channelId;
+    async handleDiscoveryResults(channelName, results) {
         let result = {
             organizations: [],
             orderers: [],
@@ -121,26 +126,29 @@ module.exports = class FabricService {
                 result.peers.push(peer);
             }
         }
-        await this.updateChannel(channelId, result);
+        let channelDb = await this.addChannel(channelName, result);
+        result.channel_id = channelDb._id;
+        await this.updateChannel(channelDb._id, result);
+
         return result;
     }
-    
+
     async updateChannel(channelId, mapData){
         let peerIds = [];
         let orgIds = [];
-        
+
         if(mapData.peers){
             for(let peer of mapData.peers){
                 peerIds.push(peer._id);
             }
         }
-        
+
         if(mapData.orderers){
             for(let orderer of mapData.orderers){
                 peerIds.push(orderer._id);
             }
         }
-        
+
         if(mapData.organizations){
             for(let organization of mapData.organizations){
                 orgIds.push(organization._id);

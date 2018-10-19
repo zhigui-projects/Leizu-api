@@ -253,8 +253,9 @@ paths:
     get:
       tags:
       - channel
-      - TODO
       summary: List all channels
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
@@ -278,8 +279,9 @@ paths:
     get:
       tags:
       - channel
-      - TODO
       summary: Show channel details
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
