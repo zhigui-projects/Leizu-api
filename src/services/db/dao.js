@@ -61,16 +61,16 @@ module.exports = class DbService {
         return peers;
     }
 
-    static async counPeersByOrgGroup(orgId){
-        let data=Peer.aggregate([
-                {$match: {"org_id": {$in: orgId}}},
-                {
-                    $group: {
-                        _id: "$org_id",
-                        total: {$sum: 1}
-                    }
+    static async counPeersByOrgGroup(orgId) {
+        let data = Peer.aggregate([
+            {$match: {"org_id": {$in: orgId}}},
+            {
+                $group: {
+                    _id: "$org_id",
+                    total: {$sum: 1}
                 }
-            ]);
+            }
+        ]);
         return data;
     }
 
@@ -81,8 +81,8 @@ module.exports = class DbService {
 
     static async getOrganizationsByIds(orgIds) {
         let where = {};
-        if(orgIds&&orgIds.length>0){
-            where={_id:orgIds};
+        if (orgIds && orgIds.length > 0) {
+            where = {_id: orgIds};
         }
         let organizations = Organization.find(where);
         return organizations;

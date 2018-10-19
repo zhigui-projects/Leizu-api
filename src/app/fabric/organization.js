@@ -12,20 +12,20 @@ router.get('/', async ctx => {
     let orgList = [];
     let orgId = [];
     let orgIdx = [];
-    if(channelId){
-        try{
+    if (channelId) {
+        try {
             let channel = await DbService.getChannelById(channelId);
-            if(channel){
-                orgIds=channel.orgs;
+            if (channel) {
+                orgIds = channel.orgs;
             }
-        }catch (err) {
+        } catch (err) {
             ctx.status = 400;
             ctx.body = common.error([], err.message);
         }
     }
-    try{
+    try {
         let organizations = await DbService.getOrganizationsByIds(orgIds);
-        if(organizations){
+        if (organizations) {
             for (let i = 0; i < organizations.length; i++) {
                 let item = organizations[i];
                 orgList.push({
@@ -37,13 +37,13 @@ router.get('/', async ctx => {
                 orgIdx[item._id] = i;
                 orgId.push(item._id);
             }
-            let peerCounts= await DbService.counPeersByOrgGroup(orgId);
+            let peerCounts = await DbService.counPeersByOrgGroup(orgId);
             for (let i = 0; i < peerCounts.length; i++) {
                 let idx = orgIdx[peerCounts[i]._id];
                 orgList[idx].peer_count = peerCounts[i].total;
             }
         }
-    }catch (err) {
+    } catch (err) {
         ctx.status = 400;
         ctx.body = common.error([], err.message);
     }
@@ -52,12 +52,12 @@ router.get('/', async ctx => {
 
 router.get('/:id', async ctx => {
     let id = ctx.params.id;
-    try{
+    try {
         let organization = DbService.findOrganizationById(id);
         ctx.body = common.success(organization, common.SUCCESS);
-    }catch(err){
+    } catch (err) {
         ctx.status = 400;
-        ctx.body = common.error({}, err.message);        
+        ctx.body = common.error({}, err.message);
     }
 });
 
@@ -67,15 +67,15 @@ router.post("/", async ctx => {
         domainName: ctx.request.body.domainName
     }
     let isSupported = false;
-    try{
-        if(isSupported){
+    try {
+        if (isSupported) {
             let connectOptions = {};
             let parameters = {};
             await DockerClient.getInstance(connectOptions).createContainer(parameters);
         }
         let organization = await DbService.addOrganization(orgDto);
         ctx.body = common.success(organization, common.SUCCESS);
-    }catch(err){
+    } catch (err) {
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
