@@ -160,7 +160,7 @@ paths:
       responses:
         200:
           description: OK
-  /organization?channelId=channelId:
+  /organization:
     get:
       tags:
       - organization
