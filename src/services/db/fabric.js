@@ -14,8 +14,8 @@ module.exports = class FabricService {
         this.isFabric = true;
         this.consortiumId = consortiumId;
     }
-    
-    static getInstance(consortiumId){
+
+    static getInstance(consortiumId) {
         let fabricService = new FabricService(consortiumId);
         return fabricService;
     }
@@ -31,11 +31,13 @@ module.exports = class FabricService {
         }
     }
 
-    async addChannel(dto) {
+    async addChannel(dto, result) {
         let channel = new Channel();
         channel.uuid = uuid();
-        channel.name = dto.channel_id;
+        channel.name = dto;
         channel.consortium_id = this.consortiumId;
+        channel.orgs = result.organizations.map(org => org._id);
+        channel.peers = result.peers.map(peer => peer._id);
         try {
             channel = await channel.save();
             return channel;
@@ -100,8 +102,7 @@ module.exports = class FabricService {
         }
     }
 
-    async handleDiscoveryResults(channelId, results) {
-        this.channelId = channelId;
+    async handleDiscoveryResults(channelName, results) {
         let result = {
             organizations: [],
             orderers: [],
@@ -121,35 +122,38 @@ module.exports = class FabricService {
                 result.peers.push(peer);
             }
         }
-        await this.updateChannel(channelId, result);
+        let channelDb = await this.addChannel(channelName, result);
+        result.channel_id = channelDb._id;
+        await this.updateChannel(channelDb._id, result);
+
         return result;
     }
-    
-    async updateChannel(channelId, mapData){
+
+    async updateChannel(channelId, mapData) {
         let peerIds = [];
         let orgIds = [];
-        
-        if(mapData.peers){
-            for(let peer of mapData.peers){
+
+        if (mapData.peers) {
+            for (let peer of mapData.peers) {
                 peerIds.push(peer._id);
             }
         }
-        
-        if(mapData.orderers){
-            for(let orderer of mapData.orderers){
+
+        if (mapData.orderers) {
+            for (let orderer of mapData.orderers) {
                 peerIds.push(orderer._id);
             }
         }
-        
-        if(mapData.organizations){
-            for(let organization of mapData.organizations){
+
+        if (mapData.organizations) {
+            for (let organization of mapData.organizations) {
                 orgIds.push(organization._id);
             }
         }
         let updateItems = {
             peers: peerIds,
             orgs: orgIds
-        }
-        await Channel.findByIdAndUpdate(channelId,updateItems);
+        };
+        await Channel.findByIdAndUpdate(channelId, updateItems);
     }
 };
