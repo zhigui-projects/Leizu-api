@@ -29,12 +29,15 @@ router.get('/:id', async ctx => {
 router.post("/", async ctx => {
     let orgDto = {
         name: ctx.request.body.name,
+        domainName: ctx.request.body.domainName
     }
+    let isSupported = false;
     try{
-        // call the docker service to start one remote ca daemon process
-        let connectOptions = {};
-        let parameters = {};
-        await DockerClient.getInstance(connectOptions).createContainer(parameters);
+        if(isSupported){
+            let connectOptions = {};
+            let parameters = {};
+            await DockerClient.getInstance(connectOptions).createContainer(parameters);
+        }
         let organization = await DbService.addOrganization(orgDto);
         ctx.body = common.success(organization, common.SUCCESS);
     }catch(err){
