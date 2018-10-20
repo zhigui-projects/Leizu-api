@@ -107,15 +107,45 @@ paths:
     get:
       tags:
       - peer
-      - TODO
       summary: List all peers
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
       - application/json
+      parameters:
+      - in: query
+        name: organization id
+        description: Organization id of peer
+        required: false
+        type: string
       responses:
         200:
           description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              status:
+                type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  $ref: peer.yml#/Peer
+              msg:
+                type: string
+        400:
+          description: Bad request
+          schema:
+            $ref: common.yml#/400Error
+        401:
+          description: Unauthorized
+          schema:
+            $ref: common.yml#/401Error
     post:
       tags:
       - peer

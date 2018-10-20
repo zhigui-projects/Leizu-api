@@ -21,11 +21,15 @@ router.get('/', async ctx => {
                 .map(channel => channel.name);
             let cpu = cpuMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
             let memory = memoryMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
-            return {...peer.toJSON(), organizationName, channelNames, cpu, memory};
+
+            //TODO: need to detect docker container status
+            let status = 'running';
+            return {...peer.toJSON(), organizationName, channelNames, status, cpu, memory};
         });
         ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
-        ctx.body = common.error([], ex);
+        ctx.status = 400;
+        ctx.body = common.error(null, ex);
     }
 });
 
