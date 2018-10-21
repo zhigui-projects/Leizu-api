@@ -4,6 +4,8 @@ const DbService = require('../../services/db/dao');
 const PromClient = require('../../services/prometheus/client');
 const PeerService = require('../../services/fabric/peer');
 const common = require('../../libraries/common');
+const DockerClient = require('../../services/docker/client');
+const utils = require('../../libraries/utils');
 const router = require('koa-router')({prefix: '/peer'});
 
 router.get('/', async ctx => {
@@ -56,6 +58,34 @@ router.get('/:id', async ctx => {
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
+});
+
+router.post("/", async ctx => {
+    let peerDto = {
+        name: ctx.request.body.name,
+        organizationId: ctx.request.body.organizationId,
+        location: ctx.request.body.host + ":" + ctx.request.body.port
+    };
+    let isSupported = false;
+    try{
+        if(isSupported){
+            let connectOptions = {
+                protocol: 'http',
+                host: ctx.request.body.host,
+                port: ctx.request.body.port
+            };
+            let containerOptions = {
+                name: ctx.request.body.name
+            };
+            let parameters = utils.generatePeerContainerOptions(containerOptions);
+            await DockerClient.getInstance(connectOptions).createContainer(parameters);
+        }
+        let peer = await DbService.addPeer(peerDto);
+        ctx.body = common.success(peer, common.SUCCESS);
+    }catch(err){
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }    
 });
 
 
