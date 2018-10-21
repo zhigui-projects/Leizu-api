@@ -4,8 +4,10 @@ const Organization = require('../../models/organization');
 const Peer = require('../../models/peer');
 const Channel=require('../../models/channel');
 const common = require('../../libraries/common');
+const utils = require('../../libraries/utils');
 const mongoose = require('mongoose');
-
+const DbService = require("../../services/db/dao");
+const DockerClient = require('../../services/docker/client');
 const router = require('koa-router')({prefix: '/organization'});
 
 router.get('/', async ctx => {
@@ -90,13 +92,21 @@ router.get('/:id', async ctx => {
 router.post("/", async ctx => {
     let orgDto = {
         name: ctx.request.body.name,
-        domainName: ctx.request.body.domainName
-    }
+        consortiumId: ctx.request.body.consortiumId
+    };
     let isSupported = false;
     try{
         if(isSupported){
-            let connectOptions = {};
-            let parameters = {};
+            let connectOptions = {
+                protocol: 'http',
+                host: ctx.request.body.host,
+                port: ctx.request.body.port
+            };
+            let containerOptions = {
+                name: ctx.request.body.name,
+                domainName: ctx.request.body.domainName
+            }
+            let parameters = utils.generateCertAuthContainerOptions(containerOptions);
             await DockerClient.getInstance(connectOptions).createContainer(parameters);
         }
         let organization = await DbService.addOrganization(orgDto);
