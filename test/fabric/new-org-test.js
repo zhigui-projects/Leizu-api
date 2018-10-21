@@ -7,8 +7,9 @@ var token = 'Bearer ' + constants.token;
 const organization = {
     name: "new-org",
     domainName: "new-org.example.com",
-    ip: "59.110.164.211",
-    port: 7060
+    host: "59.110.164.211",
+    port: 7060,
+    consortiutmId: "5bc2a57c05ce040f0559a369"
 };
 
 request(app.callback())

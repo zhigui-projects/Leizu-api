@@ -94,7 +94,7 @@ router.post("/", async ctx => {
         name: ctx.request.body.name,
         consortiumId: ctx.request.body.consortiumId
     };
-    let isSupported = false;
+    let isSupported = true;
     try{
         if(isSupported){
             let connectOptions = {
