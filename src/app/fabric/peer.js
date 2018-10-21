@@ -75,7 +75,10 @@ router.post("/", async ctx => {
                 port: ctx.request.body.port
             };
             let containerOptions = {
-                name: ctx.request.body.name
+                name: ctx.request.body.name,
+                peerId: ctx.request.body.peerId,
+                endpoint: ctx.request.body.endpoint,
+                mspid: ctx.request.body.mspid
             };
             let parameters = utils.generatePeerContainerOptions(containerOptions);
             await DockerClient.getInstance(connectOptions).createContainer(parameters);
