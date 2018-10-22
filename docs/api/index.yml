@@ -211,6 +211,16 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: "organization.yml#/OrganizationListResponse"
+        400:
+          description: Bad request
+          schema:
+            $ref: common.yml#/400Error
+        401:
+          description: Unauthorized
+          schema:
+            $ref: common.yml#/401Error
     post:
       tags:
       - organization
