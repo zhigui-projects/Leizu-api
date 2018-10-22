@@ -1,8 +1,5 @@
 'use strict';
 
-const Organization = require('../../models/organization');
-const Peer = require('../../models/peer');
-const Channel=require('../../models/channel');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const mongoose = require('mongoose');
@@ -11,81 +8,57 @@ const DockerClient = require('../../services/docker/client');
 const router = require('koa-router')({prefix: '/organization'});
 
 router.get('/', async ctx => {
-    let channelId = ctx.query.channelId;
-    let where = {};
-
-    if(channelId){
-        await new Promise((resolve)=>{
-            Channel.findOne({_id: mongoose.Types.ObjectId(channelId)},function (err, channel) {
-                if(!err&&channel){
-                    where={_id:{$in:channel.orgs}}
-                }
-                resolve();
-            });
-        })
-    }
+    let channelId = ctx.query['channelId'];
+    let orgIds = [];
     let orgList = [];
     let orgId = [];
     let orgIdx = [];
-    await new Promise((resolve) => {
-        Organization.find(where, async (err, docs) => {
-            if (err) {
-                ctx.body = common.error(orgList, err.message);
-                resolve(orgList);
-            } else {
-                for (let i = 0; i < docs.length; i++) {
-                    orgList.push({
-                        id: docs[i]._id,
-                        name: docs[i].name,
-                        consortium_id: docs[i].consortium_id,
-                        peer_count: 0
-                    });
-                    orgIdx[docs[i]._id] = i;
-                    orgId.push(docs[i]._id);
-                }
-                resolve(orgList);
+    if (channelId) {
+        try {
+            let channel = await DbService.getChannelById(channelId);
+            if (channel) {
+                orgIds = channel.orgs;
             }
-        }).catch(err => {
+        } catch (err) {
             ctx.status = 400;
-            ctx.body = common.error(orgList, err.message);
-            resolve(orgList);
-        });
-    });
-    await new Promise((resolve) => {
-        Peer.aggregate([
-                {$match: {"org_id": {$in: orgId}}},
-                {
-                    $group: {
-                        _id: "$org_id",
-                        total: {$sum: 1}
-                    }
-                }
-            ]
-            , function (err, result) {
-                if (!err) {
-                    for (let i = 0; i < result.length; i++) {
-                        let idx = orgIdx[result[i]._id];
-                        orgList[idx].peer_count = result[i].total;
-                    }
-                    ctx.body = common.success(orgList, common.SUCCESS);
-                    resolve(orgList);
-                } else {
-                    ctx.body = common.error(orgList, err.message);
-                    resolve(orgList);
-                }
+            ctx.body = common.error([], err.message);
+        }
+    }
+    try {
+        let organizations = await DbService.getOrganizationsByIds(orgIds);
+        if (organizations) {
+            for (let i = 0; i < organizations.length; i++) {
+                let item = organizations[i];
+                orgList.push({
+                    id: item._id,
+                    name: item.name,
+                    consortium_id: item.consortium_id,
+                    peer_count: 0
+                });
+                orgIdx[item._id] = i;
+                orgId.push(item._id);
             }
-        );
-    });
+            let peerCounts = await DbService.countPeersByOrg(orgId);
+            for (let i = 0; i < peerCounts.length; i++) {
+                let idx = orgIdx[peerCounts[i]._id];
+                orgList[idx].peer_count = peerCounts[i].total;
+            }
+        }
+    } catch (err) {
+        ctx.status = 400;
+        ctx.body = common.error([], err.message);
+    }
+    ctx.body = common.success(orgList, common.SUCCESS);
 });
 
 router.get('/:id', async ctx => {
     let id = ctx.params.id;
-    try{
+    try {
         let organization = DbService.findOrganizationById(id);
         ctx.body = common.success(organization, common.SUCCESS);
-    }catch(err){
+    } catch (err) {
         ctx.status = 400;
-        ctx.body = common.error({}, err.message);        
+        ctx.body = common.error({}, err.message);
     }
 });
 
@@ -111,7 +84,7 @@ router.post("/", async ctx => {
         }
         let organization = await DbService.addOrganization(orgDto);
         ctx.body = common.success(organization, common.SUCCESS);
-    }catch(err){
+    } catch (err) {
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
