@@ -4,6 +4,8 @@ const DbService = require('../../services/db/dao');
 const PromClient = require('../../services/prometheus/client');
 const PeerService = require('../../services/fabric/peer');
 const common = require('../../libraries/common');
+const DockerClient = require('../../services/docker/client');
+const utils = require('../../libraries/utils');
 const router = require('koa-router')({prefix: '/peer'});
 
 router.get('/', async ctx => {
@@ -13,19 +15,23 @@ router.get('/', async ctx => {
         const cpuMetrics = await promClient.queryCpuUsage();
         const memoryMetrics = await promClient.queryMemoryUsage();
 
-        peers.forEach((peer) => {
+        const peerDetails = peers.map((peer) => {
             const org = organizations.find(org => peer.org_id === org._id);
-            if (org) {
-                peer.organizationName = org.name;
-            }
-            peer.channelNames = channels.filter(channel => channel.peers.includes(peer._id))
-                .map(channel => channel.name).join(',');
-            peer.cpu = cpuMetrics.find(data => data.metric.instance === peer.location).value[1];
-            peer.memory = memoryMetrics.find(data => data.metric.instance === peer.location).value[1];
+
+            let organizationName = org && org.name;
+            let channelNames = channels.filter(channel => channel.peers.includes(peer._id))
+                .map(channel => channel.name);
+            let cpu = cpuMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
+            let memory = memoryMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
+
+            //TODO: need to detect docker container status
+            let status = 'running';
+            return {...peer.toJSON(), organizationName, channelNames, status, cpu, memory};
         });
-        ctx.body = common.success(peers, common.SUCCESS);
+        ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
-        ctx.body = common.error([], ex);
+        ctx.status = 400;
+        ctx.body = common.error(null, ex);
     }
 });
 
@@ -52,6 +58,37 @@ router.get('/:id', async ctx => {
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
+});
+
+router.post("/", async ctx => {
+    let peerDto = {
+        name: ctx.request.body.name,
+        organizationId: ctx.request.body.organizationId,
+        location: ctx.request.body.host + ":" + ctx.request.body.port
+    };
+    let isSupported = false;
+    try{
+        if(isSupported){
+            let connectOptions = {
+                protocol: 'http',
+                host: ctx.request.body.host,
+                port: ctx.request.body.port
+            };
+            let containerOptions = {
+                name: ctx.request.body.name,
+                peerId: ctx.request.body.peerId,
+                endpoint: ctx.request.body.endpoint,
+                mspid: ctx.request.body.mspid
+            };
+            let parameters = utils.generatePeerContainerOptions(containerOptions);
+            await DockerClient.getInstance(connectOptions).createContainer(parameters);
+        }
+        let peer = await DbService.addPeer(peerDto);
+        ctx.body = common.success(peer, common.SUCCESS);
+    }catch(err){
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }    
 });
 
 

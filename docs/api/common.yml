@@ -1,0 +1,22 @@
+400Error:
+  type: object
+  properties:
+    code:
+      type: integer
+      example: 400
+    status:
+      type: string
+    data:
+      type: string
+    msg:
+      type: string
+401Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string

@@ -107,15 +107,45 @@ paths:
     get:
       tags:
       - peer
-      - TODO
       summary: List all peers
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
       - application/json
+      parameters:
+      - in: query
+        name: organization id
+        description: Organization id of peer
+        required: false
+        type: string
       responses:
         200:
           description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              status:
+                type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  $ref: peer.yml#/Peer
+              msg:
+                type: string
+        400:
+          description: Bad request
+          schema:
+            $ref: common.yml#/400Error
+        401:
+          description: Unauthorized
+          schema:
+            $ref: common.yml#/401Error
     post:
       tags:
       - peer
@@ -160,48 +190,24 @@ paths:
       responses:
         200:
           description: OK
-  /orderer:
-    get:
-      tags:
-      - orderer
-      - TODO
-      summary: List all orderers
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        200:
-          description: OK
-  /orderer/{ordererId}:
-    get:
-      tags:
-      - orderer
-      - TODO
-      summary: Show orderer details
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: ordererId
-        in: path
-        description: Orderer id
-        required: true
-        type: string
-      responses:
-        200:
-          description: OK
-  /organization:
+  /organization?channelId=channelId:
     get:
       tags:
       - organization
       - TODO
       summary: List all organizations
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
       - application/json
+      parameters:
+      - name: channelId
+        in: query
+        description: Channel id
+        required: false
+        type: string
       responses:
         200:
           description: OK

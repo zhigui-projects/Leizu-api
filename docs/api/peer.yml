@@ -1,0 +1,30 @@
+Peer:
+  type: object
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    location:
+      type: string
+    channelNames:
+      type: array
+      items:
+        type: string
+    status:
+      type: string
+    cpu:
+      type: string
+      example: 1.1247577800077124
+    memory:
+      type: string
+      example: 0.43140476423492385
+    type:
+      type: integer
+      enum:
+      - 0
+      - 1
+    date:
+      type: string
+      format: date-time
+      example: 2018-10-17T06:14:41.892Z

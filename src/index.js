@@ -22,7 +22,8 @@ app.use(cors());
 app.use(errorHandler);
 app.use(bodyParser());
 
-const document = swagger.loadDocumentSync('dist/swagger.yml');
+const swaggerYaml = path.join(__dirname, '../dist/swagger.yml')
+const document = swagger.loadDocumentSync(swaggerYaml);
 if (!swagger.validateDocument(document)) {
     throw Error('swagger.yml does not conform to the Swagger 2.0 schema');
 }

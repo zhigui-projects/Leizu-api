@@ -1,5 +1,7 @@
 "use strict";
 
+const ChannelService = require("./join-channel");
+
 module.exports = class PeerService {
     
     constructor(){
@@ -11,8 +13,11 @@ module.exports = class PeerService {
         return peerService;
     }
     
-    async joinChannel(id,params){
-        
+    async joinChannel(channelName,params){
+        let isSupported = false;
+        if(isSupported){
+            ChannelService.joinChannel(channelName,params);
+        }
     }
     
 }

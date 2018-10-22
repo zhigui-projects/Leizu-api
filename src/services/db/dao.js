@@ -60,6 +60,16 @@ module.exports = class DbService {
         let peers = await Peer.find({org_id: orgId});
         return peers;
     }
+    
+    static async addPeer(dto) {
+        let peer = new Peer();
+        peer.uuid = uuid();
+        peer.name = dto.name
+        peer.location = dto.location;
+        peer.org_id = dto.organizationId;
+        peer = await peer.save();
+        return peer;
+    }
 
     static async findOrganizations(){
         let organizations = Organization.find();

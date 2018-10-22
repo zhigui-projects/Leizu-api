@@ -10,5 +10,8 @@ module.exports = {
     },
     docker: {
         port: 2375
+    },
+    prometheus: {
+        url: 'http://47.94.200.47:9090'
     }
 };
