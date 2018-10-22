@@ -1,5 +1,7 @@
 "use strict";
 
+const UpdateChannel = require("./update-channel");
+
 module.exports = class ChannelService {
     
     constructor(){
@@ -16,7 +18,10 @@ module.exports = class ChannelService {
     }
     
     async updateChannel(id,params){
-        
+        let isSupported = false;
+        if(isSupported){
+            await UpdateChannel.updateChannel(params,{});
+        }
     }
     
 }

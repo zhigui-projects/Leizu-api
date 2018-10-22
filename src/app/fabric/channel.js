@@ -39,7 +39,10 @@ router.post("/",async ctx =>{
     try{
         let channelService = ChannelService.getInstance();
         await channelService.createChannel(parameters);
-        let dto = {};
+        let dto = {
+            name: parameters.name,
+            consortiumId: parameters.consortiumId
+        };
         let channel = DbService.addChannel(dto);
         ctx.body = common.success(channel, common.SUCCESS);
     }catch(err){
