@@ -37,7 +37,7 @@ router.get('/', async ctx => {
                 orgIdx[item._id] = i;
                 orgId.push(item._id);
             }
-            let peerCounts = await DbService.counPeersByOrgGroup(orgId);
+            let peerCounts = await DbService.countPeersByOrg(orgId);
             for (let i = 0; i < peerCounts.length; i++) {
                 let idx = orgIdx[peerCounts[i]._id];
                 orgList[idx].peer_count = peerCounts[i].total;

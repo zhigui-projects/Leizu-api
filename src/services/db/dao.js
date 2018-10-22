@@ -61,7 +61,7 @@ module.exports = class DbService {
         return peers;
     }
 
-    static async counPeersByOrgGroup(orgId) {
+    static async countPeersByOrg(orgId) {
         let data = Peer.aggregate([
             {$match: {"org_id": {$in: orgId}}},
             {
