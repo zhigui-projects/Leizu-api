@@ -194,7 +194,6 @@ paths:
     get:
       tags:
       - organization
-      - TODO
       summary: List all organizations
       security:
       - ApiKeyAuth: []
@@ -212,7 +211,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "organization.yml#/OrganizationListResponse"
+            $ref: "organization.yml#/OrganizationResponse"
         400:
           description: Bad request
           schema:
