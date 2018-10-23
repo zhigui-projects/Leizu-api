@@ -2,7 +2,6 @@
 
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
-const mongoose = require('mongoose');
 const DbService = require("../../services/db/dao");
 const DockerClient = require('../../services/docker/client');
 const router = require('koa-router')({prefix: '/organization'});
