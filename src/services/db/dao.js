@@ -27,6 +27,11 @@ module.exports = class DbService {
         return channel;
     }
 
+    static async countChannelByConsortiumId(consortiumId) {
+        let count = await Channel.count({consortium_id: consortiumId});
+        return count;
+    }
+
     static async getConsortiums() {
         let consortiums = await Consortium.find();
         return consortiums;
@@ -60,7 +65,7 @@ module.exports = class DbService {
         let peers = await Peer.find({org_id: orgId});
         return peers;
     }
-    
+
     static async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
@@ -69,6 +74,11 @@ module.exports = class DbService {
         peer.org_id = dto.organizationId;
         peer = await peer.save();
         return peer;
+    }
+
+    static async countPeersByConsortiumId(consortiumId) {
+        let count = await Peer.count({consortium_id: consortiumId});
+        return count;
     }
 
     static async countPeersByOrg(orgId) {
@@ -96,6 +106,11 @@ module.exports = class DbService {
         }
         let organizations = Organization.find(where);
         return organizations;
+    }
+
+    static async countOrgsByConsortiumId(consortiumId) {
+        let count = await Organization.count({consortium_id: consortiumId});
+        return count;
     }
 
     static async findOrganizationById(id) {
