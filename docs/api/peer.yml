@@ -7,6 +7,8 @@ Peer:
       type: string
     location:
       type: string
+    organizationName:
+      type: string
     channelNames:
       type: array
       items:
