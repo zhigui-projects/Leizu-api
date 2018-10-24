@@ -1,6 +1,5 @@
 'use strict';
 
-const uuid = require('uuid/v1');
 const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
 const DbService = require("../../services/db/dao");
