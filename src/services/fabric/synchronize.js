@@ -45,14 +45,19 @@ module.exports.processDiscoveryResults = (rawResults) => {
     if (rawResults.orderers) {
         for (let mspid in rawResults.orderers) {
             for (let index in rawResults.orderers[mspid].endpoint) {
-                results.orderers.push(rawResults.orderers[mspid].endpoint[index]);
+                let orderer = rawResults.orderers[mspid].endpoint[index];
+                orderer.mspid = mspid;
+                results.orderers.push(orderer);
             }
         }
     }
 
     if (rawResults.peers_by_org) {
         for (let mspid in rawResults.peers_by_org) {
-            results.peers = results.peers.concat(rawResults.peers_by_org[mspid].peers);
+            for(let peer of rawResults.peers_by_org[mspid].peers){
+                peer.mspid = mspid;
+                results.peers.push(peer);
+            }
         }
     }
 
