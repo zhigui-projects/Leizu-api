@@ -18,13 +18,32 @@ router.get('/', async ctx => {
 
 router.get('/:id', async ctx => {
     let id = ctx.params.id;
-    logger.debug('the query id is %d', id);
-    try{
+    let result = {
+        id:id,
+        name:"",
+        consensus_type:0,
+        create_time:"",
+        channel_count:0,
+        org_count:0,
+        peer_count:0,
+        chaincode_count:0,
+    };
+    try {
         let consortium = await DbService.getConsortiumById(id);
-        ctx.body = common.success(consortium, common.SUCCESS);
-    }catch(err){
+        if (consortium) {
+            result.name= consortium.name;
+            result.createTime=consortium.date;
+            result.channelCount = await DbService.countChannelByConsortiumId(id);
+            result.orgCount = await DbService.countOrgsByConsortiumId(id);
+            result.peerCount = await DbService.countPeersByConsortiumId(id);
+            ctx.body = common.success(result,"success");
+        }else{
+            ctx.status = 404;
+            ctx.body = common.error({}, 'Consortium not exist');
+        }
+    } catch (err) {
         ctx.status = 400;
-        ctx.body = common.error([], err.message);        
+        ctx.body = common.error([], err.message);
     }
 });
 
