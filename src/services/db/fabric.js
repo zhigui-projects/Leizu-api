@@ -35,7 +35,9 @@ module.exports = class FabricService {
         let channel = new Channel();
         channel.uuid = uuid();
         channel.name = dto.name;
-        channel.configuration = JSON.stringify(dto.configuration);
+        if(dto.configuration && dto.configuration.config){
+            channel.configuration = JSON.stringify(dto.configuration.config.channel_group);
+        }
         channel.consortium_id = this.consortiumId;
         channel.orgs = result.organizations.map(org => org._id);
         channel.peers = result.peers.map(peer => peer._id);
