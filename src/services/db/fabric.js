@@ -60,6 +60,16 @@ module.exports = class FabricService {
             return null;
         }
     }
+    
+    async findOrganizationIdByName(name){
+        try {
+            let organization = await Organization.findOne({name: name});
+            return organization ? organization._id : null;
+        } catch (err) {
+            logger.error(err);
+            return null;
+        }        
+    }
 
     async addOrderer(dto) {
         let orderer = new Orderer();
@@ -79,6 +89,7 @@ module.exports = class FabricService {
         peer.uuid = uuid();
         peer.location = dto.host + dto.port;
         peer.type = 1;
+        peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
         try {
             peer = await peer.save();
             return peer;
@@ -93,6 +104,7 @@ module.exports = class FabricService {
         peer.uuid = uuid();
         peer.name = dto.endpoint.slice(0, dto.endpoint.indexOf(common.SEPARATOR_DOT));
         peer.location = dto.endpoint;
+        peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
         try {
             peer = await peer.save();
             return peer;

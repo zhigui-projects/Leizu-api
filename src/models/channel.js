@@ -7,6 +7,7 @@ const channelSchema = new mongoose.Schema({
     peers: [mongoose.Schema.ObjectId],
     orgs: [mongoose.Schema.ObjectId],
     consortium_id: mongoose.Schema.ObjectId,
+    configuration: String,
     date: {
         type: Date,
         default: Date.now()

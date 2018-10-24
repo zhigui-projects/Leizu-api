@@ -1,0 +1,83 @@
+OrganizationResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: object
+      properties:
+        peers:
+          type: array
+          items:
+            type: string
+            example: 5bc9389760dc6449e9a832e6
+        orgs:
+          type: array
+          items:
+            type: string
+            example: 5bc9389760dc6449e9a832e4
+        date:
+          type: string
+          example: 2018-10-19T01:51:17.844Z
+        _id:
+          type: string
+          example: 5bc9389760dc6449e9a832e7
+        uuid:
+          type: string
+          example: 7909f1f0-d341-11e8-84f0-69f0cc532f0e
+        name:
+          type: string
+          example: mychannel
+        consortium_id:
+          type: string
+          example: 5bc9387fa37c2749d6b69e14
+        __v:
+          type: int
+          example: 0
+    msg:
+      type: string
+      example: success
+OrganizationListResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: 5bc6980172b780d909aeab0f
+          name:
+            type: string
+            example: OrdererMSP
+          consortium_id:
+            type: string
+            example: 5bc697d8c9ebd4d8f747dd4f
+          peer_count:
+            type: int
+            example: 0
+    msg:
+      type: string
+      example: success
+Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+            example: Token Expired

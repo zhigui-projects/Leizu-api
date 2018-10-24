@@ -33,6 +33,24 @@ module.exports.getBlockChainInfo = async (channelName, peerConfig, caConfig) => 
     return result;
 };
 
+module.exports.getChannelConfig = async (channelName, peerConfig, caConfig) => {
+    let client = new Client();
+    client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+
+    let options = {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+
+    let peer = client.newPeer(peerConfig.url, options);
+    let channel = client.newChannel(channelName);
+    let configEnvelope = await channel.getChannelConfig(peer, true);
+    return configEnvelope;    
+};
+
 module.exports.getBlockByFilter = async (filter, channelName, peerConfig, caConfig) => {
     let condition = filter || {};
     let result = {};
