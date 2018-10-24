@@ -7,6 +7,7 @@ module.exports.SYNC_SUCCESS = 'synchronize successfully';
 
 module.exports.SEPARATOR_DOT = '.';
 module.exports.SEPARATOR_HYPHEN = '-';
+module.exports.SEPARATOR_COLON = ':';
 
 module.exports.success = (data, msg) => {
     return {

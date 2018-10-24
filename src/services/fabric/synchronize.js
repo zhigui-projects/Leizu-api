@@ -44,8 +44,8 @@ module.exports.processDiscoveryResults = (rawResults) => {
 
     if (rawResults.orderers) {
         for (let mspid in rawResults.orderers) {
-            for (let index in rawResults.orderers[mspid].endpoint) {
-                let orderer = rawResults.orderers[mspid].endpoint[index];
+            for (let index in rawResults.orderers[mspid].endpoints) {
+                let orderer = rawResults.orderers[mspid].endpoints[index];
                 orderer.mspid = mspid;
                 results.orderers.push(orderer);
             }

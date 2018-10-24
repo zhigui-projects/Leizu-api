@@ -194,3 +194,26 @@ module.exports.getTlsCACerts = async (client) => {
     client.setTlsClientCertAndKey(cert, key);
     return;
 };
+
+module.exports.newOrderer = async (client, config) => {
+    let enrollment = await module.exports.getClientKeyAndCert(config.ordererCaConfig);
+    let options = {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': config.ordererConfig['server-hostname']
+    };
+    client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
+    return client.newOrderer(config.ordererConfig.url, options);
+};
+
+module.exports.newPeer = async (client, caConfig, peerConfig) => {
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+    let options = {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+    return client.newPeer(peerConfig.url, options);
+};

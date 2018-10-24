@@ -97,3 +97,51 @@ Error:
           message:
             type: string
             example: Token Expired
+Create:
+  type: object
+  properties:
+    consortiumId:
+      type: string
+      example: 5bc9387fa37c2749d6b69e14
+    name:
+      type: string
+      example: mychannel
+Update:
+  type: object
+  properties:
+    opt:
+      type: string
+      example: add
+    update:
+      type: object
+      properties:
+        mspid:
+          type: string
+          example: org2MSP
+        tlscacerts:
+          type: string
+          example:
+        admincerts:
+          type: string
+          example:
+        cacerts:
+          type: string
+          example:
+ChannelUpdateResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: object
+      properties:
+       id:
+         type: string
+         example: 5bc9389760dc6449e9a832e7
+    msg:
+      type: string
+      example: success

@@ -16,12 +16,10 @@
  *        superagent-promise
  */
 
+var query = require('./query');
+var logger = require('../../libraries/log4js').getLogger('Update-Channel');
 var Client = require('fabric-client');
-var log4js = require('log4js');
-var logger = log4js.getLogger("Update-Channel");
-logger.level = 'debug';
-var Configtxlator = require('./tools/configtxlator');
-var configtxlator = new Configtxlator();
+var configtxlator = require('./tools/configtxlator');
 var ConfigBuilder = require('./tools/config-builder');
 var MSP = require('./tools/msp-builder');
 
@@ -52,85 +50,68 @@ var MSP = require('./tools/msp-builder');
  *    the "ConfigUpdate" object.
  */
 
-var updateChannel = async (updateOpt, config) => {
+module.exports.updateChannel = async (updateConfig, channelName, config) => {
     try {
-        // first setup the client for this org
         let client = new Client();
         client.setAdminSigningIdentity(config.peerConfig.adminKey, config.peerConfig.adminCert, config.peerConfig.mspid);
-        const channel_name = config.orderConfig.sysChannel;
-        let sysChannel = client.newChannel(channel_name);
-        let orderer = client.newOrderer(config.orderConfig.url, {
-            'pem': config.orderConfig.pem,
-            'ssl-target-name-override': config.orderConfig['server-hostname']
-        });
-
-        sysChannel.addOrderer(orderer);
-        const config_envelope = await sysChannel.getChannelConfigFromOrderer();
+        let orderer = await query.newOrderer(client, config);
+        let channel = client.newChannel(channelName);
+        channel.addOrderer(orderer);
+        const envelopeConfig = await channel.getChannelConfigFromOrderer();
 
         // we just need the config from the envelope and configtxlator works with bytes
-        let original_config_proto = config_envelope.config.toBuffer();
+        let originalConfigProto = envelopeConfig.config.toBuffer();
 
         // lets get the config converted into JSON, so we can edit JSON to
         // make our changes
-        let original_config_json = await configtxlator.decode(original_config_proto, 'common.Config');
-        logger.info('Successfully decoded the current configuration config proto into JSON');
-        logger.debug(' original_config_json :: %s', original_config_json);
+        let originalConfigJson = await configtxlator.decode(originalConfigProto, 'common.Config');
+        logger.debug('Successfully decoded the current configuration config proto into JSON');
+        // logger.debug(' original_config_json :: %s', originalConfigJson);
 
         // make a copy of the original so we can edit it
-        let updated_config_json = original_config_json;
-        const updated_config = JSON.parse(updated_config_json);
+        let updatedConfigJson = originalConfigJson;
+        const updatedConfig = JSON.parse(updatedConfigJson);
 
         // now edit the config -- add one of the organizations
-        if (updateOpt.opt === 'del') {
-            delete updated_config.channel_group.groups.Application.groups[updateOpt.orgName];
-        } else if (updateOpt.opt === 'add') {
+        if (updateConfig.opt === 'del') {
+            delete updatedConfig.channel_group.groups.Application.groups[updateConfig.update];
+        } else if (updateConfig.opt === 'add') {
             //Add a new org, you should prepare a related msp for the target org first
             //Build a new organisation group for application group section
-            var mspid = config.addOrg.mspid;
-            var mspObj = new MSP(config.addOrg);
+            var mspid = updateConfig.update.mspid;
+            var mspObj = new MSP(updateConfig.update);
 
             var builder = new ConfigBuilder();
             builder.addOrganization(mspid, mspid, mspObj.getMSP());
-            let org_content = builder.buildApplicationGroup(false);
+            let orgContent = builder.buildApplicationGroup(false);
 
-            updated_config.channel_group.groups.Application.groups[mspid] = org_content;
-        } else if (updateOpt.opt === 'update') {
-            updated_config.channel_group.groups.Orderer.values.BatchSize.value.max_message_count = 30;
+            updatedConfig.channel_group.groups.Application.groups[mspid] = orgContent;
+        } else if (updateConfig.opt === 'update') {
+            updatedConfig.channel_group.groups.Orderer.values.BatchSize.value.max_message_count = updateConfig.update;
         }
 
-        updated_config_json = JSON.stringify(updated_config);
-        logger.debug(' updated_config_json :: %s', updated_config_json);
+        updatedConfigJson = JSON.stringify(updatedConfig);
+        // logger.debug(' updated_config_json :: %s', updatedConfigJson);
 
         // lets get the updated JSON encoded
-        let updated_config_proto = await configtxlator.encode(updated_config_json, 'common.Config');
+        let updatedConfigProto = await configtxlator.encode(updatedConfigJson, 'common.Config');
         logger.debug('Successfully encoded the updated config from the JSON input');
 
-        let update_delta = await configtxlator.computeDelta(original_config_proto, updated_config_proto, channel_name);
+        let updateDelta = await configtxlator.computeDelta(originalConfigProto, updatedConfigProto, channelName);
         logger.debug('Successfully had configtxlator compute the updated config object');
 
         // will have to now collect the signatures
         let signatures = []; //clear out the above
         // sign and collect signature
-        signatures.push(client.signChannelConfig(update_delta));
-        logger.debug('Successfully signed config update by org1');
-
-        client._userContext = null;
-        client.setAdminSigningIdentity(config.signOrg.adminKey, config.signOrg.adminCert, config.signOrg.mspid);
-        logger.debug('Successfully got the fabric client for the organization Org2');
-        signatures.push(client.signChannelConfig(update_delta));
-        logger.debug('Successfully signed config update by org2');
-
-        client._userContext = null;
-        client.setAdminSigningIdentity(config.orderConfig.adminKey, config.orderConfig.adminCert, config.orderConfig.mspid);
-        signatures.push(client.signChannelConfig(update_delta));
-        logger.debug('Successfully signed config update by orderer');
+        signatures.push(client.signChannelConfig(updateDelta));
+        logger.debug('Successfully signed config update by org admin');
 
         // build up the create request
         let request = {
-            config: update_delta,
+            config: updateDelta,
             signatures: signatures,
-            name: channel_name,
-            orderer: sysChannel.getOrderers()[0],
+            name: channelName,
+            orderer: channel.getOrderers()[0],
             txId: client.newTransactionID(true)
         };
 
@@ -140,17 +121,15 @@ var updateChannel = async (updateOpt, config) => {
             logger.info('Successfully updated the channel.');
             let response = {
                 success: true,
-                message: 'Channel \'' + channel_name + '\' updated Successfully'
+                message: 'Channel \'' + channelName + '\' updated Successfully'
             };
             return response;
         } else {
-            logger.error('Failed to update the channel:', result);
-            throw new Error('Failed to updated the channel \'' + channel_name + '\'');
+            logger.error('Failed to update the channel:' + JSON.stringify(result));
+            throw new Error('Failed to updated the channel \'' + channelName + '\':' + JSON.stringify(result));
         }
     } catch (err) {
         logger.error('Unexpected error ' + err.stack ? err.stack : err);
         throw err;
     }
 };
-
-exports.updateChannel = updateChannel;
