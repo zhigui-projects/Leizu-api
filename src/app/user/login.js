@@ -13,20 +13,37 @@ router.post('/login', async (ctx) => {
 
     if (ctx.errors) throw new BadRequest(ctx.errors);
 
-    const user = await User.findOne({
-        name: ctx.request.body.name,
-        password: string.generatePasswordHash(ctx.request.body.password),
-    });
-
-    if (!user) throw new Unauthorized('Invalid Credentials');
+    const {name, password} = ctx.request.body;
+    const user = await getUser(name, password);
 
     ctx.body = {
         id: user._id,
-        name: user.name,
+        name: user.toJSON().name,
         token: jwt.encode({id: user._id}),
     };
 });
 
+router.post('/password/reset', async (ctx) => {
+    const {name, password, newPassword} = ctx.request.body;
+    const user = await getUser(name, password);
+    const newUser = await User.findOneAndUpdate(user._id, {password: string.generatePasswordHash(newPassword)}, {new: true});
+
+    ctx.body = {
+        id: newUser._id,
+        name: newUser.toJSON().name
+    };
+});
+
+const getUser = async (username, password) => {
+    const user = await User.findOne({
+        name: username,
+        password: string.generatePasswordHash(password),
+    });
+
+    if (!user) throw new Unauthorized('Invalid Credentials');
+
+    return user;
+};
 
 
 module.exports = router;
