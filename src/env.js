@@ -13,5 +13,11 @@ module.exports = {
     },
     prometheus: {
         url: 'http://47.94.200.47:9090'
+    },
+    configtxlator: {
+        url: 'http://59.110.164.211:7059'
+    },
+    configTx: {
+        path: '../../../build/generator/mychannel.tx'
     }
 };

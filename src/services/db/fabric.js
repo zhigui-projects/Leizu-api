@@ -90,7 +90,7 @@ module.exports = class FabricService {
     async addOrdererPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
-        peer.location = dto.host + dto.port;
+        peer.location = dto.host + common.SEPARATOR_COLON + dto.port;
         peer.type = 1;
         peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
         try {
