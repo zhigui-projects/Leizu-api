@@ -91,6 +91,7 @@ module.exports = class FabricService {
         let peer = new Peer();
         peer.uuid = uuid();
         peer.location = dto.host + common.SEPARATOR_COLON + dto.port;
+        peer.consortium_id = this.consortiumId;
         peer.type = 1;
         peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
         try {
@@ -105,7 +106,8 @@ module.exports = class FabricService {
     async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
-        peer.name = dto.endpoint.slice(0, dto.endpoint.indexOf(common.SEPARATOR_DOT));
+        peer.consortium_id = this.consortiumId;
+        peer.name = dto.endpoint.slice(0, dto.endpoint.indexOf(common.SEPARATOR_COLON));
         peer.location = dto.endpoint;
         peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
         try {
