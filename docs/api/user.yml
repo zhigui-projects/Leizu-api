@@ -1,7 +1,7 @@
 User:
   type: object
   properties:
-    name:
+    username:
       type: string
       example: admin
     password:
@@ -10,7 +10,7 @@ User:
 ResetPasswordRequest:
   type: object
   properties:
-    name:
+    username:
       type: string
       example: admin
     password:
@@ -25,7 +25,7 @@ ResetPasswordResponse:
     id:
       type: string
       example: 5bbeea345d46ac0ba215518b
-    name:
+    username:
       type: string
       example: admin
 LoginResponse:
@@ -34,7 +34,7 @@ LoginResponse:
     id:
       type: string
       example: 5bbeea345d46ac0ba215518b
-    name:
+    username:
       type: string
       example: admin
     token:
