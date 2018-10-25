@@ -561,6 +561,38 @@ paths:
       responses:
         200:
           description: OK
+
+  /container:
+    get:
+      tags:
+      - container
+      summary: List all containers or the containers in one consortium
+      security:
+      - ApiKeyAuth: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: consortium id
+        description: The consortium which the containers belong to
+        required: false
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "container.yml#/ContainerListResponse"
+        400:
+          description: Bad request
+          schema:
+            $ref: common.yml#/400Error
+        401:
+          description: Unauthorized
+          schema:
+            $ref: common.yml#/401Error
+          
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey
