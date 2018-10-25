@@ -13,6 +13,11 @@ module.exports = class DbService {
         return channels;
     }
 
+    static async getChannelsByCondition(where) {
+        let channels = await Channel.find(where);
+        return channels;
+    }
+
     static async getChannelById(id) {
         let channel = await Channel.findById(id);
         return channel;
@@ -77,7 +82,7 @@ module.exports = class DbService {
     }
 
     static async countPeersByConsortiumId(consortiumId) {
-        let count = await Peer.count({consortium_id: consortiumId});
+        let count = await Peer.countDocuments({consortium_id: consortiumId});
         return count;
     }
 
@@ -109,7 +114,7 @@ module.exports = class DbService {
     }
 
     static async countOrgsByConsortiumId(consortiumId) {
-        let count = await Organization.count({consortium_id: consortiumId});
+        let count = await Organization.countDocuments({consortium_id: consortiumId});
         return count;
     }
 
