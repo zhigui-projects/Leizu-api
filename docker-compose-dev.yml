@@ -12,7 +12,7 @@ services:
 
   mongodb:
     image: mongo
-    container_name: dashboard-mongo
+    container_name: dashboard-mongodb
     ports:
     - "27017:27017"
     volumes:
