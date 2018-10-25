@@ -11,10 +11,12 @@ module.exports.syncFabric = async (consortiumId, networkConfig) => {
     let channelResult = await query.getChannels(peerConfig, caConfig);
     let channels = channelResult.channels || [];
     for (let i = 0; i < channels.length; i++) {
-        let channel = channels[i];
-        let rawResults = await query.serviceDiscovery(channel.channel_id, peerConfig, caConfig);
+        let channelInfo = channels[i];
+        let channelConfig = await query.getChannelConfig(channelInfo.channel_id, peerConfig, caConfig);
+        channelInfo.channelConfig = channelConfig || {};
+        let rawResults = await query.serviceDiscovery(channelInfo.channel_id, peerConfig, caConfig);
         let results = module.exports.processDiscoveryResults(rawResults);
-        let dbResult = await fabricService.handleDiscoveryResults(channel.channel_id, results);
+        let dbResult = await fabricService.handleDiscoveryResults(channelInfo, results);
         syncResults.push(dbResult);
     }
     return syncResults;
@@ -45,14 +47,19 @@ module.exports.processDiscoveryResults = (rawResults) => {
     if (rawResults.orderers) {
         for (let mspid in rawResults.orderers) {
             for (let index in rawResults.orderers[mspid].endpoint) {
-                results.orderers.push(rawResults.orderers[mspid].endpoint[index]);
+                let orderer = rawResults.orderers[mspid].endpoint[index];
+                orderer.mspid = mspid;
+                results.orderers.push(orderer);
             }
         }
     }
 
     if (rawResults.peers_by_org) {
         for (let mspid in rawResults.peers_by_org) {
-            results.peers = results.peers.concat(rawResults.peers_by_org[mspid].peers);
+            for(let peer of rawResults.peers_by_org[mspid].peers){
+                peer.mspid = mspid;
+                results.peers.push(peer);
+            }
         }
     }
 
