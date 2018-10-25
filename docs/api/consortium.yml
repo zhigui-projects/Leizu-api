@@ -54,6 +54,12 @@ ConsortiumResponse:
         name:
           type: string
           example: sample-consortium
+        type:
+          type: string
+          example: fabric
+        status:
+          type: int
+          example: 1
         consensus_type:
           type: int
           example: 0
