@@ -91,6 +91,7 @@ module.exports = class FabricService {
         let peer = new Peer();
         peer.uuid = uuid();
         peer.location = dto.host + common.SEPARATOR_COLON + dto.port;
+        peer.name = dto.host;
         peer.consortium_id = this.consortiumId;
         peer.type = 1;
         peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
