@@ -16,8 +16,8 @@ router.get('/', async ctx => {
         const memoryMetrics = await promClient.queryMemoryUsage();
 
         const peerDetails = peers.map((peer) => {
-            const org = organizations.find(org => peer.org_id === org._id);
-
+            const org = organizations.find(org => String(peer.org_id)==String(org._id) );
+            console.log(org);
             let organizationName = org && org.name;
             let channelNames = channels.filter(channel => channel.peers.includes(peer._id))
                 .map(channel => channel.name);
@@ -31,7 +31,7 @@ router.get('/', async ctx => {
         ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
         ctx.status = 400;
-        ctx.body = common.error(null, ex);
+        ctx.body = common.error(null, ex.message);
     }
 });
 
