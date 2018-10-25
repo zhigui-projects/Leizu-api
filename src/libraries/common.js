@@ -8,6 +8,11 @@ module.exports.SYNC_SUCCESS = 'synchronize successfully';
 module.exports.SEPARATOR_DOT = '.';
 module.exports.SEPARATOR_HYPHEN = '-';
 
+module.exports.CONSENSUS_SOLO = 'solo';
+module.exports.CONSENSUS_SOLO_VALUE = 0;
+module.exports.CONSENSUS_KAFKE = 'kafka';
+module.exports.CONSENSUS_KAFKA_VALUE = 1;
+
 module.exports.success = (data, msg) => {
     return {
         code: 200,

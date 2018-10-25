@@ -7,11 +7,6 @@ const DbService = require("../../services/db/dao");
 const query = require('../../services/fabric/query');
 const router = require('koa-router')({prefix: '/consortium'});
 
-const CONSENSUS_SOLO = 'solo';
-const CONSENSUS_SOLO_VALUE = 0;
-const CONSENSUS_KAFKE = 'kafka';
-const CONSENSUS_KAFKA_VALUE = 1;
-
 router.get('/', async ctx => {
     try {
         let consortiums = await DbService.getConsortiums();
@@ -91,10 +86,10 @@ const getConsensusType = (channel) => {
     let channelConfig = channel.configuration;
     let channelConfigObject = JSON.parse(channelConfig);
     let consensusType = channelConfigObject.groups.Orderer.values.ConsensusType.value.type;
-    if (consensusType === CONSENSUS_SOLO) {
-        return CONSENSUS_SOLO_VALUE;
-    } else if (consensusType === CONSENSUS_KAFKE) {
-        return CONSENSUS_KAFKA_VALUE;
+    if (consensusType === common.CONSENSUS_SOLO) {
+        return common.CONSENSUS_SOLO_VALUE;
+    } else if (consensusType === common.CONSENSUS_KAFKE) {
+        return common.CONSENSUS_KAFKA_VALUE;
     }
 };
 
