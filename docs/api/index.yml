@@ -103,6 +103,33 @@ paths:
       responses:
         200:
           description: OK
+  /user/password/reset:
+    post:
+      tags:
+        - user
+      summary: Reset user password
+      security:
+      - ApiKeyAuth: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        description: User object for reset password
+        required: true
+        schema:
+          $ref: "user.yml#/ResetPasswordRequest"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "user.yml#/ResetPasswordResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "user.yml#/Error"
   /peer:
     get:
       tags:
