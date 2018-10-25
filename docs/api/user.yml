@@ -1,19 +1,40 @@
 User:
   type: object
   properties:
-    name:
+    username:
       type: string
       example: admin
     password:
       type: string
       example: pasw0rd
+ResetPasswordRequest:
+  type: object
+  properties:
+    username:
+      type: string
+      example: admin
+    password:
+      type: string
+      example: pasw0rd
+    newPassword:
+      type: string
+      example: pasw0rd123
+ResetPasswordResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      example: 5bbeea345d46ac0ba215518b
+    username:
+      type: string
+      example: admin
 LoginResponse:
   type: object
   properties:
     id:
       type: string
       example: 5bbeea345d46ac0ba215518b
-    name:
+    username:
       type: string
       example: admin
     token:

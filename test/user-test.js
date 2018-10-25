@@ -3,7 +3,7 @@
 const request = require('supertest');
 const app = require('../src/index');
 const user = {
-    name: 'admin',
+    username: 'admin',
     password: 'pasw0rd'
 };
 request(app.callback())

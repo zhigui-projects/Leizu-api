@@ -7,6 +7,7 @@
     "test": "node test/app-test.js",
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "debug": "nodemon --inspect index.js",
     "doc": "node scripts/json-refs.js",
     "lint": "eslint --ext .js ."
   },

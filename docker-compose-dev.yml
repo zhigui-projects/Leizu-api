@@ -19,7 +19,7 @@ services:
     - dbdata:/data/db
 
   configtxlator:
-    image: zhigui/confiftxlator
+    image: zhigui/configtxlator
     container_name: dashboard-configtxlator
     ports:
     - "7059:7059"
