@@ -11,7 +11,6 @@ router.get('/', async ctx => {
     let orgIds = [];
     let orgList = [];
     let orgId = [];
-    let orgIdx = [];
     if (channelId) {
         try {
             let channel = await DbService.getChannelById(channelId);
@@ -26,22 +25,16 @@ router.get('/', async ctx => {
     try {
         let organizations = await DbService.getOrganizationsByIds(orgIds);
         if (organizations) {
-            for (let i = 0; i < organizations.length; i++) {
-                let item = organizations[i];
-                orgList.push({
-                    id: item._id,
-                    name: item.name,
-                    consortium_id: item.consortium_id,
-                    peer_count: 0
-                });
-                orgIdx[item._id] = i;
-                orgId.push(item._id);
-            }
+            orgId = organizations.map(item => {
+                orgList.push({id: item._id, name: item.name, consortium_id: item.consortium_id, peer_count: 0});
+                return item._id;
+            });
             let peerCounts = await DbService.countPeersByOrg(orgId);
-            for (let i = 0; i < peerCounts.length; i++) {
-                let idx = orgIdx[peerCounts[i]._id];
-                orgList[idx].peer_count = peerCounts[i].total;
-            }
+            orgId = orgId.map(id => String(id));
+            peerCounts.map(item => {
+                let idx = orgId.indexOf(String(item._id));
+                orgList[idx].peer_count = item.total;
+            });
         }
     } catch (err) {
         ctx.status = 400;
@@ -67,8 +60,8 @@ router.post("/", async ctx => {
         consortiumId: ctx.request.body.consortiumId
     };
     let isSupported = true;
-    try{
-        if(isSupported){
+    try {
+        if (isSupported) {
             let connectOptions = {
                 protocol: 'http',
                 host: ctx.request.body.host,
