@@ -49,10 +49,10 @@ module.exports.getChannelConfig = async (channelName, peerConfig, caConfig) => {
     let peer = client.newPeer(peerConfig.url, options);
     let channel = client.newChannel(channelName);
     let configEnvelope = await channel.getChannelConfig(peer, true);
-    if(configEnvelope){
-        let result = BlockDecoder.HeaderType.decodePayloadBasedOnType(configEnvelope.toBuffer(),1);
+    if (configEnvelope) {
+        let result = BlockDecoder.HeaderType.decodePayloadBasedOnType(configEnvelope.toBuffer(), 1);
         return result;
-    }else{
+    } else {
         return {};
     }
 };
@@ -81,6 +81,24 @@ module.exports.getBlockByFilter = async (filter, channelName, peerConfig, caConf
     } else if (condition.queryBlockByTxID) {
         result = await channel.queryBlockByTxID(condition.txId, peer, true);
     }
+    return result;
+};
+
+module.exports.getInstanceChaincodes = async (channelName, peerConfig, caConfig) => {
+    let client = new Client();
+    client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+
+    let options = {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+
+    let peer = client.newPeer(peerConfig.url, options);
+    let channel = client.newChannel(channelName);
+    let result = await channel.queryInstantiatedChaincodes(peer, true);
     return result;
 };
 
