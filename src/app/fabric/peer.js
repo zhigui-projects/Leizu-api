@@ -17,7 +17,7 @@ router.get('/', async ctx => {
 
         const peerDetails = peers.map((peer) => {
             let org = organizations;
-            if(typeof organizations !== 'object'){
+            if(!ctx.query['organizationId']){
                 org = organizations.find(org => org._id.equals(peer.org_id));
             }
             let organizationName = (org && org.name) || null;
