@@ -32,7 +32,7 @@ router.post('/logout', async (ctx) => {
     try {
         const decoded = jwt.decode(token.split(' ')[1], config.secret);
         await User.findOneAndUpdate({_id: decoded.id,}, {token: ""}, {new: true});
-        ctx.body = common.success(null, "User logged out.")
+        ctx.body = common.success(null, "User logged out")
     } catch (err) {
         ctx.status = 400;
         ctx.body = common.error(null, err.message)

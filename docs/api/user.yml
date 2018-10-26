@@ -40,6 +40,21 @@ LoginResponse:
     token:
       type: string
       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViYmVlYTM0NWQ0NmFjMGJhMjE1NTE4YiIsImlhdCI6MTUzOTMxMzEyOCwiZXhwIjoxNTM5MzQ5MTI4fQ.Q5YuMsK7ABbQS4ZlmvQHmpenDu9_zCFAI-SLA7sYkiQ
+LogoutResponse:
+  type: object
+  properties:
+    code:
+      type: integer
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: string
+      example: null
+    msg:
+      type: string
+      example: User logged out
 Error:
   type: object
   properties:

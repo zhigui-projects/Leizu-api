@@ -94,8 +94,9 @@ paths:
     post:
       tags:
       - user
-      - TODO
       summary: User logout
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
@@ -103,6 +104,12 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: user.yml#/LogoutResponse
+        401:
+          description: Unauthorized
+          schema:
+            $ref: user.yml#/Error
   /user/password/reset:
     post:
       tags:
@@ -120,16 +127,16 @@ paths:
         description: User object for reset password
         required: true
         schema:
-          $ref: "user.yml#/ResetPasswordRequest"
+          $ref: user.yml#/ResetPasswordRequest
       responses:
         200:
           description: OK
           schema:
-            $ref: "user.yml#/ResetPasswordResponse"
+            $ref: user.yml#/ResetPasswordResponse
         401:
           description: Unauthorized
           schema:
-            $ref: "user.yml#/Error"
+            $ref: user.yml#/Error
   /peer:
     get:
       tags:
