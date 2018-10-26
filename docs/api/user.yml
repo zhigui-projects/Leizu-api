@@ -55,6 +55,12 @@ LogoutResponse:
     msg:
       type: string
       example: User logged out
+CheckResponse:
+  type: object
+  properties:
+    username:
+      type: string
+      example: admin
 Error:
   type: object
   properties:

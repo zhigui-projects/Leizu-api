@@ -10,6 +10,11 @@ const router = require('koa-router')({prefix: '/consortium'});
 router.get('/', async ctx => {
     try {
         let consortiums = await DbService.getConsortiums();
+        consortiums=consortiums.map(consortium=>{
+            consortium=consortium.toJSON();
+            consortium.network_config='';
+            return consortium;
+        });
         ctx.body = common.success(consortiums, common.SUCCESS);
     } catch (err) {
         logger.error(err);

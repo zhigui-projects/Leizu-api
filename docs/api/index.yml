@@ -136,7 +136,25 @@ paths:
         401:
           description: Unauthorized
           schema:
-            $ref: user.yml#/Error
+            $ref: "user.yml#/Error"
+  /user/check:
+    post:
+      tags:
+        - user
+      summary: Check user has been logged in
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "user.yml#/CheckResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "user.yml#/Error"
   /peer:
     get:
       tags:
