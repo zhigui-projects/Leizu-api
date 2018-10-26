@@ -2,6 +2,8 @@
 
 const User = require('../../models/user');
 const jwt = require('../../libraries/jwt');
+const config = require('../../env').jwt;
+const common = require('../../libraries/common');
 
 const {BadRequest, Unauthorized} = require('../../libraries/error');
 const string = require('../../libraries/string');
@@ -15,12 +17,26 @@ router.post('/login', async (ctx) => {
 
     const {username, password} = ctx.request.body;
     const user = await getUser(username, password);
+    const token = jwt.encode({id: user._id});
+    await User.findOneAndUpdate({_id: user._id}, {token: token});
 
     ctx.body = {
         id: user._id,
         username: user.toJSON().username,
-        token: jwt.encode({id: user._id}),
+        token: token,
     };
+});
+
+router.post('/logout', async (ctx) => {
+    const token = ctx.request.headers['authorization'];
+    try {
+        const decoded = jwt.decode(token.split(' ')[1], config.secret);
+        await User.findOneAndUpdate({_id: decoded.id,}, {token: ""}, {new: true});
+        ctx.body = common.success(null, "User logged out.")
+    } catch (err) {
+        ctx.status = 400;
+        ctx.body = common.error(null, err.message)
+    }
 });
 
 router.post('/password/reset', async (ctx) => {
