@@ -1,0 +1,23 @@
+ContainerListResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: 5bc6980172b780d909aeab0f
+          name:
+            type: string
+            example: peer0.org1.example.com
+    msg:
+      type: string
+      example: success

@@ -94,8 +94,9 @@ paths:
     post:
       tags:
       - user
-      - TODO
       summary: User logout
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
@@ -103,6 +104,12 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: user.yml#/LogoutResponse
+        401:
+          description: Unauthorized
+          schema:
+            $ref: user.yml#/Error
   /user/password/reset:
     post:
       tags:
@@ -120,12 +127,12 @@ paths:
         description: User object for reset password
         required: true
         schema:
-          $ref: "user.yml#/ResetPasswordRequest"
+          $ref: user.yml#/ResetPasswordRequest
       responses:
         200:
           description: OK
           schema:
-            $ref: "user.yml#/ResetPasswordResponse"
+            $ref: user.yml#/ResetPasswordResponse
         401:
           description: Unauthorized
           schema:
@@ -332,15 +339,29 @@ paths:
     post:
       tags:
       - channel
-      - TODO
       summary: Create channel
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
       - application/json
+      parameters:
+      - in: body
+        name: channel
+        description: Channel elevant information for create
+        required: true
+        schema:
+          $ref: "channel.yml#/Create"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "channel.yml#/ChannelResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "channel.yml#/Error"
   /channel/{channelId}:
     get:
       tags:
@@ -363,6 +384,37 @@ paths:
           description: OK
           schema:
             $ref: "channel.yml#/ChannelResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "channel.yml#/Error"
+    put:
+      tags:
+      - channel
+      summary: Update channel config
+      security:
+      - ApiKeyAuth: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: channelId
+        in: path
+        description: Channel id
+        required: true
+        type: string
+      - in: body
+        name: updateConfig
+        description: Channel config elevant information for update
+        required: true
+        schema:
+          $ref: "channel.yml#/Update"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "channel.yml#/ChannelUpdateResponse"
         401:
           description: Unauthorized
           schema:
@@ -534,6 +586,38 @@ paths:
       responses:
         200:
           description: OK
+
+  /container:
+    get:
+      tags:
+      - container
+      summary: List all containers or the containers in one consortium
+      security:
+      - ApiKeyAuth: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: consortium id
+        description: The consortium which the containers belong to
+        required: false
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "container.yml#/ContainerListResponse"
+        400:
+          description: Bad request
+          schema:
+            $ref: common.yml#/400Error
+        401:
+          description: Unauthorized
+          schema:
+            $ref: common.yml#/401Error
+          
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey

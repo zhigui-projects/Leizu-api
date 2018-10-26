@@ -3,6 +3,7 @@
 const request = require('request');
 var log4js = require('log4js');
 var logger = log4js.getLogger('Configtxlator');
+var host = require('../../../env').configtxlator;
 
 var Configtxlator = class {
     constructor(endpoint) {
@@ -11,7 +12,7 @@ var Configtxlator = class {
         if (typeof endpoint === 'string') {
             this.endpoint = endpoint;
         }
-        logger.info('Configtxlator server address: %s', this.endpoint);
+        logger.debug('Configtxlator server address: %s', this.endpoint);
     }
 
     encode(message, proto_name) {
@@ -20,7 +21,7 @@ var Configtxlator = class {
         return new Promise((resolve, reject) => {
             request({
                 url: url,
-                method: "POST",
+                method: 'POST',
                 body: message,
                 encoding: null,
                 resolveWithFullResponse: true
@@ -43,7 +44,7 @@ var Configtxlator = class {
         return new Promise((resolve, reject) => {
             request({
                 url: url,
-                method: "POST",
+                method: 'POST',
                 body: block,
                 encoding: null,
                 resolveWithFullResponse: true
@@ -103,5 +104,5 @@ var Configtxlator = class {
     }
 };
 
-module.exports = Configtxlator;
-
+const configtxlator = new Configtxlator(host.url);
+module.exports = configtxlator;

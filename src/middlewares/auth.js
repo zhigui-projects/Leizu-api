@@ -4,16 +4,15 @@ const config = require('../env').jwt;
 const {Unauthorized} = require('../libraries/error');
 
 module.exports = async (ctx, next) => {
-    const token = ctx.request.headers['authorization'];
+    const bearerToken = ctx.request.headers['authorization'];
 
-    if (token) {
+    if (bearerToken) {
         try {
-            const decoded = jwt.verify(token.split(' ')[1], config.secret);
-            const user = await User.findOne({
-                _id: decoded.id,
-            });
+            const token = bearerToken.split(' ')[1];
+            const decoded = jwt.verify(token, config.secret);
+            const user = await User.findOne({_id: decoded.id});
 
-            if (user && user.id) {
+            if (user && token === user.toJSON().token) {
                 ctx.currentUser = user;
                 await next();
             } else {
