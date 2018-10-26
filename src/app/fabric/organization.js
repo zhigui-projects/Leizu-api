@@ -35,12 +35,12 @@ router.get('/', async ctx => {
                 let idx = orgId.indexOf(String(item._id));
                 orgList[idx].peer_count = item.total;
             });
+            ctx.body = common.success(orgList, common.SUCCESS);
         }
     } catch (err) {
         ctx.status = 400;
         ctx.body = common.error([], err.message);
     }
-    ctx.body = common.success(orgList, common.SUCCESS);
 });
 
 router.get('/:id', async ctx => {
