@@ -33,6 +33,12 @@ router.post('/password/reset', async (ctx) => {
     };
 });
 
+router.get('/check',async (ctx)=>{
+   if (ctx.currentUser) {
+       ctx.body={username:ctx.currentUser.username}
+   }
+});
+
 const getUser = async (username, password) => {
     const user = await User.findOne({
         username: username,
