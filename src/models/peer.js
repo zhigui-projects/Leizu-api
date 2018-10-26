@@ -9,6 +9,7 @@ const peerSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    consortium_id: mongoose.Schema.ObjectId,
     org_id: mongoose.Schema.ObjectId,
     server_crt_path: String,
     client_cert_path: String,

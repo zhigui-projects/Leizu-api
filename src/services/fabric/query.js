@@ -12,7 +12,8 @@
  */
 
 const Client = require('fabric-client');
-const Peer = require('fabric-client/lib/Peer.js');
+const Peer = require('fabric-client/lib/Peer');
+const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 const FabricCAServices = require('fabric-ca-client');
 
 module.exports.getBlockChainInfo = async (channelName, peerConfig, caConfig) => {
@@ -48,7 +49,12 @@ module.exports.getChannelConfig = async (channelName, peerConfig, caConfig) => {
     let peer = client.newPeer(peerConfig.url, options);
     let channel = client.newChannel(channelName);
     let configEnvelope = await channel.getChannelConfig(peer, true);
-    return configEnvelope;    
+    if (configEnvelope) {
+        let result = BlockDecoder.HeaderType.decodePayloadBasedOnType(configEnvelope.toBuffer(), 1);
+        return result;
+    } else {
+        return {};
+    }
 };
 
 module.exports.getBlockByFilter = async (filter, channelName, peerConfig, caConfig) => {
@@ -75,6 +81,24 @@ module.exports.getBlockByFilter = async (filter, channelName, peerConfig, caConf
     } else if (condition.queryBlockByTxID) {
         result = await channel.queryBlockByTxID(condition.txId, peer, true);
     }
+    return result;
+};
+
+module.exports.getInstanceChaincodes = async (channelName, peerConfig, caConfig) => {
+    let client = new Client();
+    client.setAdminSigningIdentity(peerConfig.adminKey, peerConfig.adminCert, peerConfig.mspid);
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+
+    let options = {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+
+    let peer = client.newPeer(peerConfig.url, options);
+    let channel = client.newChannel(channelName);
+    let result = await channel.queryInstantiatedChaincodes(peer, true);
     return result;
 };
 
@@ -146,7 +170,6 @@ module.exports.getChannelConfigFromOrderer = async (orderConfig, caConfig) => {
     let sysChannel = client.newChannel(orderConfig.sysChannel);
     client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
     let options = {
-        //pem: orderConfig.pem,
         pem: enrollment.rootCertificate,
         'clientCert': enrollment.certificate,
         'clientKey': enrollment.key,

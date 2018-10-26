@@ -12,14 +12,14 @@ services:
 
   mongodb:
     image: mongo
-    container_name: dashboard-mongo
+    container_name: dashboard-mongodb
     ports:
     - "27017:27017"
     volumes:
     - dbdata:/data/db
 
   configtxlator:
-    image: zhigui/confiftxlator
+    image: zhigui/configtxlator
     container_name: dashboard-configtxlator
     ports:
     - "7059:7059"

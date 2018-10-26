@@ -34,7 +34,10 @@ module.exports = class FabricService {
     async addChannel(dto, result) {
         let channel = new Channel();
         channel.uuid = uuid();
-        channel.name = dto;
+        channel.name = dto.name;
+        if (dto.configuration && dto.configuration.config) {
+            channel.configuration = JSON.stringify(dto.configuration.config.channel_group);
+        }
         channel.consortium_id = this.consortiumId;
         channel.orgs = result.organizations.map(org => org._id);
         channel.peers = result.peers.map(peer => peer._id);
@@ -60,15 +63,15 @@ module.exports = class FabricService {
             return null;
         }
     }
-    
-    async findOrganizationIdByName(name){
+
+    async findOrganizationIdByName(name) {
         try {
             let organization = await Organization.findOne({name: name});
             return organization ? organization._id : null;
         } catch (err) {
             logger.error(err);
             return null;
-        }        
+        }
     }
 
     async addOrderer(dto) {
@@ -88,8 +91,10 @@ module.exports = class FabricService {
         let peer = new Peer();
         peer.uuid = uuid();
         peer.location = dto.host + common.SEPARATOR_COLON + dto.port;
+        peer.name = dto.host;
+        peer.consortium_id = this.consortiumId;
         peer.type = 1;
-        peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
+        peer.org_id = await this.findOrganizationIdByName(dto.mspid);
         try {
             peer = await peer.save();
             return peer;
@@ -102,9 +107,11 @@ module.exports = class FabricService {
     async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
-        peer.name = dto.endpoint.slice(0, dto.endpoint.indexOf(common.SEPARATOR_DOT));
+        peer.consortium_id = this.consortiumId;
+        peer.name = dto.endpoint.slice(0, dto.endpoint.indexOf(common.SEPARATOR_COLON));
         peer.location = dto.endpoint;
-        peer.org_id =  await this.findOrganizationIdByName(dto.mspid);
+        peer.consortium_id = this.consortiumId;
+        peer.org_id = await this.findOrganizationIdByName(dto.mspid);
         try {
             peer = await peer.save();
             return peer;
@@ -114,7 +121,7 @@ module.exports = class FabricService {
         }
     }
 
-    async handleDiscoveryResults(channelName, results) {
+    async handleDiscoveryResults(channelInfo, results) {
         let result = {
             organizations: [],
             orderers: [],
@@ -134,9 +141,13 @@ module.exports = class FabricService {
                 result.peers.push(peer);
             }
         }
-        let channelDb = await this.addChannel(channelName, result);
+        let channelDto = {
+            name: channelInfo.channel_id,
+            configuration: channelInfo.channelConfig
+        };
+        let channelDb = await this.addChannel(channelDto, result);
         result.channel_id = channelDb._id;
-        await this.updateChannel(channelDb._id, result);
+        //await this.updateChannel(channelDb._id, result);
 
         return result;
     }

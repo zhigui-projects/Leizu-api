@@ -1,0 +1,105 @@
+ConsortiumListResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+            example: 5bc6980172b780d909aeab0f
+          name:
+            type: string
+            example: sample-consortium
+          type:
+            type: string
+            example: fabric
+          synced:
+            type: bool
+            example: false
+          date:
+            type: string
+            example: 2018-10-23T08:53:50.556Z
+          uuid:
+            type: string
+            example: 7c0c24a0-d1b0-11e8-86e4-4da846089d2a
+          _v:
+            type: int
+            example: 0
+    msg:
+      type: string
+      example: success
+ConsortiumResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 5bc6980172b780d909aeab0f
+        name:
+          type: string
+          example: sample-consortium
+        type:
+          type: string
+          example: fabric
+        status:
+          type: int
+          example: 1
+        consensus_type:
+          type: int
+          example: 0
+        create_time:
+          type: string
+          example: 2018-10-23T08:23:00.988Z
+        channel_count:
+          type: int
+          example: 1
+        org_count:
+          type: int
+          example: 3
+        peer_count:
+          type: int
+          example: 1
+        chaincode_count:
+          type: int
+          example: 0
+    msg:
+      type: string
+      example: success
+404Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+            example: Consortium not exist
+401Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+            example: Token Expired

@@ -9,4 +9,4 @@
  
  use zigdb;
  
- db.user.insert({name:'admin',password:'3bf15982a73a5a949559676cb8a272cbd6bd5459'});
+ db.user.insert({username:'admin',password:'3bf15982a73a5a949559676cb8a272cbd6bd5459'});

@@ -11,10 +11,12 @@ module.exports.syncFabric = async (consortiumId, networkConfig) => {
     let channelResult = await query.getChannels(peerConfig, caConfig);
     let channels = channelResult.channels || [];
     for (let i = 0; i < channels.length; i++) {
-        let channel = channels[i];
-        let rawResults = await query.serviceDiscovery(channel.channel_id, peerConfig, caConfig);
+        let channelInfo = channels[i];
+        let channelConfig = await query.getChannelConfig(channelInfo.channel_id, peerConfig, caConfig);
+        channelInfo.channelConfig = channelConfig || {};
+        let rawResults = await query.serviceDiscovery(channelInfo.channel_id, peerConfig, caConfig);
         let results = module.exports.processDiscoveryResults(rawResults);
-        let dbResult = await fabricService.handleDiscoveryResults(channel.channel_id, results);
+        let dbResult = await fabricService.handleDiscoveryResults(channelInfo, results);
         syncResults.push(dbResult);
     }
     return syncResults;

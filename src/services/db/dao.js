@@ -13,6 +13,11 @@ module.exports = class DbService {
         return channels;
     }
 
+    static async getChannelsByCondition(where) {
+        let channels = await Channel.find(where);
+        return channels;
+    }
+
     static async getChannelById(id) {
         let channel = await Channel.findById(id);
         return channel;
@@ -25,6 +30,11 @@ module.exports = class DbService {
         channel.consortium_id = dto.consortiumId;
         channel = await channel.save();
         return channel;
+    }
+
+    static async countChannelByConsortiumId(consortiumId) {
+        let count = await Channel.count({consortium_id: consortiumId});
+        return count;
     }
 
     static async getConsortiums() {
@@ -60,7 +70,7 @@ module.exports = class DbService {
         let peers = await Peer.find({org_id: orgId});
         return peers;
     }
-    
+
     static async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
@@ -69,6 +79,11 @@ module.exports = class DbService {
         peer.org_id = dto.organizationId;
         peer = await peer.save();
         return peer;
+    }
+
+    static async countPeersByConsortiumId(consortiumId) {
+        let count = await Peer.countDocuments({consortium_id: consortiumId});
+        return count;
     }
 
     static async countPeersByOrg(orgId) {
@@ -96,6 +111,11 @@ module.exports = class DbService {
         }
         let organizations = Organization.find(where);
         return organizations;
+    }
+
+    static async countOrgsByConsortiumId(consortiumId) {
+        let count = await Organization.countDocuments({consortium_id: consortiumId});
+        return count;
     }
 
     static async findOrganizationById(id) {

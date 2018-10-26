@@ -16,10 +16,9 @@ router.get('/', async ctx => {
         const memoryMetrics = await promClient.queryMemoryUsage();
 
         const peerDetails = peers.map((peer) => {
-            const org = organizations.find(org => peer.org_id === org._id);
-
-            let organizationName = org && org.name;
-            let channelNames = channels.filter(channel => channel.peers.includes(peer._id))
+            const org = organizations.find(org => org._id.equals(peer.org_id));
+            let organizationName = (org && org.name) || null;
+            let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id)))
                 .map(channel => channel.name);
             let cpu = cpuMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
             let memory = memoryMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
@@ -31,7 +30,7 @@ router.get('/', async ctx => {
         ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
         ctx.status = 400;
-        ctx.body = common.error(null, ex);
+        ctx.body = common.error(null, ex.message);
     }
 });
 

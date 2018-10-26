@@ -94,8 +94,9 @@ paths:
     post:
       tags:
       - user
-      - TODO
       summary: User logout
+      security:
+      - ApiKeyAuth: []
       consumes:
       - application/json
       produces:
@@ -103,6 +104,57 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: user.yml#/LogoutResponse
+        401:
+          description: Unauthorized
+          schema:
+            $ref: user.yml#/Error
+  /user/password/reset:
+    post:
+      tags:
+        - user
+      summary: Reset user password
+      security:
+      - ApiKeyAuth: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        description: User object for reset password
+        required: true
+        schema:
+          $ref: user.yml#/ResetPasswordRequest
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: user.yml#/ResetPasswordResponse
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "user.yml#/Error"
+  /user/check:
+    post:
+      tags:
+        - user
+      summary: Check user has been logged in
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "user.yml#/CheckResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "user.yml#/Error"
   /peer:
     get:
       tags:
@@ -194,7 +246,6 @@ paths:
     get:
       tags:
       - organization
-      - TODO
       summary: List all organizations
       security:
       - ApiKeyAuth: []
@@ -212,7 +263,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "organization.yml#/OrganizationListResponse"
+            $ref: "organization.yml#/OrganizationResponse"
         400:
           description: Bad request
           schema:
@@ -468,16 +519,23 @@ paths:
   /consortium:
     get:
       tags:
-      - consortium
-      - TODO
+        - consortium
       summary: List all consortiums
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
+      security:
+        - ApiKeyAuth: []
       responses:
         200:
           description: OK
+          schema:
+            $ref: "consortium.yml#/ConsortiumListResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "consortium.yml#/401Error"
     post:
       tags:
       - consortium
@@ -493,16 +551,29 @@ paths:
   /consortium/{consortiumId}:
     get:
       tags:
-      - consortium
-      - TODO
+        - consortium
       summary: Show consortium details
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: consortiumId
+          in: path
+          description: consortium id
+          required: true
+          type: string
       responses:
         200:
           description: OK
+          schema:
+            $ref: "consortium.yml#/ConsortiumResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "consortium.yml#/401Error"
     post:
       tags:
       - consortium
@@ -515,6 +586,38 @@ paths:
       responses:
         200:
           description: OK
+
+  /container:
+    get:
+      tags:
+      - container
+      summary: List all containers or the containers in one consortium
+      security:
+      - ApiKeyAuth: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: consortium id
+        description: The consortium which the containers belong to
+        required: false
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "container.yml#/ContainerListResponse"
+        400:
+          description: Bad request
+          schema:
+            $ref: common.yml#/400Error
+        401:
+          description: Unauthorized
+          schema:
+            $ref: common.yml#/401Error
+          
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey
