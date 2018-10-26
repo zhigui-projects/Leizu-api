@@ -16,9 +16,9 @@ router.get('/', async ctx => {
         const memoryMetrics = await promClient.queryMemoryUsage();
 
         const peerDetails = peers.map((peer) => {
-            const org = organizations.find(org => String(peer.org_id) == String(org._id) );
+            const org = organizations.find(org => org._id.equals(peer.org_id));
             let organizationName = (org && org.name) || null;
-            let channelNames = channels.filter(channel => channel.peers.includes(peer._id))
+            let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id)))
                 .map(channel => channel.name);
             let cpu = cpuMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
             let memory = memoryMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
