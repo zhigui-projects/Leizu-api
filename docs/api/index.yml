@@ -168,7 +168,7 @@ paths:
       - application/json
       parameters:
       - in: query
-        name: organization id
+        name: organizationId
         description: Organization id of peer
         required: false
         type: string
