@@ -8,6 +8,7 @@ const common = require('../../libraries/common');
 const {BadRequest} = require('../../libraries/error');
 const string = require('../../libraries/string');
 const router = require('koa-router')({prefix: '/user'});
+const ErrorCode = require('../../libraries/error-code');
 
 router.post('/login', async (ctx) => {
     ctx.checkBody('username').notEmpty('Name field is required').len(4, 50, 'Name length must be between 4 and 50 characters');
@@ -17,11 +18,11 @@ router.post('/login', async (ctx) => {
 
     const {username, password} = ctx.request.body;
     const {user, code} = await getUser(username, password);
-    if (code === 10001) {
-        ctx.body = common.error([], {'code': code, 'msg': 'User not exist'});
+    if (code === ErrorCode.USER_CHECK_USERNAME) {
+        ctx.body = common.errorWithCode([], {'code': code, 'msg': 'User not exist'}, 401);
         return;
-    } else if (code === 10002) {
-        ctx.body = common.error([], {'code': code, 'msg': 'Password error'});
+    } else if (code === ErrorCode.USER_CHECK_PASSWORD) {
+        ctx.body = common.errorWithCode([], {'code': code, 'msg': 'Password error'}, 401);
         return;
     }
     const token = jwt.encode({id: user._id});
@@ -47,7 +48,14 @@ router.post('/logout', async (ctx) => {
 
 router.post('/password/reset', async (ctx) => {
     const {username, password, newPassword} = ctx.request.body;
-    const user = await getUser(username, password);
+    const {user, code} = await getUser(username, password);
+    if (code === ErrorCode.USER_CHECK_USERNAME) {
+        ctx.body = common.error([], {'code': code, 'msg': 'User not exist'});
+        return;
+    } else if (code === ErrorCode.USER_CHECK_PASSWORD) {
+        ctx.body = common.error([], {'code': code, 'msg': 'Password error'});
+        return;
+    }
     const newUser = await User.findOneAndUpdate({_id: user._id}, {password: string.generatePasswordHash(newPassword)}, {new: true});
     ctx.body = {
         id: newUser._id,
@@ -63,13 +71,13 @@ router.get('/check', async (ctx) => {
 
 const getUser = async (username, password) => {
     const user = await User.findOne({username: username});
-    let code = 200;
+    let code = ErrorCode.SUCCESS_CODE;
     if (!user) {
-        code = 10001;
+        code = ErrorCode.USER_CHECK_USERNAME;
         return {code, user};
     }
     if (user.password !== string.generatePasswordHash(password)) {
-        code = 10002;
+        code = ErrorCode.USER_CHECK_PASSWORD;
         return {code, user};
     }
 
