@@ -17,7 +17,7 @@ router.get('/', async ctx => {
 
         const peerDetails = peers.map((peer) => {
             let org = organizations;
-            if(!ctx.query['organizationId']){
+            if (!ctx.query['organizationId']) {
                 org = organizations.find(org => org._id.equals(peer.org_id));
             }
             let organizationName = (org && org.name) || null;
@@ -62,15 +62,15 @@ router.get('/:id', async ctx => {
     }
 });
 
-router.post("/", async ctx => {
+router.post('/', async ctx => {
     let peerDto = {
         name: ctx.request.body.name,
         organizationId: ctx.request.body.organizationId,
-        location: ctx.request.body.host + ":" + ctx.request.body.port
+        location: ctx.request.body.host + ':' + ctx.request.body.port
     };
     let isSupported = false;
-    try{
-        if(isSupported){
+    try {
+        if (isSupported) {
             let connectOptions = {
                 protocol: 'http',
                 host: ctx.request.body.host,
@@ -87,10 +87,10 @@ router.post("/", async ctx => {
         }
         let peer = await DbService.addPeer(peerDto);
         ctx.body = common.success(peer, common.SUCCESS);
-    }catch(err){
+    } catch (err) {
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
-    }    
+    }
 });
 
 
@@ -99,7 +99,7 @@ router.post("/", async ctx => {
  * parameters: to-be-specified
  *
  */
-router.put("/:id", async ctx => {
+router.put('/:id', async ctx => {
     let id = ctx.params.id;
     let params = ctx.request.body;
     try {
