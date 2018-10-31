@@ -77,7 +77,8 @@ LoginError:
   properties:
     code:
       type: int
-      example: 400
+      example: 10001
+      description: 10001=> user not exist 10002=> password error
     status:
       type: string
       example: 'error'
@@ -87,12 +88,19 @@ LoginError:
         type: object
         example: null
     msg:
-      type: object
-      properties:
-        code:
-          type: string
-          example: 10001
-        msg:
-          type: string
-          description: 10001=> user not exist 10002=> password error
-          example: User not exist
+      type: string
+      example: User not exist
+400Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          field:
+            type: string
+            example: username
+          message:
+            type: string
+            example: UserName field is required

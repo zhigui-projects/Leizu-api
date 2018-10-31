@@ -89,7 +89,7 @@ paths:
         401:
           description: Unauthorized
           schema:
-            $ref: "user.yml#/Error"
+            $ref: "user.yml#/LoginError"
         400:
           description: Login failed
           schema:
