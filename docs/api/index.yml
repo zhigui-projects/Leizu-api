@@ -90,6 +90,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: "user.yml#/Error"
+        400:
+          description: Login failed
+          schema:
+            $ref: "user.yml#/LoginError"
   /user/logout:
     post:
       tags:

@@ -31,3 +31,12 @@ module.exports.error = (data, msg) => {
         msg: msg
     };
 };
+
+module.exports.errorWithCode = (data,msg,code)=>{
+    return {
+        code: code,
+        status: exports.ERROR,
+        data: data,
+        msg: msg
+    };
+};

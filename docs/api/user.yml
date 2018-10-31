@@ -72,3 +72,27 @@ Error:
           message:
             type: string
             example: Invalid Credentials
+LoginError:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 400
+    status:
+      type: string
+      example: 'error'
+    data:
+      type: array
+      items:
+        type: object
+        example: null
+    msg:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 10001
+        msg:
+          type: string
+          description: 10001=> user not exist 10002=> password error
+          example: User not exist
