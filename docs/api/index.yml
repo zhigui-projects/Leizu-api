@@ -93,7 +93,7 @@ paths:
         400:
           description: Login failed
           schema:
-            $ref: "user.yml#/LoginError"
+            $ref: "user.yml#/400Error"
   /user/logout:
     post:
       tags:
