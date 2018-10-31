@@ -19,10 +19,12 @@ router.post('/login', async (ctx) => {
     const {username, password} = ctx.request.body;
     const {user, code} = await getUser(username, password);
     if (code === ErrorCode.USER_CHECK_USERNAME) {
-        ctx.body = common.errorWithCode([], {'code': code, 'msg': 'User not exist'}, 401);
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'User not exist', code);
         return;
     } else if (code === ErrorCode.USER_CHECK_PASSWORD) {
-        ctx.body = common.errorWithCode([], {'code': code, 'msg': 'Password error'}, 401);
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'Password error', code);
         return;
     }
     const token = jwt.encode({id: user._id});
@@ -50,10 +52,12 @@ router.post('/password/reset', async (ctx) => {
     const {username, password, newPassword} = ctx.request.body;
     const {user, code} = await getUser(username, password);
     if (code === ErrorCode.USER_CHECK_USERNAME) {
-        ctx.body = common.error([], {'code': code, 'msg': 'User not exist'});
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'User not exist', code);
         return;
     } else if (code === ErrorCode.USER_CHECK_PASSWORD) {
-        ctx.body = common.error([], {'code': code, 'msg': 'Password error'});
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'Password error', code);
         return;
     }
     const newUser = await User.findOneAndUpdate({_id: user._id}, {password: string.generatePasswordHash(newPassword)}, {new: true});
