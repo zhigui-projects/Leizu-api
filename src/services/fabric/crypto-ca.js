@@ -119,7 +119,7 @@ module.exports = class CryptoCA {
     	}
     }
     
-    async postContainerStart(params){
+    async postContainerStart(){
         let result = {};
         if(!this.bootstrapEnrollment){
             await this.bootstrapUserEnrollement();
