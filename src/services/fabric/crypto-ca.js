@@ -7,21 +7,27 @@ const common = require('../../libraries/common');
 
 module.exports = class CryptoCA {
     
-    constructor(bootstrapUser, options) {
-        this.bootstrapUser = bootstrapUser || common.BOOTSTRAPUSER;
+    constructor(options) {
         this.options = options || {};
-        this.orgName = this.options.orgName;
-        this.adminUser = this.options.adminUser || common.ADMINUSER;
+        this.init(this.options);
         this.bootstrapEnrollment = null;
         this.caService = null;
+    }
+    
+    init(options){
+        this.caName = options.caName;
+        this.orgName = options.orgName;
+        this.url = options.url;
+        this.bootstrapUser = options.bootstrapUser || common.BOOTSTRAPUSER;
+        this.adminUser = options.adminUser || common.ADMINUSER;        
     }
     
     getFabricCaService(){
         if(this.caService){
             return this.caService;
         } 
-        let name = this.options.name
-        let endpoint = this.options.url;
+        let name = this.caName;
+        let endpoint = this.url;
         let tlsOptions = {
             trustedRoots: [],
             verify: false
@@ -48,8 +54,8 @@ module.exports = class CryptoCA {
             let caService = this.getFabricCaService();
             let affiliationService = caService.newAffiliationService();
             const newAffiliationRequest = {
-    		    name: this.orgName,
-    	    }
+    		    name: this.orgName
+    	    };
             let response = await affiliationService.create(newAffiliationRequest, this.bootstrapEnrollment);
             return response;
         }catch(err){
@@ -70,7 +76,7 @@ module.exports = class CryptoCA {
                 { name: 'abac.init', value: 'true:ecert'}
             ];
             let identity = {
-        		enrollmentID: this.adminUser.enrollmentID + this.orgName,
+        		enrollmentID: this.adminUser.enrollmentID,
         		enrollmentSecret: this.adminUser.enrollmentSecret,
         		affiliation: this.orgName,
         		attrs: attrs
@@ -105,7 +111,7 @@ module.exports = class CryptoCA {
     async enrollUser(user){
     	let caService = this.getFabricCaService();
     	try{
-    	    const enrollment = await caService.enroll(user);
+    	    let enrollment = await caService.enroll(user);
     	    return enrollment;
     	}catch(err){
     	    console.error(err);
@@ -114,6 +120,13 @@ module.exports = class CryptoCA {
     }
     
     async postContainerStart(params){
-        
+        let result = {};
+        if(!this.bootstrapEnrollment){
+            await this.bootstrapUserEnrollement();
+        }
+        await this.addOrgAffiliation();
+        await this.registerAdminUser();
+        result.enrollment = await this.enrollUser(this.adminUser);
+        return result;
     }
 }
