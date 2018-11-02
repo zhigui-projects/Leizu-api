@@ -4,7 +4,7 @@ const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const DbService = require('../../services/db/dao');
 const DockerClient = require('../../services/docker/client');
-const CryptoCaService = require('../../services/db/crypto-ca');
+const CryptoCaService = require('../../services/fabric/crypto-ca');
 const router = require('koa-router')({prefix: '/organization'});
 
 router.get('/', async ctx => {

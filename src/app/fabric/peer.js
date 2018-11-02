@@ -23,9 +23,16 @@ router.get('/', async ctx => {
             let organizationName = (org && org.name) || null;
             let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id)))
                 .map(channel => channel.name);
-            let cpu = cpuMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
-            let memory = memoryMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
-
+            let cpuMetric = cpuMetrics.find(data => peer.location.includes(data.metric.name));
+            let cpu = 0;
+            if (cpuMetric) {
+                cpu = cpuMetric.value[1];
+            }
+            let memoryMetric = memoryMetrics.find(data => peer.location.includes(data.metric.name));
+            let memory = 0;
+            if (memoryMetric) {
+                memory = memoryMetric.value[1];
+            }
             //TODO: need to detect docker container status
             let status = 'running';
             return {...peer.toJSON(), organizationName, channelNames, status, cpu, memory};
