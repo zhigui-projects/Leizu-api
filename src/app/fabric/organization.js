@@ -2,8 +2,9 @@
 
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
-const DbService = require("../../services/db/dao");
+const DbService = require('../../services/db/dao');
 const DockerClient = require('../../services/docker/client');
+const CryptoCaService = require('../../services/db/crypto-ca');
 const router = require('koa-router')({prefix: '/organization'});
 
 router.get('/', async ctx => {
@@ -72,7 +73,15 @@ router.post("/", async ctx => {
                 domainName: ctx.request.body.domainName
             }
             let parameters = utils.generateCertAuthContainerOptions(containerOptions);
-            await DockerClient.getInstance(connectOptions).createContainer(parameters);
+            let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
+            if(container){
+                let options = {
+                    
+                };
+                let cryptoCaService = new CryptoCaService(options);
+                let result = await cryptoCaService.postContainerStart();
+                //orgDto
+            }
         }
         let organization = await DbService.addOrganization(orgDto);
         ctx.body = common.success(organization, common.SUCCESS);

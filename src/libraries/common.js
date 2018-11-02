@@ -14,6 +14,16 @@ module.exports.CONSENSUS_SOLO_VALUE = 0;
 module.exports.CONSENSUS_KAFKE = 'kafka';
 module.exports.CONSENSUS_KAFKA_VALUE = 1;
 
+module.exports.BOOTSTRAPUSER = {
+	enrollmentID: 'admin',
+	enrollmentSecret: 'adminpw'
+};
+
+module.exports.ADMINUSER = {
+	enrollmentID: 'admin-user',
+	enrollmentSecret: 'passw0rd'
+};
+
 module.exports.success = (data, msg) => {
     return {
         code: 200,

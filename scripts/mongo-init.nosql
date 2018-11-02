@@ -10,3 +10,7 @@
  use zigdb;
  
  db.user.insert({username:'admin',password:'3bf15982a73a5a949559676cb8a272cbd6bd5459'});
+ 
+ db.user.insert({username:'testadmin',password:'3bf15982a73a5a949559676cb8a272cbd6bd5459'});
+ db.user.insert({username:'devadmin',password:'3bf15982a73a5a949559676cb8a272cbd6bd5459'});
+ db.user.insert({username:'zigadmin',password:'3bf15982a73a5a949559676cb8a272cbd6bd5459'});
