@@ -103,14 +103,14 @@ module.exports.CredentialHelper = class {
         fs.unlinkSync(filePath);
     }
 
-    zipDirectoryFiles(){
+    async zipDirectoryFiles(){
         let output = fs.createWriteStream(this.archiveFileName);
         let archive = archiver('zip', {
             zlib: { level: 9 }
         });
         archive.pipe(output);
         archive.directory(this.dirName, false);
-        archive.finalize();
+        await archive.finalize();
     }
 
 };
