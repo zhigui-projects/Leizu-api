@@ -17,6 +17,7 @@ module.exports.CredentialHelper = class {
     constructor(mspId){
         this.mspId = mspId;
         this.dirName = path.join(__dirname,mspId);
+        this.archiveFileName = this.mspId + ".zip";
     }
 
     writeCaCerts(caCert){

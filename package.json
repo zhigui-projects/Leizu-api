@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@koa/cors": "^2.2.2",
+    "archiver": "^3.0.0",
     "axios": "^0.18.0",
     "dockerode": "^2.5.7",
     "es6-error": "^4.1.1",
