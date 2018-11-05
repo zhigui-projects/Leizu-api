@@ -6,6 +6,7 @@ const PeerService = require('../../services/fabric/peer');
 const common = require('../../libraries/common');
 const DockerClient = require('../../services/docker/client');
 const utils = require('../../libraries/utils');
+const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
 
 router.get('/', async ctx => {
@@ -39,6 +40,7 @@ router.get('/', async ctx => {
         });
         ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
+        logger.error(ex);
         ctx.status = 400;
         ctx.body = common.error(null, ex.message);
     }
@@ -93,6 +95,7 @@ router.post('/', async ctx => {
         });
         ctx.body = common.success(peer, common.SUCCESS);
     } catch (err) {
+        logger.error(err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
