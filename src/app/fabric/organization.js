@@ -74,7 +74,7 @@ router.post("/", async ctx => {
             let connectOptions = {
                 protocol: common.PROTOCOL_HTTP,
                 host: ctx.request.body.host,
-                port: ctx.request.body.port
+                port: ctx.request.body.port || ctx.app.config.docker.port
             };
             let containerOptions = {
                 name: name,
