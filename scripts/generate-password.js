@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const stringUtil = require('../src/libraries/string');
+const stringUtil = require('../src/libraries/string-util');
 
 const password = 'pasw0rd';
 

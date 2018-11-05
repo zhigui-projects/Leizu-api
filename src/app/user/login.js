@@ -6,7 +6,7 @@ const config = require('../../env').jwt;
 const common = require('../../libraries/common');
 
 const {BadRequest} = require('../../libraries/error');
-const string = require('../../libraries/string');
+const stringUtil = require('../../libraries/string-util');
 const router = require('koa-router')({prefix: '/user'});
 const ErrorCode = require('../../libraries/error-code');
 
@@ -60,7 +60,7 @@ router.post('/password/reset', async (ctx) => {
         ctx.body = common.errorWithCode([], 'Password error', code);
         return;
     }
-    const newUser = await User.findOneAndUpdate({_id: user._id}, {password: string.generatePasswordHash(newPassword)}, {new: true});
+    const newUser = await User.findOneAndUpdate({_id: user._id}, {password: stringUtil.generatePasswordHash(newPassword)}, {new: true});
     ctx.body = {
         id: newUser._id,
         username: newUser.toJSON().username
@@ -80,7 +80,7 @@ const getUser = async (username, password) => {
         code = ErrorCode.USER_CHECK_USERNAME;
         return {code, user};
     }
-    if (user.password !== string.generatePasswordHash(password)) {
+    if (user.password !== stringUtil.generatePasswordHash(password)) {
         code = ErrorCode.USER_CHECK_PASSWORD;
         return {code, user};
     }

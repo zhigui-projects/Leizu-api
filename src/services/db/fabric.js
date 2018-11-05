@@ -51,6 +51,8 @@ module.exports = class FabricService {
     }
 
     async addOrganization(dto) {
+        let existedOrganization = await this.findOrganizationByName(dto.id);
+        if(existedOrganization) return existedOrganization;
         let organization = new Organization();
         organization.uuid = uuid();
         organization.name = dto.id;
@@ -64,10 +66,10 @@ module.exports = class FabricService {
         }
     }
 
-    async findOrganizationIdByName(name) {
+    async findOrganizationByName(name) {
         try {
             let organization = await Organization.findOne({name: name});
-            return organization ? organization._id : null;
+            return organization;
         } catch (err) {
             logger.error(err);
             return null;
@@ -106,7 +108,8 @@ module.exports = class FabricService {
         peer.name = dto.host;
         peer.consortium_id = this.consortiumId;
         peer.type = 1;
-        peer.org_id = await this.findOrganizationIdByName(dto.mspid);
+        let organization = await this.findOrganizationByName(dto.mspid);
+        if(organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();
             return peer;
@@ -126,7 +129,8 @@ module.exports = class FabricService {
         peer.name = name;
         peer.location = dto.endpoint;
         peer.consortium_id = this.consortiumId;
-        peer.org_id = await this.findOrganizationIdByName(dto.mspid);
+        let organization = await this.findOrganizationByName(dto.mspid);
+        if(organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();
             return peer;
