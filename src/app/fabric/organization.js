@@ -60,6 +60,7 @@ router.post("/", async ctx => {
     let name = ctx.request.body.name;
     let orgDto = {
         name: name,
+        mspId: stringUtil.getMspId(name),
         consortiumId: ctx.request.body.consortiumId
     };
     let isSupported = true;
@@ -79,11 +80,15 @@ router.post("/", async ctx => {
             if(container){
                 let options = {
                     caName: stringUtil.getCaName(name),
+                    orgName: name,
                     url: stringUtil.getUrl(common.PROTOCOL_HTTP,ctx.request.body.host,common.PORT_CA)
                 };
                 let cryptoCaService = new CryptoCaService(options);
                 let result = await cryptoCaService.postContainerStart();
-                //orgDto
+                if(result){
+                    orgDto.adminKey = result.enrollment.key.toBytes();
+                    orgDto.adminCert = result.enrollment.certificate;
+                }
             }
         }
         let organization = await DbService.addOrganization(orgDto);

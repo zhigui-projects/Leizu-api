@@ -8,4 +8,11 @@ module.exports.getCaName = orgName => 'ca-' + orgName;
 
 module.exports.getUrl = (protocol,ip,port) => protocol + '://' + ip + ":" + port;
 
+module.exports.getMspId = orgName => module.exports.capitalize(orgName) + 'MSP';
+
+module.exports.capitalize = (s) => {
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 

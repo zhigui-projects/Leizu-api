@@ -127,6 +127,9 @@ module.exports = class DbService {
         let organization = new Organization();
         organization.uuid = uuid();
         organization.name = dto.name;
+        organization.msp_id = dto.mspId;
+        organization.admin_key = dto.adminKey;
+        organization.admin_cert = dto.adminCert;
         organization.consortium_id = dto.consortiumId;
         organization = await organization.save();
         return organization;
