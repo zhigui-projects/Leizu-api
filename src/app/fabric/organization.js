@@ -56,8 +56,9 @@ router.get('/:id', async ctx => {
 });
 
 router.post("/", async ctx => {
+    let name = ctx.request.body.name;
     let orgDto = {
-        name: ctx.request.body.name,
+        name: name,
         consortiumId: ctx.request.body.consortiumId
     };
     let isSupported = true;
@@ -69,14 +70,14 @@ router.post("/", async ctx => {
                 port: ctx.request.body.port
             };
             let containerOptions = {
-                name: ctx.request.body.name,
+                name: name,
                 domainName: ctx.request.body.domainName
             }
             let parameters = utils.generateCertAuthContainerOptions(containerOptions);
             let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
             if(container){
                 let options = {
-                    
+                    caName: name,
                 };
                 let cryptoCaService = new CryptoCaService(options);
                 let result = await cryptoCaService.postContainerStart();
