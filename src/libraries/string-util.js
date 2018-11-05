@@ -13,6 +13,8 @@ module.exports.getMspId = orgName => module.exports.capitalize(orgName) + 'MSP';
 module.exports.capitalize = (s) => {
     if (typeof s !== 'string') return ''
     return s.charAt(0).toUpperCase() + s.slice(1)
-}
+};
+
+module.exports.hash = data => sha1(data);
 
 
