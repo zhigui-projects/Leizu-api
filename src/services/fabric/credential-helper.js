@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const archiver = require('archiver');
 const stringUtil = require('../../libraries/string-util');
 
 module.exports.CERT_PATHS = {
@@ -103,7 +104,13 @@ module.exports.CredentialHelper = class {
     }
 
     zipDirectoryFiles(){
-
+        let output = fs.createWriteStream(this.archiveFileName);
+        let archive = archiver('zip', {
+            zlib: { level: 9 }
+        });
+        archive.pipe(output);
+        archive.directory(this.dirName, false);
+        archive.finalize();
     }
 
 };
