@@ -1,0 +1,11 @@
+
+version: '2'
+
+services:
+  dashboard-configtxlator:
+    container_name: dashboard-configtxlator
+    image: zhigui/configtxlator:latest
+    ports:
+      - 7059:7059
+    volumes:
+      - ./data:/work/data

@@ -18,6 +18,9 @@ module.exports = {
         url: 'http://59.110.164.211:7059'
     },
     configTx: {
-        path: '../../../build/generator/mychannel.tx'
+        path: '../../../build/configtxlator/configtx.yaml'
+    },
+    neworg: {
+        path: '../../../build/configtxlator/newOrg/configtx.yaml'
     }
 };

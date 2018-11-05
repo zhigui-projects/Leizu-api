@@ -36,6 +36,42 @@ const caConfig = {
     enrollSecret: 'user-org1pw'
 };
 
+// const peerConfig = {
+//     mspid: 'org3MSP',
+//     url: 'grpcs://39.106.149.201:7051',
+//     'server-hostname': 'peer1-org3',
+//     adminKey: '-----BEGIN PRIVATE KEY-----\n' +
+//     'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgx63z7D2OOMw/G403\n' +
+//     'x+wRGrhIlg9Q8cxMVrQ/SSAHrcChRANCAAT3ryRZ2OEqHyf1K414c7cWp+mhAIwB\n' +
+//     'uwP6REKE9JOWH2prlF/cHX5If+59+k1ziO1FL3lZxV83PwZrP1b+9mGD\n' +
+//     '-----END PRIVATE KEY-----',
+//     adminCert: '-----BEGIN CERTIFICATE-----\n' +
+//     'MIIC5DCCAougAwIBAgIUT+yx0bqGxTanUbDcxd0aXXaDHjQwCgYIKoZIzj0EAwIw\n' +
+//     'ZjELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK\n' +
+//     'EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGY2xpZW50MRcwFQYDVQQDEw5yY2Etb3Jn\n' +
+//     'My1hZG1pbjAeFw0xODEwMzAwODIwMDBaFw0xOTEwMzAwODI1MDBaMG8xCzAJBgNV\n' +
+//     'BAYTAlVTMRcwFQYDVQQIEw5Ob3J0aCBDYXJvbGluYTEUMBIGA1UEChMLSHlwZXJs\n' +
+//     'ZWRnZXIxHDANBgNVBAsTBmNsaWVudDALBgNVBAsTBG9yZzExEzARBgNVBAMTCmFk\n' +
+//     'bWluLW9yZzMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT3ryRZ2OEqHyf1K414\n' +
+//     'c7cWp+mhAIwBuwP6REKE9JOWH2prlF/cHX5If+59+k1ziO1FL3lZxV83PwZrP1b+\n' +
+//     '9mGDo4IBDDCCAQgwDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwHQYDVR0O\n' +
+//     'BBYEFBKyLoGiZFN7Z9dNitVRI0h/EQJMMB8GA1UdIwQYMBaAFAexdd98JxIgr+Rj\n' +
+//     'BR9QepajO1mVMCIGA1UdEQQbMBmCF2laMnplZml6bm0wc2lraHR3NWZvbGtaMIGD\n' +
+//     'BggqAwQFBgcIAQR3eyJhdHRycyI6eyJhYmFjLmluaXQiOiJ0cnVlIiwiYWRtaW4i\n' +
+//     'OiJ0cnVlIiwiaGYuQWZmaWxpYXRpb24iOiJvcmcxIiwiaGYuRW5yb2xsbWVudElE\n' +
+//     'IjoiYWRtaW4tb3JnMyIsImhmLlR5cGUiOiJjbGllbnQifX0wCgYIKoZIzj0EAwID\n' +
+//     'RwAwRAIgcWl3RWE61911JWFemBCLfVtltVNMQ/95QAyT56kB3LQCIC+FQm+MMi4R\n' +
+//     'It51iTV7kEi6O1LXKHN0aBlZqGXdV4AX\n' +
+//     '-----END CERTIFICATE-----'
+// };
+//
+// const caConfig = {
+//     url: 'https://39.106.149.201:7054',
+//     name: 'ica-org3',
+//     enrollId: 'admin-org3',
+//     enrollSecret: 'admin-org3pw'
+// };
+
 const ordererConfig = {
     mspid: 'org0MSP',
     url: 'grpcs://47.94.200.47:7050',
@@ -49,57 +85,6 @@ const ordererCaConfig = {
     enrollSecret: 'admin-org0pw'
 };
 
-const updateConfig = {
-    opt: 'add', // 'del' or 'update'
-    update: {
-        mspid: 'org2MSP',
-        tlscacerts: '-----BEGIN CERTIFICATE-----\n' +
-        'MIICSjCCAfCgAwIBAgIRAJl8QtAz00ontY2NmrmyiqQwCgYIKoZIzj0EAwIwdjEL\n' +
-        'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
-        'cmFuY2lzY28xGTAXBgNVBAoTEG9yZzMuZXhhbXBsZS5jb20xHzAdBgNVBAMTFnRs\n' +
-        'c2NhLm9yZzMuZXhhbXBsZS5jb20wHhcNMTgxMDA2MDgwNDU4WhcNMjgxMDAzMDgw\n' +
-        'NDU4WjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UE\n' +
-        'BxMNU2FuIEZyYW5jaXNjbzEZMBcGA1UEChMQb3JnMy5leGFtcGxlLmNvbTEfMB0G\n' +
-        'A1UEAxMWdGxzY2Eub3JnMy5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49\n' +
-        'AwEHA0IABC34BManGNRClDHN4X5SY/JEfy3agiVwMRCJBC9EK1BBD9FvHUDAqJp7\n' +
-        'CiXby1ZMl/swzkaaTajhfWb9jEFU09ujXzBdMA4GA1UdDwEB/wQEAwIBpjAPBgNV\n' +
-        'HSUECDAGBgRVHSUAMA8GA1UdEwEB/wQFMAMBAf8wKQYDVR0OBCIEILmo8DIY+3UV\n' +
-        '0dF1ZQl7j4ZyPsNrLnYhcf4utdGIHXzMMAoGCCqGSM49BAMCA0gAMEUCIQDyw7UE\n' +
-        'bL12+Qz9oy5IrdwbP8NtYiK8vEvEooySQGrfXgIgb3MRordiU9buD/2lEZcSVtmB\n' +
-        'PPQwIkEInSPpkoB9+KA=\n' +
-        '-----END CERTIFICATE-----\n',
-        admincerts: '-----BEGIN CERTIFICATE-----\n' +
-        'MIICKjCCAdGgAwIBAgIRALcj26o6OFOS5LHjfdgfhDAwCgYIKoZIzj0EAwIwczEL\n' +
-        'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
-        'cmFuY2lzY28xGTAXBgNVBAoTEG9yZzMuZXhhbXBsZS5jb20xHDAaBgNVBAMTE2Nh\n' +
-        'Lm9yZzMuZXhhbXBsZS5jb20wHhcNMTgxMDA2MDgwNDU4WhcNMjgxMDAzMDgwNDU4\n' +
-        'WjBsMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMN\n' +
-        'U2FuIEZyYW5jaXNjbzEPMA0GA1UECxMGY2xpZW50MR8wHQYDVQQDDBZBZG1pbkBv\n' +
-        'cmczLmV4YW1wbGUuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEroKAEiJa\n' +
-        'LkLY1Ypy/oB5I6fux0OWON4oU8v+xWEBipqc99YwOg295T1q1IE0Kbeo9gtHTGe0\n' +
-        '8UQKqiW4htui06NNMEswDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwKwYD\n' +
-        'VR0jBCQwIoAgdcgfdMspO2Ou9tx6KKT61DGDA1SlvaqWeb55ZU0qy3YwCgYIKoZI\n' +
-        'zj0EAwIDRwAwRAIgVb9bLoB+c1QRQocA/iMzzDOfHyPz6U0POoDKNGg4Th0CIGHd\n' +
-        'M6g3kVMHPjL6fWFcnYFKu62+eUJ9OSZsPNDPvmtv\n' +
-        '-----END CERTIFICATE-----\n',
-        cacerts: '-----BEGIN CERTIFICATE-----\n' +
-        'MIICQzCCAemgAwIBAgIQWLj280UcnQvFGCf2Tr0dPTAKBggqhkjOPQQDAjBzMQsw\n' +
-        'CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy\n' +
-        'YW5jaXNjbzEZMBcGA1UEChMQb3JnMy5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu\n' +
-        'b3JnMy5leGFtcGxlLmNvbTAeFw0xODEwMDYwODA0NThaFw0yODEwMDMwODA0NTha\n' +
-        'MHMxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T\n' +
-        'YW4gRnJhbmNpc2NvMRkwFwYDVQQKExBvcmczLmV4YW1wbGUuY29tMRwwGgYDVQQD\n' +
-        'ExNjYS5vcmczLmV4YW1wbGUuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE\n' +
-        'tcoosNH74YzEAVzQgAEj1fdg44WTkIP+znESaLljB+wUH8UvxII4/QfY8Y1TUox0\n' +
-        'FTo3AgsC63SjFwbwYu0UWqNfMF0wDgYDVR0PAQH/BAQDAgGmMA8GA1UdJQQIMAYG\n' +
-        'BFUdJQAwDwYDVR0TAQH/BAUwAwEB/zApBgNVHQ4EIgQgdcgfdMspO2Ou9tx6KKT6\n' +
-        '1DGDA1SlvaqWeb55ZU0qy3YwCgYIKoZIzj0EAwIDSAAwRQIhAJja1hwHrOmcVPHu\n' +
-        'uZ7i/masEj0AjyUf003Gi1EWNeMkAiAhpzkG353VLF/1SDAB7AyvV1oQYA/xxoSv\n' +
-        'Kmt4yhjYJQ==\n' +
-        '-----END CERTIFICATE-----\n'
-    }
-};
-
 module.exports = {
     name: 'sample-consortium',
     config: {
@@ -107,6 +92,5 @@ module.exports = {
         caConfig: caConfig,
         ordererConfig: ordererConfig,
         ordererCaConfig: ordererCaConfig,
-    },
-    updateConfig: updateConfig
+    }
 };
