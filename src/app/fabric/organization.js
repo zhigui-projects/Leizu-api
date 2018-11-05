@@ -2,6 +2,7 @@
 
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
+const stringUtil = require('../../libraries/string-util');
 const DbService = require('../../services/db/dao');
 const DockerClient = require('../../services/docker/client');
 const CryptoCaService = require('../../services/fabric/crypto-ca');
@@ -65,7 +66,7 @@ router.post("/", async ctx => {
     try {
         if (isSupported) {
             let connectOptions = {
-                protocol: 'http',
+                protocol: common.PROTOCOL_HTTP,
                 host: ctx.request.body.host,
                 port: ctx.request.body.port
             };
@@ -77,7 +78,8 @@ router.post("/", async ctx => {
             let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
             if(container){
                 let options = {
-                    caName: name,
+                    caName: stringUtil.getCaName(name),
+                    url: stringUtil.getUrl(common.PROTOCOL_HTTP,ctx.request.body.host,common.PORT_CA)
                 };
                 let cryptoCaService = new CryptoCaService(options);
                 let result = await cryptoCaService.postContainerStart();

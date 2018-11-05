@@ -24,6 +24,13 @@ module.exports.ADMINUSER = {
 	enrollmentSecret: 'passw0rd'
 };
 
+module.exports.PROTOCOL_HTTP = 'http';
+module.exports.PROTOCOL_HTTPS = 'https';
+
+module.exports.PORT_CA = 7054;
+module.exports.PORT_ORDERER = 7050;
+module.exports.PORT_PEER = 7051;
+
 module.exports.success = (data, msg) => {
     return {
         code: 200,
