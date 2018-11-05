@@ -58,11 +58,16 @@ router.get('/:id', async ctx => {
 
 router.post("/", async ctx => {
     let name = ctx.request.body.name;
+    let consortiumId = ctx.request.body.consortiumId;
     let orgDto = {
         name: name,
         mspId: stringUtil.getMspId(name),
-        consortiumId: ctx.request.body.consortiumId
+        consortiumId: consortiumId
     };
+    let certAuthDto = {
+        name: stringUtil.getCaName(name),
+        consortiumId: consortiumId
+    }
     let isSupported = true;
     try {
         if (isSupported) {
@@ -89,9 +94,15 @@ router.post("/", async ctx => {
                     orgDto.adminKey = result.enrollment.key.toBytes();
                     orgDto.adminCert = result.enrollment.certificate;
                 }
+                certAuthDto.url = options.url;
             }
         }
         let organization = await DbService.addOrganization(orgDto);
+        if(organization){
+            certAuthDto.ordId = organization._id;
+            let certAuthority = await DbService.addCertAuthority(certAuthDto);
+            organization.ca = certAuthority;
+        }
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;

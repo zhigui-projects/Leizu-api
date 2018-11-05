@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const certAuthoritySchema = new mongoose.Schema({
     uuid: String,
     name: String,
-    endpoint: String,
+    url: String,
     org_id: mongoose.Schema.ObjectId,
     consortium_id: mongoose.Schema.ObjectId,
     date: {
