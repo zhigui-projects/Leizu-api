@@ -14,6 +14,23 @@ module.exports.CONSENSUS_SOLO_VALUE = 0;
 module.exports.CONSENSUS_KAFKE = 'kafka';
 module.exports.CONSENSUS_KAFKA_VALUE = 1;
 
+module.exports.BOOTSTRAPUSER = {
+	enrollmentID: 'admin',
+	enrollmentSecret: 'adminpw'
+};
+
+module.exports.ADMINUSER = {
+	enrollmentID: 'admin-user',
+	enrollmentSecret: 'passw0rd'
+};
+
+module.exports.PROTOCOL_HTTP = 'http';
+module.exports.PROTOCOL_HTTPS = 'https';
+
+module.exports.PORT_CA = 7054;
+module.exports.PORT_ORDERER = 7050;
+module.exports.PORT_PEER = 7051;
+
 module.exports.success = (data, msg) => {
     return {
         code: 200,
@@ -26,6 +43,15 @@ module.exports.success = (data, msg) => {
 module.exports.error = (data, msg) => {
     return {
         code: 400,
+        status: exports.ERROR,
+        data: data,
+        msg: msg
+    };
+};
+
+module.exports.errorWithCode = (data,msg,code)=>{
+    return {
+        code: code,
         status: exports.ERROR,
         data: data,
         msg: msg

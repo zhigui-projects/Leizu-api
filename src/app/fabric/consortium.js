@@ -3,16 +3,16 @@
 const PromClient = require('../../services/prometheus/client');
 const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
-const DbService = require("../../services/db/dao");
+const DbService = require('../../services/db/dao');
 const query = require('../../services/fabric/query');
 const router = require('koa-router')({prefix: '/consortium'});
 
 router.get('/', async ctx => {
     try {
         let consortiums = await DbService.getConsortiums();
-        consortiums=consortiums.map(consortium=>{
-            consortium=consortium.toJSON();
-            consortium.network_config='';
+        consortiums = consortiums.map(consortium => {
+            consortium = consortium.toJSON();
+            consortium.network_config = '';
             return consortium;
         });
         ctx.body = common.success(consortiums, common.SUCCESS);
@@ -47,7 +47,7 @@ router.get('/:id', async ctx => {
             result.org_count = await DbService.countOrgsByConsortiumId(id);
             result.peer_count = await DbService.countPeersByConsortiumId(id);
             result.status = await getNetworkStatus();
-            ctx.body = common.success(result, "success");
+            ctx.body = common.success(result, 'success');
         } else {
             ctx.status = 404;
             ctx.body = common.error({}, 'Consortium not exist');
@@ -62,7 +62,7 @@ router.post('/', async ctx => {
     let dto = {
         name: ctx.request.body.name,
         config: ctx.request.body.config
-    }
+    };
     try {
         let consortium = await DbService.addConsortium(dto);
         ctx.body = common.success(consortium, common.SUCCESS);
@@ -75,16 +75,17 @@ router.post('/', async ctx => {
 const initConsortiumDetail = (id) => {
     return {
         id: id,
-        name: "",
-        type: "",
+        name: '',
+        type: '',
         consensus_type: 0,
         status: 0,
-        create_time: "",
+        create_time: '',
         channel_count: 0,
         org_count: 0,
         peer_count: 0,
         chaincode_count: 0,
     };
+
 };
 
 const getConsensusType = (channel) => {

@@ -17,15 +17,22 @@ router.get('/', async ctx => {
 
         const peerDetails = peers.map((peer) => {
             let org = organizations;
-            if(!ctx.query['organizationId']){
+            if (!ctx.query['organizationId']) {
                 org = organizations.find(org => org._id.equals(peer.org_id));
             }
             let organizationName = (org && org.name) || null;
             let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id)))
                 .map(channel => channel.name);
-            let cpu = cpuMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
-            let memory = memoryMetrics.find(data => peer.location.includes(data.metric.name)).value[1];
-
+            let cpuMetric = cpuMetrics.find(data => peer.location.includes(data.metric.name));
+            let cpu = 0;
+            if (cpuMetric) {
+                cpu = cpuMetric.value[1];
+            }
+            let memoryMetric = memoryMetrics.find(data => peer.location.includes(data.metric.name));
+            let memory = 0;
+            if (memoryMetric) {
+                memory = memoryMetric.value[1];
+            }
             //TODO: need to detect docker container status
             let status = 'running';
             return {...peer.toJSON(), organizationName, channelNames, status, cpu, memory};
@@ -62,35 +69,33 @@ router.get('/:id', async ctx => {
     }
 });
 
-router.post("/", async ctx => {
-    let peerDto = {
-        name: ctx.request.body.name,
-        organizationId: ctx.request.body.organizationId,
-        location: ctx.request.body.host + ":" + ctx.request.body.port
-    };
-    let isSupported = false;
-    try{
-        if(isSupported){
-            let connectOptions = {
-                protocol: 'http',
-                host: ctx.request.body.host,
-                port: ctx.request.body.port
-            };
-            let containerOptions = {
-                name: ctx.request.body.name,
-                peerId: ctx.request.body.peerId,
-                endpoint: ctx.request.body.endpoint,
-                mspid: ctx.request.body.mspid
-            };
-            let parameters = utils.generatePeerContainerOptions(containerOptions);
-            await DockerClient.getInstance(connectOptions).createContainer(parameters);
-        }
-        let peer = await DbService.addPeer(peerDto);
+router.post('/', async ctx => {
+    const {user, password} = ctx.request.body.sshInfo;
+    const {organizationId, host, port} = ctx.request.body;
+    try {
+        const org = await DbService.findOrganizationById(organizationId);
+        const peerName = `${org.name}-${host.replace(/\./g, '-')}`;
+        let containerOptions = {
+            peerName: peerName,
+            mspid: org.msp_id
+        };
+        let parameters = utils.generatePeerContainerOptions(containerOptions);
+        await DockerClient.getInstance({
+            protocol: 'http',
+            host: host,
+            port: port
+        }).createContainer(parameters);
+
+        const peer = await DbService.addPeer({
+            name: peerName,
+            organizationId: organizationId,
+            location: `${host}:${port}`
+        });
         ctx.body = common.success(peer, common.SUCCESS);
-    }catch(err){
+    } catch (err) {
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
-    }    
+    }
 });
 
 
@@ -99,7 +104,7 @@ router.post("/", async ctx => {
  * parameters: to-be-specified
  *
  */
-router.put("/:id", async ctx => {
+router.put('/:id', async ctx => {
     let id = ctx.params.id;
     let params = ctx.request.body;
     try {

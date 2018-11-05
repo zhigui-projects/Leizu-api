@@ -5,6 +5,7 @@ const Channel = require('../../models/channel');
 const Organization = require('../../models/organization');
 const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
+const CertAuthority = require('../../models/certauthority');
 
 module.exports = class DbService {
 
@@ -127,8 +128,22 @@ module.exports = class DbService {
         let organization = new Organization();
         organization.uuid = uuid();
         organization.name = dto.name;
+        organization.msp_id = dto.mspId;
+        organization.admin_key = dto.adminKey;
+        organization.admin_cert = dto.adminCert;
         organization.consortium_id = dto.consortiumId;
         organization = await organization.save();
         return organization;
+    }
+
+    static async addCertAuthority(dto) {
+        let certAuthority = new CertAuthority();
+        certAuthority.uuid = uuid();
+        certAuthority.name = dto.name;
+        certAuthority.url = dto.url;
+        certAuthority.org_id = dto.orgId;
+        certAuthority.consortium_id = dto.consortiumId;
+        certAuthority = certAuthority.save();
+        return certAuthority;
     }
 };

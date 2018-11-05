@@ -5,9 +5,10 @@ const jwt = require('../../libraries/jwt');
 const config = require('../../env').jwt;
 const common = require('../../libraries/common');
 
-const {BadRequest, Unauthorized} = require('../../libraries/error');
-const string = require('../../libraries/string');
+const {BadRequest} = require('../../libraries/error');
+const stringUtil = require('../../libraries/string-util');
 const router = require('koa-router')({prefix: '/user'});
+const ErrorCode = require('../../libraries/error-code');
 
 router.post('/login', async (ctx) => {
     ctx.checkBody('username').notEmpty('Name field is required').len(4, 50, 'Name length must be between 4 and 50 characters');
@@ -16,10 +17,18 @@ router.post('/login', async (ctx) => {
     if (ctx.errors) throw new BadRequest(ctx.errors);
 
     const {username, password} = ctx.request.body;
-    const user = await getUser(username, password);
+    const {user, code} = await getUser(username, password);
+    if (code === ErrorCode.USER_CHECK_USERNAME) {
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'User not exist', code);
+        return;
+    } else if (code === ErrorCode.USER_CHECK_PASSWORD) {
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'Password error', code);
+        return;
+    }
     const token = jwt.encode({id: user._id});
     await User.findOneAndUpdate({_id: user._id}, {token: token});
-
     ctx.body = {
         id: user._id,
         username: user.toJSON().username,
@@ -31,39 +40,52 @@ router.post('/logout', async (ctx) => {
     const token = ctx.request.headers['authorization'];
     try {
         const decoded = jwt.decode(token.split(' ')[1], config.secret);
-        await User.findOneAndUpdate({_id: decoded.id,}, {token: ""}, {new: true});
-        ctx.body = common.success(null, "User logged out")
+        await User.findOneAndUpdate({_id: decoded.id,}, {token: ''}, {new: true});
+        ctx.body = common.success(null, 'User logged out');
     } catch (err) {
         ctx.status = 400;
-        ctx.body = common.error(null, err.message)
+        ctx.body = common.error(null, err.message);
     }
 });
 
 router.post('/password/reset', async (ctx) => {
     const {username, password, newPassword} = ctx.request.body;
-    const user = await getUser(username, password);
-    const newUser = await User.findOneAndUpdate({_id: user._id}, {password: string.generatePasswordHash(newPassword)}, {new: true});
+    const {user, code} = await getUser(username, password);
+    if (code === ErrorCode.USER_CHECK_USERNAME) {
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'User not exist', code);
+        return;
+    } else if (code === ErrorCode.USER_CHECK_PASSWORD) {
+        ctx.status = 401;
+        ctx.body = common.errorWithCode([], 'Password error', code);
+        return;
+    }
+    const newUser = await User.findOneAndUpdate({_id: user._id}, {password: stringUtil.generatePasswordHash(newPassword)}, {new: true});
     ctx.body = {
         id: newUser._id,
         username: newUser.toJSON().username
     };
 });
 
-router.get('/check',async (ctx)=>{
-   if (ctx.currentUser) {
-       ctx.body={username:ctx.currentUser.username}
-   }
+router.get('/check', async (ctx) => {
+    if (ctx.currentUser) {
+        ctx.body = {username: ctx.currentUser.username};
+    }
 });
 
 const getUser = async (username, password) => {
-    const user = await User.findOne({
-        username: username,
-        password: string.generatePasswordHash(password),
-    });
+    const user = await User.findOne({username: username});
+    let code = ErrorCode.SUCCESS_CODE;
+    if (!user) {
+        code = ErrorCode.USER_CHECK_USERNAME;
+        return {code, user};
+    }
+    if (user.password !== stringUtil.generatePasswordHash(password)) {
+        code = ErrorCode.USER_CHECK_PASSWORD;
+        return {code, user};
+    }
 
-    if (!user) throw new Unauthorized('Invalid Credentials');
-
-    return user;
+    return {code, user};
 };
 
 

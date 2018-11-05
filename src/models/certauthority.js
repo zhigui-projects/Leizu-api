@@ -1,12 +1,11 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const organizationSchema = new mongoose.Schema({
+const certAuthoritySchema = new mongoose.Schema({
     uuid: String,
     name: String,
-    msp_id: String,
-    admin_key: String,
-    admin_cert: String,
+    url: String,
+    org_id: mongoose.Schema.ObjectId,
     consortium_id: mongoose.Schema.ObjectId,
     date: {
         type: Date,
@@ -14,4 +13,4 @@ const organizationSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Organization', organizationSchema, 'organization');
+module.exports = mongoose.model('CertAuthority', certAuthoritySchema, 'certauthority');

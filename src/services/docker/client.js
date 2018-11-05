@@ -22,8 +22,7 @@ module.exports = class DockerClient {
            return container;
         }catch(err){
             logger.error(err);
-            return null;
+            throw err;
         }
     }
-
-}
+};
