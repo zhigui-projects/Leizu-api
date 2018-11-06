@@ -3,7 +3,6 @@
 const Consortium = require('../../models/consortium');
 const CreateChannel = require('./create-channel');
 const UpdateChannel = require('./update-channel');
-const configTx = require('../../env').configTx;
 
 module.exports = class ChannelService {
     constructor(consortiumId, channelId) {
@@ -39,11 +38,11 @@ module.exports = class ChannelService {
         }
     }
 
-    createChannel() {
-        return CreateChannel.createChannel(this._channel_name, configTx.path, this._network_config);
+    createChannel(profile) {
+        return CreateChannel.createChannel(profile, this._channel_name, this._network_config);
     }
 
-    updateChannel(updateConfig) {
-        return UpdateChannel.updateChannel(updateConfig, this._channel_name, this._network_config);
+    updateChannel(orgName) {
+        return UpdateChannel.updateChannel(orgName, this._channel_name, this._network_config);
     }
 };
