@@ -39,8 +39,9 @@ router.post('/', async ctx => {
     try {
         let consortiumId = parameters.consortiumId;
         let channelName = parameters.name;
+        let profile = parameters.profile;
         let channelService = await ChannelService.getInstance(consortiumId, channelName);
-        await channelService.createChannel();
+        await channelService.createChannel(profile);
         let channel = await DbService.addChannel({
             name: parameters.name,
             consortiumId: parameters.consortiumId
@@ -65,7 +66,7 @@ router.put('/:id', async ctx => {
         let channel = await DbService.getChannelById(id);
         if (channel) {
             let channelService = await ChannelService.getInstance(channel.consortium_id, channel.name);
-            await channelService.updateChannel(params);
+            await channelService.updateChannel(params.orgName);
             ctx.body = common.success({id: id}, common.SUCCESS);
         } else {
             logger.error('The channelId does not exist.');

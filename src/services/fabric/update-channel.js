@@ -16,12 +16,13 @@
  *        superagent-promise
  */
 
+var fs = require('fs');
+var path = require('path');
 var query = require('./query');
+var configTx = require('../../env').neworg;
 var logger = require('../../libraries/log4js').getLogger('Update-Channel');
+var configtxlator = require('./configtxlator');
 var Client = require('fabric-client');
-var configtxlator = require('./tools/configtxlator');
-var ConfigBuilder = require('./tools/config-builder');
-var MSP = require('./tools/msp-builder');
 
 /*
  *  C H A N N E L  U P D A T E
@@ -50,7 +51,7 @@ var MSP = require('./tools/msp-builder');
  *    the "ConfigUpdate" object.
  */
 
-module.exports.updateChannel = async (updateConfig, channelName, config) => {
+module.exports.updateChannel = async (orgName, channelName, config) => {
     try {
         let client = new Client();
         client.setAdminSigningIdentity(config.peerConfig.adminKey, config.peerConfig.adminCert, config.peerConfig.mspid);
@@ -73,22 +74,11 @@ module.exports.updateChannel = async (updateConfig, channelName, config) => {
         const updatedConfig = JSON.parse(updatedConfigJson);
 
         // now edit the config -- add one of the organizations
-        if (updateConfig.opt === 'del') {
-            delete updatedConfig.channel_group.groups.Application.groups[updateConfig.update];
-        } else if (updateConfig.opt === 'add') {
-            //Add a new org, you should prepare a related msp for the target org first
-            //Build a new organisation group for application group section
-            var mspid = updateConfig.update.mspid;
-            var mspObj = new MSP(updateConfig.update);
-
-            var builder = new ConfigBuilder();
-            builder.addOrganization(mspid, mspid, mspObj.getMSP());
-            let orgContent = builder.buildApplicationGroup(false);
-
-            updatedConfig.channel_group.groups.Application.groups[mspid] = orgContent;
-        } else if (updateConfig.opt === 'update') {
-            updatedConfig.channel_group.groups.Orderer.values.BatchSize.value.max_message_count = updateConfig.update;
-        }
+        //Add a new org, you should prepare a related msp for the target org first
+        //Build a new organisation group for application group section
+        var configtx = fs.readFileSync(path.join(__dirname, configTx.path));
+        let orgBytes = await configtxlator.printOrg(orgName, configtx, '');
+        updatedConfig.channel_group.groups.Application.groups[orgName] = JSON.parse(orgBytes);
 
         updatedConfigJson = JSON.stringify(updatedConfig);
         // logger.debug(' updated_config_json :: %s', updatedConfigJson);

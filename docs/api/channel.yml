@@ -106,27 +106,15 @@ Create:
     name:
       type: string
       example: mychannel
+    profile:
+      type: string
+      example: OrgsChannel
 Update:
   type: object
   properties:
-    opt:
+    orgName:
       type: string
-      example: add
-    update:
-      type: object
-      properties:
-        mspid:
-          type: string
-          example: org2MSP
-        tlscacerts:
-          type: string
-          example:
-        admincerts:
-          type: string
-          example:
-        cacerts:
-          type: string
-          example:
+      example: org3
 ChannelUpdateResponse:
   type: object
   properties:

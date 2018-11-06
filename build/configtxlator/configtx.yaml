@@ -29,6 +29,26 @@ Organizations:
     # MSPDir is the filesystem path which contains the MSP configuration
     MSPDir: data/orgs/org1/msp
 
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies: &SampleOrgPolicies
+        Readers:
+            Type: Signature
+            Rule: "OR('org1MSP.member')"
+            # If your MSP is configured with the new NodeOUs, you might
+            # want to use a more specific rule like the following:
+            # Rule: "OR('org1MSP.admin', 'org1MSP.peer', 'org1MSP.client')"
+        Writers:
+            Type: Signature
+            Rule: "OR('org1MSP.member')"
+            # If your MSP is configured with the new NodeOUs, you might
+            # want to use a more specific rule like the following:
+            # Rule: "OR('org1MSP.admin', 'org1MSP.client')"
+        Admins:
+            Type: Signature
+            Rule: "OR('org1MSP.admin')"
+
     AnchorPeers:
        # AnchorPeers defines the location of peers which can be used
        # for cross org gossip communication.  Note, this value is only
@@ -50,6 +70,19 @@ Application: &ApplicationDefaults
     # the application side of the network
     Organizations:
 
+    # Policies defines the set of policies at this level of the config tree
+    # For Application policies, their canonical path is
+    #   /Channel/Application/<PolicyName>
+    Policies: &ApplicationDefaultPolicies
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: Signature
+            Rule: "OR('org1MSP.admin')"
 
 ################################################################################
 #
