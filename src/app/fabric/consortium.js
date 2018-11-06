@@ -6,6 +6,7 @@ const common = require('../../libraries/common');
 const DbService = require('../../services/db/dao');
 const query = require('../../services/fabric/query');
 const router = require('koa-router')({prefix: '/consortium'});
+const ConsortiumConfig = require('../../services/db/consortium-config');
 
 router.get('/', async ctx => {
     try {
@@ -65,6 +66,17 @@ router.post('/', async ctx => {
     };
     try {
         let consortium = await DbService.addConsortium(dto);
+        ctx.body = common.success(consortium, common.SUCCESS);
+    } catch (err) {
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }
+});
+
+router.post('/create', async ctx => {
+    try {
+        var consortiumConfig = new ConsortiumConfig();
+        let consortium = await consortiumConfig.load(ctx.request.body);
         ctx.body = common.success(consortium, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;
