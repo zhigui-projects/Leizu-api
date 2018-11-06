@@ -4,6 +4,7 @@ const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const stringUtil = require('../../libraries/string-util');
 const DbService = require('../../services/db/dao');
+const DockerProvider = require('../../services/docker/docker-provider');
 const DockerClient = require('../../services/docker/client');
 const CryptoCaService = require('../../services/fabric/crypto-ca');
 const router = require('koa-router')({prefix: '/organization'});
@@ -79,18 +80,18 @@ router.post("/", async ctx => {
             let containerOptions = {
                 name: name,
                 domainName: ctx.request.body.domainName
-            }
+            };
             let parameters = utils.generateCertAuthContainerOptions(containerOptions);
-            let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
-            if(container){
+            let container = await DockerClient.getInstance(new DockerProvider(connectOptions)).createContainer(parameters);
+            if (container) {
                 let options = {
                     caName: stringUtil.getCaName(name),
                     orgName: name,
-                    url: stringUtil.getUrl(common.PROTOCOL_HTTP,ctx.request.body.host,common.PORT_CA)
+                    url: stringUtil.getUrl(common.PROTOCOL_HTTP, ctx.request.body.host, common.PORT_CA)
                 };
                 let cryptoCaService = new CryptoCaService(options);
                 let result = await cryptoCaService.postContainerStart();
-                if(result){
+                if (result) {
                     orgDto.adminKey = result.enrollment.key.toBytes();
                     orgDto.adminCert = result.enrollment.certificate;
                 }
@@ -98,10 +99,9 @@ router.post("/", async ctx => {
             }
         }
         let organization = await DbService.addOrganization(orgDto);
-        if(organization){
+        if (organization) {
             certAuthDto.ordId = organization._id;
-            let certAuthority = await DbService.addCertAuthority(certAuthDto);
-            organization.ca = certAuthority;
+            organization.ca = await DbService.addCertAuthority(certAuthDto);
         }
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {

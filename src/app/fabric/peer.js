@@ -4,6 +4,7 @@ const DbService = require('../../services/db/dao');
 const PromClient = require('../../services/prometheus/client');
 const PeerService = require('../../services/fabric/peer');
 const common = require('../../libraries/common');
+const DockerProvider = require('../../services/docker/docker-provider');
 const DockerClient = require('../../services/docker/client');
 const utils = require('../../libraries/utils');
 const logger = require('../../libraries/log4js');
@@ -82,11 +83,13 @@ router.post('/', async ctx => {
             mspid: org.msp_id
         };
         let parameters = utils.generatePeerContainerOptions(containerOptions);
-        await DockerClient.getInstance({
+
+        const dockerProvider = new DockerProvider({
             protocol: 'http',
             host: host,
             port: port
-        }).createContainer(parameters);
+        });
+        await DockerClient.getInstance(dockerProvider).createContainer(parameters);
 
         const peer = await DbService.addPeer({
             name: peerName,
