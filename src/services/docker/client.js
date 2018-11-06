@@ -1,28 +1,15 @@
 "use strict";
 
-const Docker = require('dockerode');
-const logger = require('../../libraries/log4js');
-
 module.exports = class DockerClient {
-    
-    constructor(connectOptions){
-        this.connectOptions = connectOptions;
-        this.docker = new Docker(connectOptions);
+    constructor(provider) {
+        this.provider = provider;
     }
-    
-    static getInstance(connectOptions){
-        let dockerClient = new DockerClient(connectOptions);
-        return dockerClient;
+
+    static getInstance(provider) {
+        return new DockerClient(provider);
     }
-    
-    async createContainer(options){
-        try{
-           let container = await this.docker.createContainer(options);
-           container.start();
-           return container;
-        }catch(err){
-            logger.error(err);
-            throw err;
-        }
+
+    async createContainer(options) {
+        return await this.provider.createContainer(options);
     }
 };

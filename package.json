@@ -25,6 +25,7 @@
     "es6-error": "^4.1.1",
     "fabric-ca-client": "~1.2.2",
     "fabric-client": "~1.2.2",
+    "flightplan": "^0.6.19",
     "js-yaml": "^3.12.0",
     "json-refs": "^3.0.12",
     "jsonwebtoken": "^8.3.0",
