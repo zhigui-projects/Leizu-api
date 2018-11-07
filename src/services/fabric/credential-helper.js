@@ -13,12 +13,12 @@ module.exports.CERT_PATHS = {
     tlscacerts: "tlscacerts"
 };
 
-module.exports.CredentialHelper = class {
+module.exports.CredentialHelper = class CredentialHelper {
 
     constructor(mspId){
         this.mspId = mspId;
         this.dirName = path.join(__dirname,mspId);
-        this.archiveFileName = this.mspId + ".zip";
+        this.archiveFileName = path.join(this.dirName,this.mspId + ".zip");
     }
 
     writeCaCerts(caCert){
@@ -31,7 +31,7 @@ module.exports.CredentialHelper = class {
         this.writeFile(filePath,caCert);
     }
 
-    writeTlsCaCerts(){
+    writeTlsCaCerts(caCert){
         let dirName = path.join(this.dirName,exports.CERT_PATHS.tlscacerts);
         if(this.isDirExists(dirName)){
             this.removeDir(dirName);
@@ -73,7 +73,7 @@ module.exports.CredentialHelper = class {
         this.writeFile(keyPath,tls.key);
     }
 
-    writeKeys(key){
+    writeKey(key){
         let dirName = path.join(this.dirName,exports.CERT_PATHS.keystore);
         if(this.isDirExists(dirName)){
             this.removeDir(dirName);
@@ -113,4 +113,15 @@ module.exports.CredentialHelper = class {
         await archive.finalize();
     }
 
+};
+
+module.exports.storeCredentials = async (mspId, credential) => {
+    let credentialHelper = new CredentialHelper(mspId);
+    credentialHelper.writeCaCerts(credential.rootCert);
+    credentialHelper.writeTlsCaCerts(credential.rootCert);
+    credentialHelper.writeAdminCerts(credential.adminCert);
+    credentialHelper.writeKey(credential.adminKey);
+    credentialHelper.writeSignCerts(credential.adminCert);
+    await credentialHelper.zipDirectoryFiles();
+    return credentialHelper.archiveFileName;
 };
