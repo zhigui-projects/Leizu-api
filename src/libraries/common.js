@@ -15,17 +15,22 @@ module.exports.CONSENSUS_KAFKE = 'kafka';
 module.exports.CONSENSUS_KAFKA_VALUE = 1;
 
 module.exports.BOOTSTRAPUSER = {
-	enrollmentID: 'admin',
-	enrollmentSecret: 'adminpw'
+    enrollmentID: 'admin',
+    enrollmentSecret: 'adminpw'
 };
 
 module.exports.ADMINUSER = {
-	enrollmentID: 'admin-user',
-	enrollmentSecret: 'passw0rd'
+    enrollmentID: 'admin-user',
+    enrollmentSecret: 'passw0rd'
 };
 
 module.exports.PROTOCOL_HTTP = 'http';
 module.exports.PROTOCOL_HTTPS = 'https';
+
+module.exports.MODES = {
+    DOCKER: 'docker',
+    SSH: 'ssh'
+};
 
 module.exports.PORT_CA = 7054;
 module.exports.PORT_ORDERER = 7050;
@@ -49,7 +54,7 @@ module.exports.error = (data, msg) => {
     };
 };
 
-module.exports.errorWithCode = (data,msg,code)=>{
+module.exports.errorWithCode = (data, msg, code) => {
     return {
         code: code,
         status: exports.ERROR,

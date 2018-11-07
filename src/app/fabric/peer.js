@@ -84,7 +84,7 @@ router.post('/', async ctx => {
         let connectionOptions, parameters = null;
         if (ctx.app.config.docker.enabled) {
             connectionOptions = {
-                mode: module.exports.MODES.DOCKER,
+                mode: common.MODES.DOCKER,
                 protocol: common.PROTOCOL_HTTP,
                 host: host,
                 port: port || ctx.app.config.docker.port
@@ -92,7 +92,7 @@ router.post('/', async ctx => {
             parameters = utils.generatePeerContainerOptions(containerOptions);
         } else {
             connectionOptions = {
-                mode: module.exports.MODES.SSH,
+                mode: common.MODES.SSH,
                 host: host,
                 username: username,
                 password: password,
