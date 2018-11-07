@@ -1,9 +1,9 @@
 'use strict';
 
 const uuid = require('uuid/v1');
-const ConsortiumCreate = require('../../models/create-consortium');
+const ConsortiumCreate = require('../../models/request');
 
-var ConsortiumConfig = class {
+var Request = class {
 
     constructor() {
         this._consortium_config = null;
@@ -98,4 +98,4 @@ var ConsortiumConfig = class {
 
 };
 
-module.exports = ConsortiumConfig;
+module.exports = Request;

@@ -18,4 +18,4 @@ const consortiumSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('CreateConsortium', consortiumSchema, 'create_consortium');
+module.exports = mongoose.model('Request', consortiumSchema, 'request');
