@@ -1,6 +1,6 @@
 "use strict";
 
-const util = require('util');
+const util = require('../../libraries/utils');
 
 const DockerProvider = require('./docker-provider');
 const SSHProvider = require('./ssh-provider');
@@ -12,14 +12,16 @@ module.exports = class DockerClient {
     }
 
     static getInstance(options) {
-        let defaults = {mode:module.exports.MODES.SSH};
-        this.options = util._extend(defaults,options);
+        let defaults = {mode: module.exports.MODES.SSH};
+        this.options = util.extend(defaults, options);
         let provider = null;
-        switch (this.options.mode){
+        switch (this.options.mode) {
             case module.exports.MODES.DOCKER:
                 provider = new DockerProvider(this.options);
+                break;
             case module.exports.MODES.SSH:
                 provider = new SSHProvider(this.options);
+                break;
             default:
                 provider = new SSHProvider(this.options);
         }
