@@ -103,6 +103,7 @@ router.post("/", async ctx => {
             if (result) {
                 orgDto.adminKey = result.enrollment.key.toBytes();
                 orgDto.adminCert = result.enrollment.certificate;
+                ordDto.rootCert = result.enrollement.rootCertificate;
             }
             certAuthDto.url = options.url;
         }
