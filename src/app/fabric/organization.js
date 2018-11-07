@@ -73,7 +73,8 @@ router.post("/", async ctx => {
         if (isSupported) {
             let containerOptions = {
                 name: name,
-                domainName: ctx.request.body.domainName
+                domainName: ctx.request.body.domainName,
+                port: common.PORT_CA
             };
             let parameters = null;
             let connectOptions = null;
