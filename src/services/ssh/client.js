@@ -25,7 +25,30 @@ module.exports = class SSHClient extends AbstractSSH {
             this.logger.error(ex);
             throw ex;
         }
+    }
 
+    async transferFile(parameters) {
+        let sshClient = new NodeSSH();
+        try {
+            await sshClient.connect(this.options);
+            await sshClient.putFile(parameters.local, parameters.remote);
+            await sshClient.dispose();
+        } catch (ex) {
+            this.logger.error(ex);
+            throw ex;
+        }
+    }
+
+    async exec(parameters) {
+        let sshClient = new NodeSSH();
+        try {
+            await sshClient.connect(this.options);
+            await sshClient.exec(this.cmd, parameters);
+            await sshClient.dispose();
+        } catch (ex) {
+            this.logger.error(ex);
+            throw ex;
+        }
     }
 
     getContainerParameters(parameters) {

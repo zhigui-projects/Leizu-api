@@ -13,9 +13,27 @@ module.exports = class SshProvider {
         return new SshProvider(connectOptions);
     }
 
-    async createContainer(options) {
+    async createContainer(parameters) {
         try {
-            this.ssh.createContainer(options);
+            return await this.ssh.createContainer(parameters);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+    }
+
+    async transferFile(parameters) {
+        try {
+            await this.ssh.transferFile(parameters);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+    }
+
+    async exec(parameters) {
+        try {
+            await this.ssh.exec(parameters);
         } catch (err) {
             logger.error(err);
             throw err;
