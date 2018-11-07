@@ -6,6 +6,7 @@ const stringUtil = require('../../libraries/string-util');
 const DbService = require('../../services/db/dao');
 const DockerClient = require('../../services/docker/client');
 const CryptoCaService = require('../../services/fabric/crypto-ca');
+const CredentialHelper = require('../../services/fabric/credential-helper');
 const router = require('koa-router')({prefix: '/organization'});
 
 router.get('/', async ctx => {
@@ -104,6 +105,7 @@ router.post("/", async ctx => {
                 orgDto.adminKey = result.enrollment.key.toBytes();
                 orgDto.adminCert = result.enrollment.certificate;
                 orgDto.rootCert = result.enrollment.rootCertificate;
+                orgDto.mspPath = await CredentialHelper.storeCredentials(name,orgDto);
             }
             certAuthDto.url = options.url;
         }

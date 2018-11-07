@@ -8,6 +8,7 @@ const organizationSchema = new mongoose.Schema({
     admin_key: String,
     admin_cert: String,
     root_cert: String,
+    msp_path: String,
     consortium_id: mongoose.Schema.ObjectId,
     date: {
         type: Date,
