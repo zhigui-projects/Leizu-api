@@ -72,8 +72,7 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
-    const {username, password} = ctx.request.body.sshInfo;
-    const {organizationId, host, port} = ctx.request.body;
+    const {organizationId, username, password, host, port} = ctx.request.body;
     try {
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `${org.name}-${host.replace(/\./g, '-')}`;
@@ -82,8 +81,7 @@ router.post('/', async ctx => {
             mspid: org.msp_id
         };
 
-        let connectionOptions = null;
-        let parameters = null;
+        let connectionOptions, parameters = null;
         if (ctx.app.config.docker.enabled) {
             connectionOptions = {
                 mode: module.exports.MODES.DOCKER,
