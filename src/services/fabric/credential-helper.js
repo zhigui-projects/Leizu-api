@@ -116,7 +116,7 @@ module.exports.CredentialHelper = class CredentialHelper {
 };
 
 module.exports.storeCredentials = async (mspId, credential) => {
-    let credentialHelper = new CredentialHelper(mspId);
+    let credentialHelper = new module.exports.CredentialHelper(mspId);
     credentialHelper.writeCaCerts(credential.rootCert);
     credentialHelper.writeTlsCaCerts(credential.rootCert);
     credentialHelper.writeAdminCerts(credential.adminCert);
