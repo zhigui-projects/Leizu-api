@@ -75,7 +75,7 @@ module.exports = class DbService {
     static async addPeer(dto) {
         let peer = new Peer();
         peer.uuid = uuid();
-        peer.name = dto.name
+        peer.name = dto.name;
         peer.location = dto.location;
         peer.org_id = dto.organizationId;
         peer = await peer.save();
@@ -88,11 +88,11 @@ module.exports = class DbService {
     }
 
     static async countPeersByOrg(orgId) {
-        let data = Peer.aggregate([
-            {$match: {"org_id": {$in: orgId}}},
+        let data = await Peer.aggregate([
+            {$match: {'org_id': {$in: orgId}}},
             {
                 $group: {
-                    _id: "$org_id",
+                    _id: '$org_id',
                     total: {$sum: 1}
                 }
             }
@@ -101,7 +101,7 @@ module.exports = class DbService {
     }
 
     static async findOrganizations() {
-        let organizations = Organization.find();
+        let organizations = await Organization.find();
         return organizations;
     }
 
@@ -110,7 +110,7 @@ module.exports = class DbService {
         if (orgIds && orgIds.length > 0) {
             where = {_id: orgIds};
         }
-        let organizations = Organization.find(where);
+        let organizations = await Organization.find(where);
         return organizations;
     }
 
@@ -120,7 +120,7 @@ module.exports = class DbService {
     }
 
     static async findOrganizationById(id) {
-        let organization = Organization.findById(id);
+        let organization = await Organization.findById(id);
         return organization;
     }
 
@@ -143,7 +143,7 @@ module.exports = class DbService {
         certAuthority.url = dto.url;
         certAuthority.org_id = dto.orgId;
         certAuthority.consortium_id = dto.consortiumId;
-        certAuthority = certAuthority.save();
+        certAuthority = await certAuthority.save();
         return certAuthority;
     }
 };
