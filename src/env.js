@@ -12,6 +12,9 @@ module.exports = {
         enabled: false,
         port: 2375
     },
+    ssh: {
+        port: 22
+    },
     prometheus: {
         url: 'http://47.94.200.47:9090'
     },

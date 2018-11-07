@@ -72,7 +72,7 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
-    const {user, password} = ctx.request.body.sshInfo;
+    const {username, password} = ctx.request.body.sshInfo;
     const {organizationId, host, port} = ctx.request.body;
     try {
         const org = await DbService.findOrganizationById(organizationId);
@@ -81,13 +81,28 @@ router.post('/', async ctx => {
             peerName: peerName,
             mspid: org.msp_id
         };
-        let parameters = utils.generatePeerContainerOptions(containerOptions);
 
-        const connectionOptions = {
-            protocol: 'http',
-            host: host,
-            port: port
-        };
+        let connectionOptions = null;
+        let parameters = null;
+        if (ctx.app.config.docker.enabled) {
+            connectionOptions = {
+                mode: module.exports.MODES.DOCKER,
+                protocol: common.PROTOCOL_HTTP,
+                host: host,
+                port: port || ctx.app.config.docker.port
+            };
+            parameters = utils.generatePeerContainerOptions(containerOptions);
+        } else {
+            connectionOptions = {
+                mode: module.exports.MODES.SSH,
+                host: host,
+                username: username,
+                password: password,
+                port: port || ctx.app.config.ssh.port
+            };
+            parameters = utils.generatePeerContainerCreateOptions(containerOptions);
+        }
+
         await DockerClient.getInstance(connectionOptions).createContainer(parameters);
 
         const peer = await DbService.addPeer({

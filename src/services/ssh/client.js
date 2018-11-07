@@ -2,30 +2,33 @@
 
 const NodeSSH = require('node-ssh');
 const AbstractSSH = require('./ssh');
+const log4js = require('log4js');
 
 module.exports = class SSHClient extends AbstractSSH {
 
-    constructor(options){
+    constructor(options) {
         super(options);
         this.cmd = options.cmd || 'docker';
+        this.logger = log4js.getLogger(name);
     }
 
-    async createContainer(parameters){
+    async createContainer(parameters) {
         let sshClient = new NodeSSH();
-        try{
+        try {
             await sshClient.connect(this.options);
             let containerParameters = this.getContainerParameters(parameters);
-            let containerId = await sshClient.exec(this.cmd,containerParameters);
-            let container = await sshClient.exec(this.cmd,['start',containerId]);
+            let containerId = await sshClient.exec(this.cmd, containerParameters);
+            let container = await sshClient.exec(this.cmd, ['start', containerId]);
             await sshClient.dispose();
             return container;
-        }catch (e) {
-            throw e;
+        } catch (ex) {
+            this.logger.error(ex);
+            throw ex;
         }
 
     }
 
-    getContainerParameters(parameters){
+    getContainerParameters(parameters) {
         return parameters;
     }
 
