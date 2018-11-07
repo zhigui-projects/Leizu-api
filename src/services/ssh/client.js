@@ -9,7 +9,7 @@ module.exports = class SSHClient extends AbstractSSH {
     constructor(options) {
         super(options);
         this.cmd = options.cmd || 'docker';
-        this.logger = log4js.getLogger(name);
+        this.logger = log4js.getLogger(this.constructor.name);
     }
 
     async createContainer(parameters) {
