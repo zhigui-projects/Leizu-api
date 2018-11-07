@@ -1,8 +1,8 @@
 'use strict';
 
-const CryptoCaService = require('../../services/fabric/crypto-ca');
-const stringUtil = require('../../libraries/string-util');
-const common = require('../../libraries/common');
+const CryptoCaService = require('../../src/services/fabric/crypto-ca');
+const stringUtil = require('../../src/libraries/string-util');
+const common = require('../../src/libraries/common');
 
 async function testCryptoCaService() {
     let name = 'new-org';
