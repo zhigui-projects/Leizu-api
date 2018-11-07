@@ -17,7 +17,11 @@ module.exports.CredentialHelper = class CredentialHelper {
 
     constructor(mspId){
         this.mspId = mspId;
-        this.dirName = path.join(__dirname,mspId);
+        this.dirName = path.join('/tmp',mspId);
+        if(this.isDirExists(this.dirName)){
+            this.removeDir(this.dirName);
+        }
+        this.createDir(this.dirName);
         this.archiveFileName = path.join(this.dirName,this.mspId + ".zip");
     }
 
