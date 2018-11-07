@@ -7,8 +7,10 @@ var token = 'Bearer ' + constants.token;
 const organization = {
     name: "new-org",
     domainName: "new-org.example.com",
-    host: "59.110.164.211",
-    port: 7060,
+    host: "47.254.71.145",
+    username: "root",
+    password: "***REMOVED***",
+    port: 22,
     consortiutmId: "5bc2a57c05ce040f0559a369"
 };
 
