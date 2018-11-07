@@ -22,5 +22,8 @@ module.exports = {
     },
     neworg: {
         path: '../../../build/configtxlator/newOrg/configtx.yaml'
+    },
+    gensisFileSaveDir:{
+        path:'../../../tmp/'
     }
 };
