@@ -101,14 +101,17 @@ router.post('/', async ctx => {
             parameters = utils.generatePeerContainerCreateOptions(containerOptions);
         }
 
-        await DockerClient.getInstance(connectionOptions).createContainer(parameters);
-
-        const peer = await DbService.addPeer({
-            name: peerName,
-            organizationId: organizationId,
-            location: `${host}:${port}`
-        });
-        ctx.body = common.success(peer, common.SUCCESS);
+        const container = await DockerClient.getInstance(connectionOptions).createContainer(parameters);
+        if (container) {
+            const peer = await DbService.addPeer({
+                name: peerName,
+                organizationId: organizationId,
+                location: `${host}:${port}`
+            });
+            ctx.body = common.success(peer, common.SUCCESS);
+        } else {
+            throw new Error('create peer failed');
+        }
     } catch (err) {
         logger.error(err);
         ctx.status = 400;
