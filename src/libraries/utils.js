@@ -1,5 +1,16 @@
 'use strict';
 
+module.exports.extend = (target, source) => {
+    if (source === null || typeof source !== 'object') return target;
+
+    const keys = Object.keys(source);
+    let i = keys.length;
+    while (i--) {
+        target[keys[i]] = source[keys[i]];
+    }
+    return target;
+};
+
 module.exports.asyncForEach = async (array, callback) => {
     let results = [];
     for (let index = 0; index < array.length; index++) {
