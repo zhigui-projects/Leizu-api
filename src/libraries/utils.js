@@ -1,5 +1,16 @@
 'use strict';
 
+module.exports.extend = (target, source) => {
+    if (source === null || typeof source !== 'object') return target;
+
+    const keys = Object.keys(source);
+    let i = keys.length;
+    while (i--) {
+        target[keys[i]] = source[keys[i]];
+    }
+    return target;
+};
+
 module.exports.asyncForEach = async (array, callback) => {
     let results = [];
     for (let index = 0; index < array.length; index++) {
@@ -20,6 +31,20 @@ module.exports.generateCertAuthContainerOptions = (options) => {
             'FABRIC_CA_SERVER_CSR_HOSTS=ca-' + options.domainName
         ],
     };
+};
+
+
+module.exports.generateCertAuthContainerCreateOptions = (options) => {
+    return [
+        'create',
+        '--name', 'ca-' + options.name,
+        '-e', 'FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server',
+        '-e', 'FABRIC_CA_SERVER_CA_NAME=ca-' + options.name,
+        '-p', '7054:7054',
+        'hyperledger/fabric-ca',
+        '/bin/bash', '-c',
+        'fabric-ca-server start -d -b admin:adminpw'
+    ];
 };
 
 module.exports.generatePeerContainerOptions = (options) => {
@@ -75,48 +100,51 @@ module.exports.generatePeerContainerOptions = (options) => {
     };
 };
 
-module.exports.generateOrdererContainerOptions = (ordererName) => {
-    const workingDir = '/etc/hyperledger/orderer';
+module.exports.generatePeerContainerCreateOptions = (options) => {
+    const workingDir = '/opt/gopath/src/github.com/hyperledger/fabric/peer';
+    const {peerName, mspid} = options;
 
-    return {
-        _query: {name: ordererName},
-        Image: 'hyperledger/fabric-ca-orderer', //TODO: replace the image
-        Hostname: ordererName,
-        WorkingDir: workingDir,
-        Cmd: ['/bin/bash', '-c', '/scripts/start-orderer-standalone.sh'], //TODO: put the script into the image
-        HostConfig: {
-            NetworkMode: 'host',
-            Binds: [
-                `${workingDir}/scripts:/scripts`,//TODO: replace the workingDir
-                `${workingDir}/data:/data`,//TODO: replace the workingDir
-                '/var/run:/host/var/run'
-            ],
-        },
-        Env: [
-            'GODEBUG=netdns=go',
-            `FABRIC_CA_CLIENT_HOME=${workingDir}`,
-            'FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org0-ca-chain.pem', //TODO: generate it automatically
-            `ENROLLMENT_URL=https://${ordererName}:${ordererName}pw@ica-org1:7057`, //TODO: replace the CA url
-            'CA_ADMIN_ENROLLMENT_URL=https://ica-org1-admin:ica-org1-adminpw@ica-org1:7057', //TODO: generate it automatically
-            `ORDERER_HOME=${workingDir}`,
-            `PEER_NAME=${ordererName}`,
-            `ORDERER_HOST=${ordererName}`,
-            'ORDERER_GENERAL_LISTENADDRESS=0.0.0.0',
-            'ORDERER_GENERAL_GENESISMETHOD=file',
-            'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
-            'ORDERER_GENERAL_LOCALMSPID=org0MSP',
-            'ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/orderer/msp',
-            'ORDERER_GENERAL_TLS_ENABLED=true',
-            'ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/orderer/tls/server.key',
-            'ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/orderer/tls/server.crt',
-            'ORDERER_GENERAL_TLS_ROOTCAS=[/data/org0-ca-chain.pem]',
-            'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
-            'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/org0-ca-chain.pem]',
-            'ORDERER_GENERAL_LOGLEVEL=debug',
-            'ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs',
-            'ORG=org0',
-            'ORG_ADMIN_CERT=/data/orgs/org0/msp/admincerts/cert.pem', //TODO: replace org1
-            'ORG_ADMIN_HOME=/data/orgs/org0/admin', //TODO: replace org1
-        ],
-    };
+    return [
+        'create',
+        '--name', peerName,
+        '--hostname', peerName,
+        '--net', 'host',
+        '-w', workingDir,
+        '-v', `${workingDir}/scripts:/scripts`,
+        '-v', `${workingDir}/data:/data`,
+        '-v', '/var/run:/host/var/run',
+        '-e', `CORE_PEER_ID=${peerName}`,
+        '-e', `CORE_PEER_ADDRESS=${peerName}:7051`,
+        '-e', `CORE_PEER_LOCALMSPID=${mspid}`,
+        '-e', `CORE_PEER_MSPCONFIGPATH=${workingDir}/msp`,
+        '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}:7051`,
+        '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
+        '-e', 'CORE_PEER_GOSSIP_ORGLEADER=false',
+        '-e', 'CORE_PEER_GOSSIP_SKIPHANDSHAKE=true',
+        '-e', 'CORE_LOGGING_LEVEL=debug',
+        '-e', 'CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock',
+        '-e', 'CORE_VM_DOCKER_ATTACHSTDOUT=true',
+        '-e', 'CORE_PEER_TLS_ENABLED=true',
+        '-e', `CORE_PEER_TLS_CERT_FILE=${workingDir}/tls/server.crt`,
+        '-e', `CORE_PEER_TLS_KEY_FILE=${workingDir}/tls/server.key`,
+        '-e', 'CORE_PEER_TLS_ROOTCERT_FILE=/data/org1-ca-chain.pem', //TODO: scp the CA file
+        '-e', 'CORE_PEER_TLS_CLIENTAUTHREQUIRED=true',
+        '-e', 'CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/org1-ca-chain.pem', //TODO: generate it automatically
+        '-e', 'CORE_PEER_TLS_CLIENTCERT_FILE=/data/tls/peer3-org1-client.crt', //TODO: generate it automatically
+        '-e', 'CORE_PEER_TLS_CLIENTKEY_FILE=/data/tls/peer3-org1-client.key', //TODO: generate it automatically
+
+        '-e', 'GODEBUG=netdns=go',
+        '-e', `FABRIC_CA_CLIENT_HOME=${workingDir}`,
+        '-e', 'FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org1-ca-chain.pem', //TODO: generate it automatically
+        '-e', `ENROLLMENT_URL=https://${peerName}:${peerName}pw@ica-org1:7057`, //TODO: replace the CA url
+        '-e', 'CA_ADMIN_ENROLLMENT_URL=https://ica-org1-admin:ica-org1-adminpw@ica-org1:7057', //TODO: generate it automatically
+        '-e', `PEER_NAME=${peerName}`,
+        '-e', `PEER_HOME=${workingDir}`,
+        '-e', `PEER_HOST=${peerName}`,
+        '-e', 'ORG_ADMIN_CERT=/data/orgs/org1/msp/admincerts/cert.pem', //TODO: replace org1
+        '-e', 'ORG_ADMIN_HOME=/data/orgs/org1/admin', //TODO: replace org1
+
+        'hyperledger/fabric-ca-peer', //TODO: replace the image
+        '/bin/bash', '-c', '/scripts/start-peer-standalone.sh', //TODO: put the script into the image
+    ];
 };
