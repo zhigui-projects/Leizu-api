@@ -1,6 +1,7 @@
 'use strict';
 
 const CryptoCaService = require('../../src/services/fabric/crypto-ca');
+const CredentialHelper = require('../../src/services/fabric/credential-helper');
 const stringUtil = require('../../src/libraries/string-util');
 const common = require('../../src/libraries/common');
 
@@ -14,7 +15,14 @@ async function testCryptoCaService() {
     };
     let cryptoCaService = new CryptoCaService(options);
     let result = await cryptoCaService.postContainerStart();
-    console.info(result);
+    if (result) {
+        let credential = {};
+        credential.adminKey = result.enrollment.key.toBytes();
+        credential.adminCert = result.enrollment.certificate;
+        credential.rootCert = result.enrollment.rootCertificate;
+        let filePath = CredentialHelper.storeCredentials(name,credential);
+        console.log(filePath);
+    }
 }
 
 testCryptoCaService();
