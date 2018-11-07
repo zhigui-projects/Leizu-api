@@ -9,6 +9,7 @@ module.exports = {
         debug: false
     },
     docker: {
+        enabled: false,
         port: 2375
     },
     prometheus: {

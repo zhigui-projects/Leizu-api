@@ -1,5 +1,16 @@
 'use strict';
 
+module.exports.extend = (target, source) => {
+    if (source === null || typeof source !== 'object') return target;
+
+    const keys = Object.keys(source);
+    let i = keys.length;
+    while (i--) {
+        target[keys[i]] = source[keys[i]];
+    }
+    return target;
+};
+
 module.exports.asyncForEach = async (array, callback) => {
     let results = [];
     for (let index = 0; index < array.length; index++) {
@@ -20,6 +31,20 @@ module.exports.generateCertAuthContainerOptions = (options) => {
             'FABRIC_CA_SERVER_CSR_HOSTS=ca-' + options.domainName
         ],
     };
+};
+
+
+module.exports.generateCertAuthContainerCreateOptions = (options) => {
+    return [
+        'create',
+        '--name','ca-' + options.name,
+        '-e', 'FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server',
+        '-e', 'FABRIC_CA_SERVER_CA_NAME=ca-' + options.name,
+        '-p', '7054:7054',
+        'hyperledger/fabric-ca',
+        '/bin/bash', '-c',
+        'fabric-ca-server start -d -b admin:adminpw'
+    ];
 };
 
 module.exports.generatePeerContainerOptions = (options) => {

@@ -1,16 +1,12 @@
 "use strict";
 
-const plan = require('flightplan');
 const logger = require('../../libraries/log4js');
+const Client = require('../ssh/client');
 
 module.exports = class SshProvider {
 
     constructor(connectOptions) {
-        plan.target(connectOptions.name, {
-            host: connectOptions.host,
-            username: connectOptions.username,
-            password: connectOptions.password
-        });
+        this.ssh = new Client(connectOptions);
     }
 
     static getInstance(connectOptions) {
@@ -19,9 +15,7 @@ module.exports = class SshProvider {
 
     async createContainer(options) {
         try {
-            plan.remote((remote) => {
-                // TODO:
-            });
+            this.ssh.createContainer(options);
         } catch (err) {
             logger.error(err);
             throw err;

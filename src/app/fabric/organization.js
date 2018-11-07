@@ -4,7 +4,6 @@ const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const stringUtil = require('../../libraries/string-util');
 const DbService = require('../../services/db/dao');
-const DockerProvider = require('../../services/docker/docker-provider');
 const DockerClient = require('../../services/docker/client');
 const CryptoCaService = require('../../services/fabric/crypto-ca');
 const router = require('koa-router')({prefix: '/organization'});
@@ -68,21 +67,34 @@ router.post("/", async ctx => {
     let certAuthDto = {
         name: stringUtil.getCaName(name),
         consortiumId: consortiumId
-    }
+    };
     let isSupported = true;
     try {
         if (isSupported) {
-            let connectOptions = {
-                protocol: common.PROTOCOL_HTTP,
-                host: ctx.request.body.host,
-                port: ctx.request.body.port || ctx.app.config.docker.port
-            };
             let containerOptions = {
                 name: name,
                 domainName: ctx.request.body.domainName
             };
-            let parameters = utils.generateCertAuthContainerOptions(containerOptions);
-            let container = await DockerClient.getInstance(new DockerProvider(connectOptions)).createContainer(parameters);
+            let parameters = null;
+            let connectOptions = null;
+            if(ctx.app.config.docker.enabled){
+                connectOptions = {
+                    protocol: common.PROTOCOL_HTTP,
+                    host: ctx.request.body.host,
+                    port: ctx.request.body.port || ctx.app.config.docker.port
+                };
+                parameters = utils.generateCertAuthContainerOptions(containerOptions);
+            }else{
+                connectOptions = {
+                    host: ctx.request.body.host,
+                    username: ctx.request.body.username,
+                    password: ctx.request.body.password,
+                    port: ctx.request.body.port
+                };
+                parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
+            }
+
+            let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
             if (container) {
                 let options = {
                     caName: stringUtil.getCaName(name),
