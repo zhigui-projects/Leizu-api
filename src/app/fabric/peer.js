@@ -6,6 +6,7 @@ const PeerService = require('../../services/fabric/peer');
 const common = require('../../libraries/common');
 const DockerClient = require('../../services/docker/client');
 const utils = require('../../libraries/utils');
+const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
 
 router.get('/', async ctx => {
@@ -39,6 +40,7 @@ router.get('/', async ctx => {
         });
         ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
+        logger.error(ex);
         ctx.status = 400;
         ctx.body = common.error(null, ex.message);
     }
@@ -70,7 +72,7 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
-    const {user, password} = ctx.request.body.sshInfo;
+    const {username, password} = ctx.request.body.sshInfo;
     const {organizationId, host, port} = ctx.request.body;
     try {
         const org = await DbService.findOrganizationById(organizationId);
@@ -79,12 +81,29 @@ router.post('/', async ctx => {
             peerName: peerName,
             mspid: org.msp_id
         };
-        let parameters = utils.generatePeerContainerOptions(containerOptions);
-        await DockerClient.getInstance({
-            protocol: 'http',
-            host: host,
-            port: port
-        }).createContainer(parameters);
+
+        let connectionOptions = null;
+        let parameters = null;
+        if (ctx.app.config.docker.enabled) {
+            connectionOptions = {
+                mode: module.exports.MODES.DOCKER,
+                protocol: common.PROTOCOL_HTTP,
+                host: host,
+                port: port || ctx.app.config.docker.port
+            };
+            parameters = utils.generatePeerContainerOptions(containerOptions);
+        } else {
+            connectionOptions = {
+                mode: module.exports.MODES.SSH,
+                host: host,
+                username: username,
+                password: password,
+                port: port || ctx.app.config.ssh.port
+            };
+            parameters = utils.generatePeerContainerCreateOptions(containerOptions);
+        }
+
+        await DockerClient.getInstance(connectionOptions).createContainer(parameters);
 
         const peer = await DbService.addPeer({
             name: peerName,
@@ -93,6 +112,7 @@ router.post('/', async ctx => {
         });
         ctx.body = common.success(peer, common.SUCCESS);
     } catch (err) {
+        logger.error(err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
