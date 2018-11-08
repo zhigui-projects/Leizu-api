@@ -144,6 +144,8 @@ module.exports = class DbService {
         organization.msp_id = dto.mspId;
         organization.admin_key = dto.adminKey;
         organization.admin_cert = dto.adminCert;
+        organization.root_cert = dto.rootCert;
+        organization.msp_path = dto.mspPath;
         organization.consortium_id = dto.consortiumId;
         organization = await organization.save();
         return organization;

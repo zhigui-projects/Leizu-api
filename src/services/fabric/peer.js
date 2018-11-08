@@ -3,21 +3,17 @@
 const ChannelService = require("./join-channel");
 
 module.exports = class PeerService {
-    
-    constructor(){
-        
+
+    constructor() {
+
     }
-    
-    static getInstance(){
+
+    static getInstance() {
         let peerService = new PeerService();
         return peerService;
     }
-    
-    async joinChannel(channelName,params){
-        let isSupported = false;
-        if(isSupported){
-            ChannelService.joinChannel(channelName,params);
-        }
+
+    async joinChannel(channelName, params) {
+        ChannelService.joinChannel(channelName, params);
     }
-    
-}
+};

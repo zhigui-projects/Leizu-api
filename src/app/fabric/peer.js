@@ -72,8 +72,7 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
-    const {username, password} = ctx.request.body.sshInfo;
-    const {organizationId, host, port} = ctx.request.body;
+    const {organizationId, username, password, host, port} = ctx.request.body;
     try {
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `${org.name}-${host.replace(/\./g, '-')}`;
@@ -82,11 +81,10 @@ router.post('/', async ctx => {
             mspid: org.msp_id
         };
 
-        let connectionOptions = null;
-        let parameters = null;
+        let connectionOptions, parameters = null;
         if (ctx.app.config.docker.enabled) {
             connectionOptions = {
-                mode: module.exports.MODES.DOCKER,
+                mode: common.MODES.DOCKER,
                 protocol: common.PROTOCOL_HTTP,
                 host: host,
                 port: port || ctx.app.config.docker.port
@@ -94,7 +92,7 @@ router.post('/', async ctx => {
             parameters = utils.generatePeerContainerOptions(containerOptions);
         } else {
             connectionOptions = {
-                mode: module.exports.MODES.SSH,
+                mode: common.MODES.SSH,
                 host: host,
                 username: username,
                 password: password,
@@ -103,14 +101,17 @@ router.post('/', async ctx => {
             parameters = utils.generatePeerContainerCreateOptions(containerOptions);
         }
 
-        await DockerClient.getInstance(connectionOptions).createContainer(parameters);
-
-        const peer = await DbService.addPeer({
-            name: peerName,
-            organizationId: organizationId,
-            location: `${host}:${port}`
-        });
-        ctx.body = common.success(peer, common.SUCCESS);
+        const container = await DockerClient.getInstance(connectionOptions).createContainer(parameters);
+        if (container) {
+            const peer = await DbService.addPeer({
+                name: peerName,
+                organizationId: organizationId,
+                location: `${host}:${port}`
+            });
+            ctx.body = common.success(peer, common.SUCCESS);
+        } else {
+            throw new Error('create peer failed');
+        }
     } catch (err) {
         logger.error(err);
         ctx.status = 400;

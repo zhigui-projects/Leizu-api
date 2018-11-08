@@ -27,6 +27,11 @@ module.exports.ADMINUSER = {
 module.exports.PROTOCOL_HTTP = 'http';
 module.exports.PROTOCOL_HTTPS = 'https';
 
+module.exports.MODES = {
+    DOCKER: 'docker',
+    SSH: 'ssh'
+};
+
 module.exports.PEER_TYPE_ORDER = 1;
 module.exports.PEER_TYPE_PEER = 0;
 
