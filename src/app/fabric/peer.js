@@ -3,8 +3,9 @@
 const DbService = require('../../services/db/dao');
 const PromClient = require('../../services/prometheus/client');
 const PeerService = require('../../services/fabric/peer');
-const common = require('../../libraries/common');
+const CredentialHelper = require('../../services/fabric/credential-helper');
 const DockerClient = require('../../services/docker/client');
+const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
@@ -77,8 +78,10 @@ router.post('/', async ctx => {
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `${org.name}-${host.replace(/\./g, '-')}`;
         let containerOptions = {
+            workingDir: common.PEER_HOME,
             peerName: peerName,
-            mspid: org.msp_id
+            mspid: org.msp_id,
+            port: common.PORT_PEER
         };
 
         let connectionOptions, parameters = null;
@@ -101,7 +104,35 @@ router.post('/', async ctx => {
             parameters = utils.generatePeerContainerCreateOptions(containerOptions);
         }
 
-        const container = await DockerClient.getInstance(connectionOptions).createContainer(parameters);
+        const certs = {
+            adminKey: org.admin_key,
+            adminCert: org.admin_cert,
+            rootCert: org.root_cert
+        };
+        const certPath = await CredentialHelper.storeCredentials(org.msp_id, certs);
+        const client = DockerClient.getInstance(connectionOptions);
+        const remotePath = `${common.PEER_HOME}/${org.msp_id}.zip`;
+        await client.transferFile({
+            local: certPath,
+            remote: remotePath
+        });
+        await DockerClient.getInstance(Object.assign(connectionOptions, {cmd: 'unzip'})).exec([
+            '-o', remotePath, '-d', `${common.PEER_HOME}/data/msp`
+        ]);
+        await DockerClient.getInstance(Object.assign(connectionOptions, {cmd: 'mkdir'})).exec([
+            '-p', `${common.PEER_HOME}/data/tls`
+        ]);
+        await DockerClient.getInstance(Object.assign(connectionOptions, {cmd: 'bash'})).exec([
+            '-c', `cp ${common.PEER_HOME}/data/msp/signcerts/* ${common.PEER_HOME}/data/tls/server.crt`
+        ]);
+        await DockerClient.getInstance(Object.assign(connectionOptions, {cmd: 'bash'})).exec([
+            '-c', `cp ${common.PEER_HOME}/data/msp/keystore/* ${common.PEER_HOME}/data/tls/server.key`
+        ]);
+        await DockerClient.getInstance(Object.assign(connectionOptions, {cmd: 'bash'})).exec([
+            '-c', `cp ${common.PEER_HOME}/data/msp/cacerts/* ${common.PEER_HOME}/data/tls/ca.pem`
+        ]);
+
+        const container = await client.createContainer(parameters);
         if (container) {
             const peer = await DbService.addPeer({
                 name: peerName,
