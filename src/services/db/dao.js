@@ -6,6 +6,7 @@ const Organization = require('../../models/organization');
 const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
+const Common = require('../../libraries/common');
 
 module.exports = class DbService {
 
@@ -100,6 +101,18 @@ module.exports = class DbService {
         return data;
     }
 
+    static async addOrderer(dto) {
+        let peer = new Peer();
+        peer.uuid = uuid();
+        peer.name = dto.name;
+        peer.location = dto.location;
+        peer.org_id = dto.organizationId;
+        peer.type = Common.PEER_TYPE_ORDER;
+        peer.consortium_id = dto.consortiumId;
+        peer = await peer.save();
+        return peer;
+    }
+
     static async findOrganizations() {
         let organizations = await Organization.find();
         return organizations;
@@ -131,6 +144,8 @@ module.exports = class DbService {
         organization.msp_id = dto.mspId;
         organization.admin_key = dto.adminKey;
         organization.admin_cert = dto.adminCert;
+        organization.root_cert = dto.rootCert;
+        organization.msp_path = dto.mspPath;
         organization.consortium_id = dto.consortiumId;
         organization = await organization.save();
         return organization;
@@ -143,7 +158,7 @@ module.exports = class DbService {
         certAuthority.url = dto.url;
         certAuthority.org_id = dto.orgId;
         certAuthority.consortium_id = dto.consortiumId;
-        certAuthority = await certAuthority.save();
+        certAuthority = certAuthority.save();
         return certAuthority;
     }
 };

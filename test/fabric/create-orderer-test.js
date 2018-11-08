@@ -3,21 +3,22 @@
 const request = require('supertest');
 const app = require('../../src/index');
 const constants = require('./constants');
-var token = 'Bearer ' + constants.token;
-const organization = {
-    name: "new-org",
-    domainName: "new-org.example.com",
-    host: "47.254.71.145",
-    username: "root",
-    password: "Jia@163.com",
-    port: 22,
-    consortiutmId: "5bc2a57c05ce040f0559a369"
+const token = 'Bearer ' + constants.token;
+const sshInfo = {
+    user: 'root',
+    password: 'Inkchain-passw0rd'
+};
+const requestParam = {
+    organizationId: '5bd162bdb3ac3d3901a4ff42',
+    host: '47.106.121.33',
+    port: '2375',
+    sshInfo: sshInfo
 };
 
 request(app.callback())
-    .post('/api/v1/organization')
+    .post('/api/v1/orderer')
     .set('Authorization', token)
-    .send(organization)
+    .send(requestParam)
     .end(function(err, response){
         if(err) console.error(err);
         console.log(response.body);
