@@ -2,16 +2,19 @@
 
 module.exports = class AbstractSSH {
 
-    constructor(options){
+    constructor(options) {
         this.options = options;
     }
 
-    async transferFile(filePath, options){
+    async exec(parameters) {
         throw new Error("not implemented");
     }
 
-    async createContainer(parameters){
-        throw new Error('abstract function called');
+    async transferFile(parameters) {
+        throw new Error("not implemented");
     }
 
-}
+    async createContainer(parameters) {
+        throw new Error('abstract function called');
+    }
+};

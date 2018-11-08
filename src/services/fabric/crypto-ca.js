@@ -40,9 +40,9 @@ module.exports = class CryptoCA {
     	let caService = this.getFabricCaService();
     	try{
     	    const enrollment = await caService.enroll(this.bootstrapUser);
-    	    let bootstrapAdmin = new User(this.bootstrapUser.enrollmentID);
-    	    this.bootstrapEnrollment = await bootstrapAdmin.setEnrollment(enrollment.key, enrollment.certificate, 'Org1MSP');
-    	    return bootstrapAdmin;
+            this.bootstrapEnrollment = new User(this.bootstrapUser.enrollmentID);
+    	    await this.bootstrapEnrollment.setEnrollment(enrollment.key, enrollment.certificate, 'Org1MSP');
+    	    return this.bootstrapEnrollment;
     	}catch(err){
     	    console.error(err);
     	    return null;

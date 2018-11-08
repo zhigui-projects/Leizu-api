@@ -1,7 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const consortiumSchema = new mongoose.Schema({
+const requestSchema = new mongoose.Schema({
     uuid: String,
     serviceName: String,
     version: String,
@@ -18,4 +18,4 @@ const consortiumSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Request', consortiumSchema, 'request');
+module.exports = mongoose.model('Request', requestSchema, 'request');
