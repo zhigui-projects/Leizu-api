@@ -3,7 +3,7 @@
 const request = require('supertest');
 const app = require('../../src/index');
 const constants = require('./constants');
-var token = 'Bearer ' + constants.token;
+const token = 'Bearer ' + constants.token;
 const peer = {
     host: "116.85.36.196",
     username: "root",

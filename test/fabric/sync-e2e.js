@@ -4,8 +4,8 @@ const request = require('supertest');
 const app = require('../../src/index');
 const constants = require('./constants');
 
-var consortiumId = '5bc2a57c05ce040f0559a369';
-var token = 'Bearer ' + constants.token;
+const consortiumId = '5bc2a57c05ce040f0559a369';
+const token = 'Bearer ' + constants.token;
 
 request(app.callback())
     .post('/api/v1/fabric/sync/' + consortiumId)
