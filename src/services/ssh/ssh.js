@@ -7,11 +7,15 @@ module.exports = class AbstractSSH {
     }
 
     async exec(parameters) {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
     }
 
     async transferFile(parameters) {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
+    }
+
+    async transferDirectory(parameters) {
+        throw new Error('not implemented');
     }
 
     async createContainer(parameters) {
