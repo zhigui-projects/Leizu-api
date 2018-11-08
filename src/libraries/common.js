@@ -31,7 +31,7 @@ module.exports.MODES = {
     DOCKER: 'docker',
     SSH: 'ssh'
 };
-
+module.exports.PEER_HOME = '/opt/gopath/src/github.com/hyperledger/fabric/peer';
 module.exports.PEER_TYPE_ORDER = 1;
 module.exports.PEER_TYPE_PEER = 0;
 
