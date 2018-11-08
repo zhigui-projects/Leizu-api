@@ -1,7 +1,7 @@
 'use strict';
 
 const uuid = require('uuid/v1');
-const ConsortiumCreate = require('../../models/request');
+const RequestModel = require('../../models/request');
 
 var Request = class {
 
@@ -10,20 +10,20 @@ var Request = class {
     }
 
     async load(dto) {
-        let consortium = new ConsortiumCreate();
-        consortium.uuid = uuid();
-        consortium.serviceName = dto.serviceName;
-        consortium.version = dto.version;
-        consortium.serviceType = dto.serviceType;
-        consortium.ledgerDB = dto.ledgerDB;
-        consortium.consensusType = dto.consensusType;
-        consortium.kafka = dto.kafka;
-        consortium.zookeeper = dto.zookeeper;
-        consortium.organizations = dto.organizations;
-        consortium.channel = JSON.stringify(dto.channel);
-        consortium = await consortium.save();
-        this._consortium_config = consortium;
-        return consortium;
+        let request = new RequestModel();
+        request.uuid = uuid();
+        request.serviceName = dto.serviceName;
+        request.version = dto.version;
+        request.serviceType = dto.serviceType;
+        request.ledgerDB = dto.ledgerDB;
+        request.consensusType = dto.consensusType;
+        request.kafka = dto.kafka;
+        request.zookeeper = dto.zookeeper;
+        request.organizations = dto.organizations;
+        request.channel = JSON.stringify(dto.channel);
+        request = await request.save();
+        this._consortium_config = request;
+        return request;
     }
 
     getServiceType() {
