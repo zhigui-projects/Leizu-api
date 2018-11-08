@@ -111,7 +111,7 @@ router.post("/", async ctx => {
         }
         let organization = await DbService.addOrganization(orgDto);
         if (organization) {
-            certAuthDto.ordId = organization._id;
+            certAuthDto.orgId = organization._id;
             organization.ca = await DbService.addCertAuthority(certAuthDto);
         }
         ctx.body = common.success(organization, common.SUCCESS);
