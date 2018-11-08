@@ -1,5 +1,21 @@
 'use strict';
 
+module.exports.wait = async (resources) => {
+    const waitOn = require('wait-on');
+
+    let options = {
+        resources: [].concat(resources),
+        timeout: 30000,
+    };
+
+    try {
+        await waitOn(options);
+    } catch (err) {
+        console.error(err);
+        throw new Error(err);
+    }
+};
+
 module.exports.extend = (target, source) => {
     if (source === null || typeof source !== 'object') return target;
 
