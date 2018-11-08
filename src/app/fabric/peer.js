@@ -3,8 +3,9 @@
 const DbService = require('../../services/db/dao');
 const PromClient = require('../../services/prometheus/client');
 const PeerService = require('../../services/fabric/peer');
-const common = require('../../libraries/common');
+const CredentialHelper = require('../../services/fabric/credential-helper');
 const DockerClient = require('../../services/docker/client');
+const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
@@ -77,8 +78,10 @@ router.post('/', async ctx => {
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `${org.name}-${host.replace(/\./g, '-')}`;
         let containerOptions = {
+            workingDir: common.PEER_HOME,
             peerName: peerName,
-            mspid: org.msp_id
+            mspid: org.msp_id,
+            port: common.PORT_PEER
         };
 
         let connectionOptions, parameters = null;
@@ -101,12 +104,16 @@ router.post('/', async ctx => {
             parameters = utils.generatePeerContainerCreateOptions(containerOptions);
         }
 
-        const container = await DockerClient.getInstance(connectionOptions).createContainer(parameters);
+        await PeerService.preContainerStart({org, connectionOptions});
+
+        const client = DockerClient.getInstance(connectionOptions);
+        const container = await client.createContainer(parameters);
+        await utils.wait(`tcp:${host}:${common.PORT_PEER}`);
         if (container) {
             const peer = await DbService.addPeer({
                 name: peerName,
                 organizationId: organizationId,
-                location: `${host}:${port}`
+                location: `${host}:${common.PORT_PEER}`
             });
             ctx.body = common.success(peer, common.SUCCESS);
         } else {
@@ -129,8 +136,7 @@ router.put('/:id', async ctx => {
     let id = ctx.params.id;
     let params = ctx.request.body;
     try {
-        let peerService = new PeerService();
-        await peerService.joinChannel(id, params);
+        await PeerService.joinChannel(id, params);
         ctx.body = common.success({id: id}, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;
