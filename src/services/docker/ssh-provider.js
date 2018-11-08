@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const logger = require('../../libraries/log4js');
 const Client = require('../ssh/client');
@@ -25,6 +25,15 @@ module.exports = class SshProvider {
     async transferFile(parameters) {
         try {
             await this.ssh.transferFile(parameters);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+    }
+
+    async transferDirectory(parameters) {
+        try {
+            await this.ssh.transferDirectory(parameters);
         } catch (err) {
             logger.error(err);
             throw err;
