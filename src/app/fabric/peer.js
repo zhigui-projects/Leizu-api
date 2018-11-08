@@ -108,11 +108,12 @@ router.post('/', async ctx => {
 
         const client = DockerClient.getInstance(connectionOptions);
         const container = await client.createContainer(parameters);
+        await utils.wait(`tcp:${host}:${common.PORT_PEER}`);
         if (container) {
             const peer = await DbService.addPeer({
                 name: peerName,
                 organizationId: organizationId,
-                location: `${host}:${port}`
+                location: `${host}:${common.PORT_PEER}`
             });
             ctx.body = common.success(peer, common.SUCCESS);
         } else {
