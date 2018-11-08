@@ -99,6 +99,7 @@ router.post("/", async ctx => {
                 orgName: name,
                 url: stringUtil.getUrl(common.PROTOCOL_HTTP, host, common.PORT_CA)
             };
+            await utils.wait(`${options.url}/api/v1/cainfo`);
             let cryptoCaService = new CryptoCaService(options);
             let result = await cryptoCaService.postContainerStart();
             if (result) {
