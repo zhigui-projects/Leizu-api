@@ -3,19 +3,26 @@
 
 module.exports = class HttpHandler{
 
-    constructor(){
-
+    constructor(ctx){
+        this.ctx = ctx;
     }
 
-    async pre(ctx){
+    async preRequest(ctx){
 
     }
 
     async handle(ctx){
+        await this.preRequest(ctx);
+        await this.handlerRequest(ctx);
+        await this.postRequest(ctx);
+    }
+
+    async handlerRequest(ctx){
 
     }
 
-    async post(ctx){
+    async postRequest(ctx){
 
     }
+
 };
