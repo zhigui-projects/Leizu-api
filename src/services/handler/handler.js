@@ -7,14 +7,14 @@ module.exports = class HttpHandler{
         this.ctx = ctx;
     }
 
-    async preRequest(ctx){
-
-    }
-
     async handle(ctx){
         await this.preRequest(ctx);
         await this.handlerRequest(ctx);
         await this.postRequest(ctx);
+    }
+
+    async preRequest(ctx){
+
     }
 
     async handlerRequest(ctx){
