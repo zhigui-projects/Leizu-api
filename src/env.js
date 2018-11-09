@@ -22,12 +22,19 @@ module.exports = {
         url: 'http://59.110.164.211:7059'
     },
     configTx: {
-        path: '../../../build/configtxlator/configtx.yaml'
+        dir: '../../../configtx',
+        name: 'configtx.yaml'
     },
     neworg: {
         path: '../../../build/configtxlator/newOrg/configtx.yaml'
     },
-    gensisFileSaveDir:{
-        path:'../../../tmp/'
-    }
+    gensisFileSaveDir: {
+        path: '../../../tmp/'
+    },
+    genesisProfile: 'OrgsOrdererGenesis',
+    genesisChannel: 'OrgsChannel',
+    mspFile: {
+        localDir:'../../mspDir',
+        serverDir: 'data/$cId/orgs/$org/msp'
+    },
 };
