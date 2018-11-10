@@ -1,29 +1,35 @@
 'use strict';
 
+const RequestContext = require('./context');
 
 module.exports = class HttpHandler{
 
     constructor(ctx){
         this.ctx = ctx;
+        this.context = new RequestContext();
         this.data = null;
     }
 
-    async handle(ctx){
-        await this.preRequest(ctx);
-        await this.handlerRequest(ctx);
-        await this.postRequest(ctx);
+    setRequestContext(context){
+        this.context = context;
+    }
+
+    async handle(){
+        await this.preRequest();
+        await this.handlerRequest();
+        await this.postRequest();
         return this.data;
     }
 
-    async preRequest(ctx){
+    async preRequest(){
 
     }
 
-    async handlerRequest(ctx){
+    async handlerRequest(){
 
     }
 
-    async postRequest(ctx){
+    async postRequest(){
 
     }
 
