@@ -10,6 +10,10 @@ module.exports = class Action {
         this.context = context;
     }
 
+    initialize(){
+
+    }
+
     async execute(){
 
     }
