@@ -147,3 +147,54 @@ module.exports.generatePeerContainerCreateOptions = (options) => {
         '/bin/bash', '-c', 'peer node start',
     ];
 };
+
+module.exports.generateOrdererContainerOptions = (ordererName) => {
+    const workingDir = '/etc/hyperledger/orderer';
+
+    return {
+        _query: {name: ordererName},
+        Image: 'hyperledger/fabric-ca-orderer', //TODO: replace the image
+        Hostname: ordererName,
+        WorkingDir: workingDir,
+        Cmd: ['/bin/bash', '-c', '/scripts/start-orderer-standalone.sh'], //TODO: put the script into the image
+        HostConfig: {
+            NetworkMode: 'host',
+            Binds: [
+                `${workingDir}/scripts:/scripts`,//TODO: replace the workingDir
+                `${workingDir}/data:/data`,//TODO: replace the workingDir
+                '/var/run:/host/var/run'
+            ],
+        },
+        Env: [
+            'GODEBUG=netdns=go',
+            `FABRIC_CA_CLIENT_HOME=${workingDir}`,
+            'FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org0-ca-chain.pem', //TODO: generate it automatically
+            `ENROLLMENT_URL=https://${ordererName}:${ordererName}pw@ica-org1:7057`, //TODO: replace the CA url
+            'CA_ADMIN_ENROLLMENT_URL=https://ica-org1-admin:ica-org1-adminpw@ica-org1:7057', //TODO: generate it automatically
+            `ORDERER_HOME=${workingDir}`,
+            `PEER_NAME=${ordererName}`,
+            `ORDERER_HOST=${ordererName}`,
+            'ORDERER_GENERAL_LISTENADDRESS=0.0.0.0',
+            'ORDERER_GENERAL_GENESISMETHOD=file',
+            'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
+            'ORDERER_GENERAL_LOCALMSPID=org0MSP',
+            'ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/orderer/msp',
+            'ORDERER_GENERAL_TLS_ENABLED=true',
+            'ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/orderer/tls/server.key',
+            'ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/orderer/tls/server.crt',
+            'ORDERER_GENERAL_TLS_ROOTCAS=[/data/org0-ca-chain.pem]',
+            'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
+            'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/org0-ca-chain.pem]',
+            'ORDERER_GENERAL_LOGLEVEL=debug',
+            'ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs',
+            'ORG=org0',
+            'ORG_ADMIN_CERT=/data/orgs/org0/msp/admincerts/cert.pem', //TODO: replace org1
+            'ORG_ADMIN_HOME=/data/orgs/org0/admin', //TODO: replace org1
+        ],
+    };
+};
+
+module.exports.generateOrdererCreateOptions = () => function () {
+
+};
+
