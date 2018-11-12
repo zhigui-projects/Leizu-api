@@ -11,7 +11,7 @@ async function testCryptoCaService() {
     let options = {
         caName: stringUtil.getCaName(name),
         orgName: name,
-        url: stringUtil.getUrl(common.PROTOCOL_HTTP, host, common.PORT_CA)
+        url: stringUtil.getUrl(common.PROTOCOL.HTTP, host, common.PORT_CA)
     };
     let cryptoCaService = new CryptoCaService(options);
     let result = await cryptoCaService.postContainerStart();

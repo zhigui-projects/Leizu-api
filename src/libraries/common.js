@@ -30,8 +30,11 @@ module.exports.ADMINUSER = {
     enrollmentSecret: 'passw0rd'
 };
 
-module.exports.PROTOCOL_HTTP = 'http';
-module.exports.PROTOCOL_HTTPS = 'https';
+module.exports.PROTOCOL = {
+    HTTP: 'http',
+    HTTPS: 'https',
+    TCP: 'tcp',
+};
 
 module.exports.MODES = {
     DOCKER: 'docker',

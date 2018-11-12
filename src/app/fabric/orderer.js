@@ -49,7 +49,7 @@ router.post('/', async ctx => {
         let genesis = await Configtxlator.outputGenesisBlock('OrgsOrdererGenesis', 'OrgsChannel', configTx, '', '');
         fs.writeFileSync(path.join(__dirname, env.gensisFileSaveDir.path,'genesis.block'), genesis);
         let connectionOptions = {
-            protocol: common.PROTOCOL_HTTP,
+            protocol: common.PROTOCOL.HTTP,
             host: host,
             port: port
         };
