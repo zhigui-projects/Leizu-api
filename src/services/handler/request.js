@@ -2,6 +2,8 @@
 
 const Handler = require('./handler');
 const Request = require('../db/request');
+const logger = require('../../libraries/log4js');
+const common = require('../../libraries/common');
 
 module.exports = class RequestHandler extends Handler {
 
@@ -10,31 +12,33 @@ module.exports = class RequestHandler extends Handler {
         this.request = null;
     }
 
-    async preRequest(){
-
-    }
-
     async handlerRequest(){
-        await this.storeRequest();
+        await this.persistRequest();
         try{
+            this.decomposeRequest();
             await this.provisionNetwork();
         }catch(err){
-
+            logger.error(err);
         }
     }
 
-    async postRequest(){
-
-    }
-
-    async storeRequest(){
-        this.request = new Request();
-        this.data = await this.request.load(this.ctx.request.body);
+    async persistRequest(){
+        let request = new Request();
+        this.request = await request.load(this.ctx.request.body);
     }
 
     async provisionNetwork(){
         await this.provisionPeers();
         await this.provisionOrderers();
+    }
+
+    decomposeRequest(){
+        this.peers = [];
+        if(this.request.getConsensusType() == common.CONSENSUS_SOLO){
+
+        }else{
+
+        }
     }
 
     async provisionPeers(){
@@ -45,8 +49,9 @@ module.exports = class RequestHandler extends Handler {
 
     }
 
-    async updateRequestStatus(){
-
+    async updateRequestStatus(status){
+        this.request.status = status;
+        this.request = await Request.findOneAndUpdate({_id: this.request._id},{status: status});
     }
     
 };
