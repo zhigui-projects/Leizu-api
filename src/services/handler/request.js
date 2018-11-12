@@ -27,18 +27,36 @@ module.exports = class RequestHandler extends Handler {
         this.request = await request.load(this.ctx.request.body);
     }
 
-    async provisionNetwork(){
-        await this.provisionPeers();
-        await this.provisionOrderers();
-    }
-
     decomposeRequest(){
         this.peers = [];
         if(this.request.getConsensusType() == common.CONSENSUS_SOLO){
-
+            this.orderers = [];
         }else{
-
+            this.orderers = [];
+            this.kafkas = [];
+            this.zookeepers = [];
         }
+    }
+
+    async updateRequestStatus(status){
+        this.request.status = status;
+        this.request = await Request.findOneAndUpdate({_id: this.request._id},{status: status});
+    }
+
+    async provisionNetwork(){
+        await this.provisionOrganizations();
+        await this.provisionPeers();
+        await this.prepareGenesisBlocks();
+        await this.provisionOrderers();
+        await this.makePeersJoinChannel();
+    }
+
+    async provisionOrganizations(){
+
+    }
+
+    async prepareGenesisBlocks(){
+
     }
 
     async provisionPeers(){
@@ -49,9 +67,8 @@ module.exports = class RequestHandler extends Handler {
 
     }
 
-    async updateRequestStatus(status){
-        this.request.status = status;
-        this.request = await Request.findOneAndUpdate({_id: this.request._id},{status: status});
+    async makePeersJoinChannel(){
+
     }
     
 };
