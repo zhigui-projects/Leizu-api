@@ -3,15 +3,40 @@ const fs = require('fs');
 const path = require('path');
 const env = require('../../env');
 const yaml = require('js-yaml');
-const GENESIS_TYPE = 1;
+/**
+ * help information for how to use
+ * const CreateConfigtx = require(path);
+ * let option = {
+            consortiumId: 'xxxxxxxxxx',
+            profile: 'OrgsOrdererGenesis',
+            channel: 'OrgsChannel',
+            ordererType: 'kafka',
+            orderOrg: 'org0',
+            orderer: {
+                host: 'order1-org0',
+                port: 7051
+            },
+            initOrg: 'org1',
+            initOrgAnchorPeer: {
+                host: 'peer1-org1',
+                port: 7050
+            },
+            kafka: [
+                {
+                    host: '127.0.2.1',
+                    port: '9999'
+                }
+            ]
+        };
+ * let configtxPath = new CreateConfigtx(option).buildGenesisConfigTxFile();
+ * @type {module.generateConfigTx}
+ */
 module.exports = class generateConfigTx {
-
     /**
      * constructor generateConfigTx file
      * @param options
      * options like this
      * {
-     *     type:1,//type ==1 create genesis configtx ; type==2 create channel configtx
      *     consortiumId: 'xxxxxxxxxx',
      *     profile:'OrgsOrdererGenesis',
      *     channel:'OrgsChannel',
@@ -25,14 +50,14 @@ module.exports = class generateConfigTx {
      *     initOrgAnchorPeer:{
      *         host:'peer1-org1',
      *         port:7050
-     *     }
-     * }
+     *     }，
+     *     kafka:[{
+     *              host:'127.0.0.1',
+     *              port:7051
+     *          }]}
      */
     constructor(options) {
         this.options = options || {};
-        this.consortiumId = this.options.consortiumId;
-        this.fileDir = path.join(__dirname, env.configTx.dir);
-        this.type = this.options.type;
         this.orderOrg = {};
         this.peerOrg = {};
         this.applicationDefaults = {Organizations: null};
@@ -41,33 +66,44 @@ module.exports = class generateConfigTx {
             Application: this.applicationDefaults,
             Profiles: {},
         };
+        this.init(this.options);
+    }
+
+    //init consortiumId and create directory for configtx.yaml
+    init(options) {
+        this.consortiumId = options.consortiumId;
+        this.fileDir = path.join(__dirname, env.configTx.dir);
         if (!fs.existsSync(this.fileDir)) {
             fs.mkdirSync(this.fileDir);
         }
-        this.fileDir = path.join(this.fileDir, this.consortiumId);
+        this.fileDir = path.join(this.fileDir, options.consortiumId);
         if (!fs.existsSync(this.fileDir)) {
             fs.mkdirSync(this.fileDir);
         }
     }
 
-    buildOrganizations() {
+    //build information of peer's organization
+    buildPeerOrganization() {
         this.peerOrg = {
             Name: this.options.initOrg,
             ID: this.options.initOrg + 'MSP',
             MSPDir: env.mspFile.serverDir.replace(/\$cId/g, this.consortiumId).replace(/\$org/g, this.options.initOrg),
             AnchorPeers: [{Host: this.options.initOrgAnchorPeer.host, Port: this.options.initOrgAnchorPeer.port}]
         };
-        if (this.type === GENESIS_TYPE) {
-            this.orderOrg = {
-                Name: this.options.orderOrg,
-                ID: this.options.orderOrg + 'MSP',
-                MSPDir: env.mspFile.serverDir.replace(/\$cId/g, this.consortiumId).replace(/\$org/g, this.options.orderOrg)
-            };
-            this.configTxObject.Organizations.push(this.orderOrg);
-        }
         this.configTxObject.Organizations.push(this.peerOrg);
     }
 
+    //build information of orderer's organization
+    buildOrderOrganization() {
+        this.orderOrg = {
+            Name: this.options.orderOrg,
+            ID: this.options.orderOrg + 'MSP',
+            MSPDir: env.mspFile.serverDir.replace(/\$cId/g, this.consortiumId).replace(/\$org/g, this.options.orderOrg)
+        };
+        this.configTxObject.Organizations.push(this.orderOrg);
+    }
+
+    //build orderer's information
     buildOrgsOrdererGenesis() {
         return {
             OrdererType: this.options.ordererType,
@@ -78,36 +114,68 @@ module.exports = class generateConfigTx {
                 AbsoluteMaxBytes: '99 MB',
                 PreferredMaxBytes: '512 KB'
             },
-            Kafka: {Brokers: ['127.0.0.1:9092']},
+            Kafka: {Brokers: this.buildKafka()},
             Organizations: this.orderOrg
         };
     }
 
+    //build consortium's info
     buildConsortium() {
         return {
             Organizations: [this.peerOrg]
         };
     }
 
-    buildProfiles() {
+    //build profile's information
+    buildChannelForProfiles() {
         let application = Object.assign({}, this.applicationDefaults);
         application.Organizations = [this.peerOrg];
-        this.configTxObject.Profiles = {
-            OrgsOrdererGenesis: {
-                Orderer: this.buildOrgsOrdererGenesis(),
-                Consortiums: this.buildConsortium()
-            },
-            OrgsChannel: {
-                Consortiums: 'SampleConsortium',
-                Application: application,
-            }
+        this.configTxObject.Profiles.OrgsChannel = {
+            Consortiums: 'SampleConsortium',
+            Application: application,
         };
     }
 
-    buildConfigTxFile() {
-        this.buildOrganizations();
-        this.buildProfiles();
-        let yamlData = yaml.safeDump(this.configTxObject);
-        fs.writeFileSync(path.join(this.fileDir, env.configTx.name), yamlData);
+    buildOrdererGenssisForProfile() {
+        this.configTxObject.Profiles.OrgsOrdererGensis = {
+            Orderer: this.buildOrgsOrdererGenesis(),
+            Consortiums: this.buildConsortium()
+        };
     }
+
+    //build kafka's information
+    buildKafka() {
+        let kafkaList = ['127.0.0.1:9092'];
+        if (this.options.ordererType === 'kafka') {
+            if (this.options.kafka.length > 0) {
+                kafkaList = this.options.kafka.map((item) => {
+                    return `${item.host}:${item.port}`;
+                });
+            }
+        }
+        return kafkaList;
+    }
+
+    //build configtx.yaml file for genesis block
+    buildGenesisConfigTxFile() {
+        this.buildOrderOrganization();
+        this.buildPeerOrganization();
+        this.buildOrdererGenssisForProfile();
+        this.buildChannelForProfiles();
+        let yamlData = yaml.safeDump(this.configTxObject);
+        let configTxPath = path.join(this.fileDir, env.configTx.name);
+        fs.writeFileSync(configTxPath, yamlData);
+        return configTxPath;
+    }
+
+    //build configtx.yaml file for add organization
+    buildAddOrgConfigTxFile() {
+        this.buildPeerOrganization();
+        this.buildChannelForProfiles();
+        let yamlData = yaml.safeDump(this.configTxObject);
+        let configTxPath = path.join(this.fileDir, env.configTx.name);
+        fs.writeFileSync(configTxPath, yamlData);
+        return configTxPath;
+    }
+
 };
