@@ -14,6 +14,12 @@ module.exports.CONSENSUS_SOLO_VALUE = 0;
 module.exports.CONSENSUS_KAFKE = 'kafka';
 module.exports.CONSENSUS_KAFKA_VALUE = 1;
 
+// REQUEST STATUS SECTION
+module.exports.REQUEST_STATUS_PENDING = 'pending';
+module.exports.REQUEST_STATUS_RUNNING = 'running';
+module.exports.REQUEST_STATUS_SUCCESS = 'success';
+module.exports.REQUEST_STATUS_ERROR = 'error';
+
 module.exports.BOOTSTRAPUSER = {
     enrollmentID: 'admin',
     enrollmentSecret: 'adminpw'
@@ -24,8 +30,11 @@ module.exports.ADMINUSER = {
     enrollmentSecret: 'passw0rd'
 };
 
-module.exports.PROTOCOL_HTTP = 'http';
-module.exports.PROTOCOL_HTTPS = 'https';
+module.exports.PROTOCOL = {
+    HTTP: 'http',
+    HTTPS: 'https',
+    TCP: 'tcp',
+};
 
 module.exports.MODES = {
     DOCKER: 'docker',

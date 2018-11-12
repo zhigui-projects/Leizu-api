@@ -54,6 +54,14 @@ var Request = class {
         return JSON.parse(this._consortium_config.channel);
     }
 
+    getPeers(){
+        return [];
+    }
+
+    getOrderers(){
+        return [];
+    }
+
     static findServiceType(consortiumId) {
         var where = {_id: consortiumId};
         var query = {serviceType: 1};

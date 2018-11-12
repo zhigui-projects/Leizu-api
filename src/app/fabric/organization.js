@@ -77,7 +77,7 @@ router.post('/', async ctx => {
         let parameters, connectOptions = null;
         if (ctx.app.config.docker.enabled) {
             connectOptions = {
-                protocol: common.PROTOCOL_HTTP,
+                protocol: common.PROTOCOL.HTTP,
                 host: host,
                 port: port || ctx.app.config.docker.port
             };
@@ -97,7 +97,7 @@ router.post('/', async ctx => {
             let options = {
                 caName: stringUtil.getCaName(name),
                 orgName: name,
-                url: stringUtil.getUrl(common.PROTOCOL_HTTP, host, common.PORT_CA)
+                url: stringUtil.getUrl(common.PROTOCOL.HTTP, host, common.PORT_CA)
             };
             await utils.wait(`${options.url}/api/v1/cainfo`);
             let cryptoCaService = new CryptoCaService(options);
