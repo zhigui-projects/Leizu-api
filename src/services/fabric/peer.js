@@ -79,7 +79,7 @@ module.exports = class PeerService {
         if (config.docker.enabled) {
             connectionOptions = {
                 mode: common.MODES.DOCKER,
-                protocol: common.PROTOCOL_HTTP,
+                protocol: common.PROTOCOL.HTTP,
                 host: host,
                 port: port || config.docker.port
             };
@@ -99,7 +99,7 @@ module.exports = class PeerService {
 
         const client = DockerClient.getInstance(connectionOptions);
         const container = await client.createContainer(parameters);
-        await utils.wait(`tcp:${host}:${common.PORT_PEER}`);
+        await utils.wait(`${common.PROTOCOL.TCP}:${host}:${common.PORT_PEER}`);
         if (container) {
             return await DbService.addPeer({
                 name: peerName,
