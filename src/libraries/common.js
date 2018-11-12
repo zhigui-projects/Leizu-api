@@ -14,6 +14,12 @@ module.exports.CONSENSUS_SOLO_VALUE = 0;
 module.exports.CONSENSUS_KAFKE = 'kafka';
 module.exports.CONSENSUS_KAFKA_VALUE = 1;
 
+// REQUEST STATUS SECTION
+module.exports.REQUEST_STATUS_PENDING = 'pending';
+module.exports.REQUEST_STATUS_RUNNING = 'running';
+module.exports.REQUEST_STATUS_SUCCESS = 'success';
+module.exports.REQUEST_STATUS_ERROR = 'error';
+
 module.exports.BOOTSTRAPUSER = {
     enrollmentID: 'admin',
     enrollmentSecret: 'adminpw'
@@ -31,7 +37,7 @@ module.exports.MODES = {
     DOCKER: 'docker',
     SSH: 'ssh'
 };
-
+module.exports.PEER_HOME = '/opt/gopath/src/github.com/hyperledger/fabric/peer';
 module.exports.PEER_TYPE_ORDER = 1;
 module.exports.PEER_TYPE_PEER = 0;
 

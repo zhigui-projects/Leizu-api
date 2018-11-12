@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const shell = require('shelljs');
 const path = require('path');
 const archiver = require('archiver');
 const stringUtil = require('../../libraries/string-util');
@@ -92,7 +93,7 @@ module.exports.CredentialHelper = class CredentialHelper {
     }
 
     removeDir(dirName){
-        fs.rmdirSync(dirName);
+        shell.rm('-rf', dirName);
     }
 
     createDir(dirName){

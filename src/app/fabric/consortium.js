@@ -5,8 +5,8 @@ const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
 const DbService = require('../../services/db/dao');
 const query = require('../../services/fabric/query');
+const RequestHandler = require('../../services/handler/request');
 const router = require('koa-router')({prefix: '/consortium'});
-const Request = require('../../services/db/request');
 
 router.get('/', async ctx => {
     try {
@@ -75,8 +75,8 @@ router.post('/', async ctx => {
 
 router.post('/create', async ctx => {
     try {
-        var request = new Request();
-        var consortium = await request.load(ctx.request.body);
+        let requestHandler = new RequestHandler(ctx);
+        let consortium = await requestHandler.handle(ctx);
         ctx.body = common.success(consortium, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;

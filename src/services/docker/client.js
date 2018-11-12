@@ -33,4 +33,12 @@ module.exports = class DockerClient {
     async createContainer(options) {
         return await this.provider.createContainer(options);
     }
+
+    async transferFile(parameters) {
+        await this.provider.transferFile(parameters);
+    }
+
+    async exec(parameters) {
+        await this.provider.exec(parameters);
+    }
 };

@@ -57,7 +57,7 @@ router.get('/:id', async ctx => {
     }
 });
 
-router.post("/", async ctx => {
+router.post('/', async ctx => {
     const {name, consortiumId, domainName, host, port, username, password} = ctx.request.body;
     let orgDto = {
         name: name,
@@ -99,19 +99,20 @@ router.post("/", async ctx => {
                 orgName: name,
                 url: stringUtil.getUrl(common.PROTOCOL_HTTP, host, common.PORT_CA)
             };
+            await utils.wait(`${options.url}/api/v1/cainfo`);
             let cryptoCaService = new CryptoCaService(options);
             let result = await cryptoCaService.postContainerStart();
             if (result) {
                 orgDto.adminKey = result.enrollment.key.toBytes();
                 orgDto.adminCert = result.enrollment.certificate;
                 orgDto.rootCert = result.enrollment.rootCertificate;
-                orgDto.mspPath = await CredentialHelper.storeCredentials(name,orgDto);
+                orgDto.mspPath = await CredentialHelper.storeCredentials(name, orgDto);
             }
             certAuthDto.url = options.url;
         }
         let organization = await DbService.addOrganization(orgDto);
         if (organization) {
-            certAuthDto.ordId = organization._id;
+            certAuthDto.orgId = organization._id;
             organization.ca = await DbService.addCertAuthority(certAuthDto);
         }
         ctx.body = common.success(organization, common.SUCCESS);
