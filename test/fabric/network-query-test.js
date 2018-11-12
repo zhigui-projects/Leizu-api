@@ -94,7 +94,7 @@ query.getChannels(peerConfig,caConfig).then(response => {
     }
 });
 
-var configBlock = query.getChannelConfigFromOrderer(orderConfig,caConfig);
+const configBlock = query.getChannelConfigFromOrderer(orderConfig, caConfig);
 configBlock.then(function(result){
     console.log(result);
 },function(err){

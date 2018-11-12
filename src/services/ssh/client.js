@@ -39,6 +39,18 @@ module.exports = class SSHClient extends AbstractSSH {
         }
     }
 
+    async transferDirectory(parameters) {
+        let sshClient = new NodeSSH();
+        try {
+            await sshClient.connect(this.options);
+            await sshClient.putDirectory(parameters.localDir, parameters.remoteDir);
+            await sshClient.dispose();
+        } catch (ex) {
+            this.logger.error(ex);
+            throw ex;
+        }
+    }
+
     async exec(parameters) {
         let sshClient = new NodeSSH();
         try {
