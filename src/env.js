@@ -28,7 +28,7 @@ module.exports = {
     neworg: {
         path: '../../../build/configtxlator/newOrg/configtx.yaml'
     },
-    gensisFileSaveDir: {
+    genesisFileSaveDir: {
         path: '../../../tmp/'
     },
     genesisProfile: 'OrgsOrdererGenesis',
