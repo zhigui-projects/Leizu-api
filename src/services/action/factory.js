@@ -1,5 +1,7 @@
 'use strict';
 
+const Registry = require('./registry');
+
 module.exports = class ActionFactory {
 
     constructor(){
@@ -12,6 +14,14 @@ module.exports = class ActionFactory {
         let ActionClass = require(actionFile);
         let actionInstance = new ActionClass();
         return actionInstance
+    }
+
+    static getActionRegistry(){
+        return Registry;
+    }
+
+    static createActionContext(){
+        return new Map();
     }
 
 };

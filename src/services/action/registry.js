@@ -6,6 +6,10 @@ module.exports = {
         ORDERER: 'orderer'
     },
     TYPE: {
-        PROVISION: "provision"
+        PROVISION: 'provision',
+        ROLLBACK: 'rollback'
+    },
+    CONTEXT: {
+        CONSORTIUM_ID: 'consortiumId'
     }
 };

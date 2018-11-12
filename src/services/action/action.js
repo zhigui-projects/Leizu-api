@@ -1,9 +1,12 @@
 'use strict';
 
+const Registry = require('./registry');
+
 module.exports = class Action {
 
     constructor(){
         this.context = null;
+        this.registry = Registry;
     }
 
     setActionContext(context){
@@ -16,6 +19,10 @@ module.exports = class Action {
 
     async execute(){
 
+    }
+
+    getRegistry(){
+        return this.registry;
     }
 
 };
