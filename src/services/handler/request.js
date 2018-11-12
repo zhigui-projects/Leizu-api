@@ -44,6 +44,10 @@ module.exports = class RequestHandler extends Handler {
     async provisionOrderers(){
 
     }
+
+    async updateRequestStatus(){
+
+    }
     
 };
 
