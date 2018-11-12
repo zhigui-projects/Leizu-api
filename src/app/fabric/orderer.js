@@ -9,6 +9,8 @@ const common = require('../../libraries/common');
 const DbService = require('../../services/db/dao');
 const DockerClient = require('../../services/docker/client');
 const Configtxlator = require('../../services/fabric/configtxlator');
+const CreateConfigtx = require('../../services/fabric/create-configtx');
+const SshProvider = require('../../services/docker/ssh-provider');
 
 
 const router = require('koa-router')({prefix: '/orderer'});
@@ -40,18 +42,34 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
+    let configtxOptions = ctx.request.body.options;
     const {user, password} = ctx.request.body.sshInfo;
     const {organizationId, host, port} = ctx.request.body;
     try {
+        let configtxPath = new CreateConfigtx(configtxOptions).buildGenesisConfigTxFile();
+        let transferDir = {
+            localDir: path.join(__dirname, env.mspFile.localDir),
+            remoteDir: env.mspFile.serverDir
+        };
+        let sshProvider = new SshProvider({
+            mode: common.MODES.SSH,
+            host: env.configtxlator.host,
+            username: env.configtxlator.username,
+            password: env.configtxlator.password
+        });
+        await sshProvider.transferDirectory(transferDir);
         const org = await DbService.findOrganizationById(organizationId);
         const ordererName = `${org.name}-${host.replace(/\./g, '-')}`;
-        let configTx = fs.readFileSync(path.join(__dirname, env.configTx.path));
-        let genesis = await Configtxlator.outputGenesisBlock('OrgsOrdererGenesis', 'OrgsChannel', configTx, '', '');
-        fs.writeFileSync(path.join(__dirname, env.gensisFileSaveDir.path,'genesis.block'), genesis);
+        let configTx = fs.readFileSync(configtxPath);
+        let genesis = await Configtxlator.outputGenesisBlock(env.genesisProfile, env.genesisChannel, configTx, '', '');
+        let genesisBlockPath = path.join(__dirname, env.genesisFileSaveDir.path);
+        checkDirExistAndMake(genesisBlockPath);
+        fs.writeFileSync(path.join(__dirname, env.genesisFileSaveDir.path, organizationId + 'genesis.block'), genesis);
         let connectionOptions = {
             protocol: common.PROTOCOL_HTTP,
             host: host,
-            port: port
+            port: port,
+            mode: common.MODES.DOCKER
         };
         let parameters = utils.generateOrdererContainerOptions(ordererName);
         await DockerClient.getInstance(connectionOptions).createContainer(parameters);
@@ -67,5 +85,11 @@ router.post('/', async ctx => {
         ctx.body = common.error({}, err.message);
     }
 });
+
+function checkDirExistAndMake(path) {
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
+    }
+}
 
 module.exports = router;
