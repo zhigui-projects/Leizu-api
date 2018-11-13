@@ -11,9 +11,13 @@ module.exports = class OrdererPlan extends NodePlan {
     }
 
     init(){
+        let self = this;
         this.plan.target(this.targetName,target);
         this.plan.remote(this.planName,function(remote){
-            // task lists;
+            let createCommand = self.buildCreateContainerCommand();
+            let result = remote.exec(createCommand);
+            let startCommand = self.buildStartContainerCommand(result.stdout);
+            remote.exec(startCommand);
         });
     }
 
