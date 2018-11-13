@@ -20,13 +20,19 @@ module.exports = {
     },
     configtxlator: {
         url: 'http://59.110.164.211:7059',
-        host:'59.110.164.211',
-        username:'root',
-        password:'***REMOVED***'
+        dataPath: '/tmp/configtxlator/data',
+        connectionOptions: {
+            mode: 'ssh',
+            host: '59.110.164.211',
+            username: 'root',
+            password: '***REMOVED***',
+            port: 22
+        }
     },
     configTx: {
         dir: '../../../configtx',
-        name: 'configtx.yaml'
+        name: 'configtx.yaml',
+        path: '../../../build/configtxlator/configtx.yaml'
     },
     neworg: {
         path: '../../../build/configtxlator/newOrg/configtx.yaml'

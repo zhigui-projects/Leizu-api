@@ -40,13 +40,13 @@ module.exports.MODES = {
     DOCKER: 'docker',
     SSH: 'ssh'
 };
-module.exports.PEER_HOME = '/opt/gopath/src/github.com/hyperledger/fabric/peer';
+module.exports.PEER_HOME = '/opt/crypto-config';
 module.exports.PEER_TYPE_ORDER = 1;
 module.exports.PEER_TYPE_PEER = 0;
 
-module.exports.PORT_CA = 7054;
+module.exports.PORT_CA = 7080;
 module.exports.PORT_ORDERER = 7050;
-module.exports.PORT_PEER = 7051;
+module.exports.PORT_PEER = 9051;
 
 module.exports.success = (data, msg) => {
     return {
