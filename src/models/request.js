@@ -12,6 +12,7 @@ const requestSchema = new mongoose.Schema({
     zookeeper: Array,
     organizations: Array,
     channel: String,
+    status: String,
     date: {
         type: Date,
         default: Date.now()
