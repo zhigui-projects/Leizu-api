@@ -1,11 +1,9 @@
 'use strict';
 
-const Orderer = require('../../models/orderer');
 const common = require('../../libraries/common');
 const OrdererService = require('../../services/fabric/orderer');
-
-
 const router = require('koa-router')({prefix: '/orderer'});
+
 router.get('/', async ctx => {
     try {
         const orderers = OrdererService.get();
