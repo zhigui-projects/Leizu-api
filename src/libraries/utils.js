@@ -110,7 +110,7 @@ const generatePeerContainerOptionsForDocker = ({port, peerName, workingDir, mspi
             'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
             'CORE_VM_DOCKER_ATTACHSTDOUT=true',
         ],
-    }
+    };
 };
 
 const generatePeerContainerOptionsForSSH = ({peerName, mspid, port, workingDir}) => {
@@ -190,7 +190,33 @@ module.exports.generateOrdererContainerOptions = (ordererName) => {
     };
 };
 
-module.exports.generateOrdererCreateOptions = () => function () {
-
+module.exports.generateOrdererCreateOptions = ({ordererName, mspid, port, workingDir}) => function () {
+    return [
+        'create',
+        '--name', `orderer-${ordererName}`,
+        '--hostname', ordererName,
+        '-p', `${port}:${port}`,
+        '-w', workingDir,
+        '-v', `${workingDir}/data:/data`,
+        '-v', '/var/run:/var/run',
+        '-e', `CORE_PEER_ID=${ordererName}`,
+        '-e', `CORE_PEER_ADDRESS=${ordererName}:${port}`,
+        '-e', `CORE_PEER_LOCALMSPID=${mspid}`,
+        '-e', 'CORE_PEER_MSPCONFIGPATH=/data/msp',
+        '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${ordererName}:${port}`,
+        '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
+        '-e', 'CORE_PEER_GOSSIP_ORGLEADER=false',
+        '-e', 'CORE_PEER_TLS_ENABLED=true',
+        '-e', 'CORE_PEER_TLS_CERT_FILE=/data/tls/server.crt',
+        '-e', 'CORE_PEER_TLS_KEY_FILE=/data/tls/server.key',
+        '-e', 'CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca.pem',
+        '-e', 'CORE_PEER_TLS_CLIENTAUTHREQUIRED=true',
+        '-e', 'CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/tls/ca.pem',
+        '-e', 'CORE_LOGGING_LEVEL=debug',
+        '-e', 'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
+        '-e', 'CORE_VM_DOCKER_ATTACHSTDOUT=true',
+        'hyperledger/fabric-ca-peer',
+        '/bin/bash', '-c', 'peer node start',
+    ];
 };
 
