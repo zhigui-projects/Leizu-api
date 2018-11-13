@@ -5,8 +5,11 @@ const {Unauthorized} = require('../libraries/error');
 
 module.exports = async (ctx, next) => {
     const bearerToken = ctx.request.headers['authorization'];
+    const requestFrom = ctx.request.headers['x-request-from'];
 
-    if (bearerToken) {
+    if (requestFrom === 'BaaS') {
+        await next();
+    } else if (bearerToken) {
         try {
             const token = bearerToken.split(' ')[1];
             const decoded = jwt.verify(token, config.secret);
