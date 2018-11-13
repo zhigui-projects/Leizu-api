@@ -10,6 +10,7 @@ module.exports = {
         ROLLBACK: 'rollback'
     },
     CONTEXT: {
-        CONSORTIUM_ID: 'consortiumId'
+        CONSORTIUM_ID: 'consortiumId',
+        REQUEST_ID: 'requestId'
     }
 };
