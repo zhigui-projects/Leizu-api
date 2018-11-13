@@ -19,7 +19,10 @@ module.exports = {
         url: 'http://47.94.200.47:9090'
     },
     configtxlator: {
-        url: 'http://59.110.164.211:7059'
+        url: 'http://59.110.164.211:7059',
+        host:'59.110.164.211',
+        username:'root',
+        password:'Zigcompile-passw0rd'
     },
     configTx: {
         dir: '../../../configtx',
@@ -34,7 +37,8 @@ module.exports = {
     genesisProfile: 'OrgsOrdererGenesis',
     genesisChannel: 'OrgsChannel',
     mspFile: {
-        localDir:'../../mspDir',
-        serverDir: 'data/$cId/orgs/$org/msp'
+        localDir:'../../../mspDir',
+        serverDir: '/tmp/configtxlator/data',
+        containerPath:'/work/data/$cId/orgs/$org/msp'
     },
 };
