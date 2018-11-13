@@ -1,7 +1,6 @@
 'use strict';
 
 const plan = require('flightplan');
-const shellEscape = require('shell-escape');
 
 module.exports = class NodePlan {
 
@@ -40,7 +39,7 @@ module.exports = class NodePlan {
     }
 
     fullCommand(args){
-        return shellEscape(args);
+        return this.shellEscape(args);
     }
 
     shellEscape(a) {
