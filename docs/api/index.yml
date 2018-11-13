@@ -594,7 +594,7 @@ paths:
   /request:
     post:
       tags:
-      - consortium
+      - request
       summary: Bootstrap blockchain network
       consumes:
       - application/json
@@ -605,7 +605,6 @@ paths:
           in: body
           description: necessary parameters for provisioning blockchain network
           required: true
-          type: object
           schema:
             $ref: "request.yml#/PostRequest"
       responses:
