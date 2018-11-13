@@ -7,7 +7,7 @@ var token = 'Bearer ' + constants.token;
 const consortium = require('./request-config');
 
 request(app.callback())
-    .post('/api/v1/consortium/create')
+    .post('/api/v1/request')
     .set('Authorization', token)
     .send(consortium)
     .end(function(err, response){

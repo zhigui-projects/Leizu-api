@@ -1,6 +1,7 @@
 'use strict';
 
 const plan = require('flightplan');
+const shellEscape = require('shell-escape');
 
 module.exports = class NodePlan {
 
@@ -20,5 +21,9 @@ module.exports = class NodePlan {
     flushFinishedTasks(){
         this.plan._targets = {};
         this.plan._flights = [];
+    }
+
+    fullCommand(command, parameters){
+        return [command].concat(shellEscape(parameters)).join(' ');
     }
 };
