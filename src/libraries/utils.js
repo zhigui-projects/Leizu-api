@@ -1,5 +1,7 @@
 'use strict';
 
+const common = require('./common');
+
 module.exports.wait = async (resources) => {
     const waitOn = require('wait-on');
 
@@ -63,8 +65,16 @@ module.exports.generateCertAuthContainerCreateOptions = (options) => {
     ];
 };
 
-module.exports.generatePeerContainerOptions = (options) => {
-    const {peerName, mspid, port, workingDir} = options;
+module.exports.generatePeerContainerOptions = (options, mode) => {
+    switch (mode) {
+        case common.MODES.DOCKER:
+            return generatePeerContainerOptionsForDocker(options);
+        case common.MODES.SSH:
+            return generatePeerContainerOptionsForSSH(options);
+    }
+};
+
+const generatePeerContainerOptionsForDocker = ({port, peerName, workingDir, mspid}) => {
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
@@ -102,9 +112,7 @@ module.exports.generatePeerContainerOptions = (options) => {
     }
 };
 
-module.exports.generatePeerContainerCreateOptions = (options) => {
-    const {peerName, mspid, port, workingDir} = options;
-
+const generatePeerContainerOptionsForSSH = ({peerName, mspid, port, workingDir}) => {
     return [
         'create',
         '--name', `peer-${peerName}`,
