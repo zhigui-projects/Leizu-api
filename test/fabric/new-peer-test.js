@@ -5,11 +5,11 @@ const app = require('../../src/index');
 const constants = require('./constants');
 const token = 'Bearer ' + constants.token;
 const peer = {
-    host: "116.85.36.196",
+    host: "39.106.149.201",
     username: "root",
-    password: "1qaz!QAZ",
+    password: "Inkchain-passw0rd",
     port: 22,
-    organizationId: "5be3a0dd54e11da19fd8d1aa"
+    organizationId: "5bea5fb926681297cccedd0f"
 };
 
 request(app.callback())
