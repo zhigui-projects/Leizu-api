@@ -66,7 +66,7 @@ router.post('/', async ctx => {
         checkDirExistAndMake(genesisBlockPath);
         fs.writeFileSync(path.join(__dirname, env.genesisFileSaveDir.path, organizationId + 'genesis.block'), genesis);
         let connectionOptions = {
-            protocol: common.PROTOCOL_HTTP,
+            protocol: common.PROTOCOL.HTTP,
             host: host,
             port: port,
             mode: common.MODES.DOCKER
