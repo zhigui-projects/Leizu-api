@@ -43,7 +43,8 @@ module.exports = {
     genesisProfile: 'OrgsOrdererGenesis',
     genesisChannel: 'OrgsChannel',
     mspFile: {
-        localDir: '../../mspDir',
-        serverDir: 'data/$cId/orgs/$org/msp'
+        localDir:'../../../mspDir',
+        serverDir: '/tmp/configtxlator/data',
+        containerPath:'/work/data/$cId/orgs/$org/msp'
     },
 };

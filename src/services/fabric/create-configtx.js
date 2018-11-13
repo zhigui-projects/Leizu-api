@@ -32,30 +32,6 @@ const yaml = require('js-yaml');
  * @type {module.generateConfigTx}
  */
 module.exports = class generateConfigTx {
-    /**
-     * constructor generateConfigTx file
-     * @param options
-     * options like this
-     * {
-     *     consortiumId: 'xxxxxxxxxx',
-     *     profile:'OrgsOrdererGenesis',
-     *     channel:'OrgsChannel',
-     *     ordererType:'kafka',
-     *     orderOrg:'org0',
-     *     orderer:{
-     *         host:'order1-org0',
-     *         port:7051
-     *     },
-     *     initOrg:'org1',
-     *     initOrgAnchorPeer:{
-     *         host:'peer1-org1',
-     *         port:7050
-     *     }，
-     *     kafka:[{
-     *              host:'127.0.0.1',
-     *              port:7051
-     *          }]}
-     */
     constructor(options) {
         this.options = options || {};
         this.orderOrg = {};
@@ -84,10 +60,11 @@ module.exports = class generateConfigTx {
 
     //build information of peer's organization
     buildPeerOrganization() {
+        let mspDir = env.mspFile.containerPath.replace(/\$cId/g, this.consortiumId).replace(/\$org/g, this.options.initOrg);
         this.peerOrg = {
             Name: this.options.initOrg,
             ID: this.options.initOrg + 'MSP',
-            MSPDir: env.mspFile.serverDir.replace(/\$cId/g, this.consortiumId).replace(/\$org/g, this.options.initOrg),
+            MSPDir: mspDir,
             AnchorPeers: [{Host: this.options.initOrgAnchorPeer.host, Port: this.options.initOrgAnchorPeer.port}]
         };
         this.configTxObject.Organizations.push(this.peerOrg);
@@ -95,10 +72,11 @@ module.exports = class generateConfigTx {
 
     //build information of orderer's organization
     buildOrderOrganization() {
+        let mspDir = env.mspFile.containerPath.replace(/\$cId/g, this.consortiumId).replace(/\$org/g, this.options.initOrg);
         this.orderOrg = {
             Name: this.options.orderOrg,
             ID: this.options.orderOrg + 'MSP',
-            MSPDir: env.mspFile.serverDir.replace(/\$cId/g, this.consortiumId).replace(/\$org/g, this.options.orderOrg)
+            MSPDir: mspDir
         };
         this.configTxObject.Organizations.push(this.orderOrg);
     }
@@ -115,14 +93,16 @@ module.exports = class generateConfigTx {
                 PreferredMaxBytes: '512 KB'
             },
             Kafka: {Brokers: this.buildKafka()},
-            Organizations: this.orderOrg
+            Organizations: [this.orderOrg]
         };
     }
 
     //build consortium's info
     buildConsortium() {
         return {
-            Organizations: [this.peerOrg]
+            SampleConsortium: {
+                Organizations: [this.peerOrg]
+            }
         };
     }
 
@@ -131,13 +111,13 @@ module.exports = class generateConfigTx {
         let application = Object.assign({}, this.applicationDefaults);
         application.Organizations = [this.peerOrg];
         this.configTxObject.Profiles.OrgsChannel = {
-            Consortiums: 'SampleConsortium',
+            Consortium: 'SampleConsortium',
             Application: application,
         };
     }
 
     buildOrdererGenssisForProfile() {
-        this.configTxObject.Profiles.OrgsOrdererGensis = {
+        this.configTxObject.Profiles.OrgsOrdererGenesis = {
             Orderer: this.buildOrgsOrdererGenesis(),
             Consortiums: this.buildConsortium()
         };
