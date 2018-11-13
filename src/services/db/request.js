@@ -12,10 +12,10 @@ var Request = class {
     async load(dto) {
         let request = new RequestModel();
         request.uuid = uuid();
-        request.serviceName = dto.serviceName;
-        request.version = dto.version;
-        request.serviceType = dto.serviceType;
-        request.ledgerDB = dto.ledgerDB;
+        request.name = dto.name;
+        request.type = dto.type;
+        request.version = dto.dbType;
+        request.dbType = dto.ledgerDB;
         request.consensusType = dto.consensusType;
         request.kafka = dto.kafka;
         request.zookeeper = dto.zookeeper;
@@ -27,7 +27,7 @@ var Request = class {
     }
 
     getServiceType() {
-        return this._consortium_config.serviceType;
+        return this._consortium_config.type;
     }
 
     getLedgerDB() {
@@ -62,46 +62,46 @@ var Request = class {
         return [];
     }
 
-    static findServiceType(consortiumId) {
-        var where = {_id: consortiumId};
+    static findServiceType(id) {
+        var where = {_id: id};
         var query = {serviceType: 1};
-        return ConsortiumCreate.find(where, query);
+        return RequestModel.find(where, query);
     };
 
-    static findLedgerDB(consortiumId) {
-        var where = {_id: consortiumId};
+    static findLedgerDB(id) {
+        var where = {_id: id};
         var query = {ledgerDB: 1};
-        return ConsortiumCreate.find(where, query);
+        return RequestModel.find(where, query);
     };
 
-    static findConsensusType(consortiumId) {
-        var where = {_id: consortiumId};
+    static findConsensusType(id) {
+        var where = {_id: id};
         var query = {consensusType: 1};
-        return ConsortiumCreate.find(where, query);
+        return RequestModel.find(where, query);
     };
 
-    static findKafka(consortiumId) {
-        var where = {_id: consortiumId};
+    static findKafka(id) {
+        var where = {_id: id};
         var query = {kafka: 1};
-        return ConsortiumCreate.find(where, query);
+        return RequestModel.find(where, query);
     };
 
-    static findZookeeper(consortiumId) {
-        var where = {_id: consortiumId};
+    static findZookeeper(id) {
+        var where = {_id: id};
         var query = {zookeeper: 1};
-        return ConsortiumCreate.find(where, query);
+        return RequestModel.find(where, query);
     };
 
-    static findOrganizations(consortiumId) {
-        var where = {_id: consortiumId};
+    static findOrganizations(id) {
+        var where = {_id: id};
         var query = {organizations: 1};
-        return ConsortiumCreate.find(where, query);
+        return RequestModel.find(where, query);
     };
 
-    static findChannel(consortiumId) {
-        var where = {_id: consortiumId};
+    static findChannel(id) {
+        var where = {_id: id};
         var query = {channel: 1};
-        return ConsortiumCreate.find(where, query);
+        return RequestModel.find(where, query);
     };
 
 };

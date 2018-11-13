@@ -3,7 +3,19 @@ PostRequest:
   properties:
     name:
       type: string
-      example: sample-consortium
+      example: my-consortium
+    type:
+      type: string
+      example: fabric
+    version:
+      type: string
+      example: 1.2
+    dbType:
+      type: string
+      example: LevelDB
+    consensusType:
+      type: string
+      example: solo
 
 PostResponse:
   type: object
@@ -22,7 +34,7 @@ PostResponse:
           example: 5bc6980172b780d909aeab0f
         name:
           type: string
-          example: sample-consortium
+          example: my-consortium
     msg:
       type: string
       example: success
