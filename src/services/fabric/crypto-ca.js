@@ -4,28 +4,29 @@ const FabricCAServices = require('fabric-ca-client');
 const User = require('fabric-ca-client/lib/User');
 const { HFCAIdentityAttributes, HFCAIdentityType } = require('fabric-ca-client/lib/IdentityService');
 const common = require('../../libraries/common');
+const stringUtil = require('../../libraries/string-util');
 
 module.exports = class CryptoCA {
-    
+
     constructor(options) {
         this.options = options || {};
         this.init(this.options);
         this.bootstrapEnrollment = null;
         this.caService = null;
     }
-    
+
     init(options){
         this.caName = options.caName;
         this.orgName = options.orgName;
         this.url = options.url;
         this.bootstrapUser = options.bootstrapUser || common.BOOTSTRAPUSER;
-        this.adminUser = options.adminUser || common.ADMINUSER;        
+        this.adminUser = options.adminUser || common.ADMINUSER;
     }
-    
+
     getFabricCaService(){
         if(this.caService){
             return this.caService;
-        } 
+        }
         let name = this.caName;
         let endpoint = this.url;
         let tlsOptions = {
@@ -35,18 +36,18 @@ module.exports = class CryptoCA {
         this.caService = new FabricCAServices(endpoint, tlsOptions, name);
         return this.caService;
     }
-    
+
     async bootstrapUserEnrollement(){
     	let caService = this.getFabricCaService();
     	try{
     	    const enrollment = await caService.enroll(this.bootstrapUser);
             this.bootstrapEnrollment = new User(this.bootstrapUser.enrollmentID);
-    	    await this.bootstrapEnrollment.setEnrollment(enrollment.key, enrollment.certificate, 'Org1MSP');
+    	    await this.bootstrapEnrollment.setEnrollment(enrollment.key, enrollment.certificate, stringUtil.getMspId(this.orgName));
     	    return this.bootstrapEnrollment;
     	}catch(err){
     	    console.error(err);
     	    return null;
-    	}        
+    	}
     }
 
     async addOrgAffiliation(){
@@ -61,8 +62,8 @@ module.exports = class CryptoCA {
         }catch(err){
             console.error(err);
             return null;
-        }    
-    }    
+        }
+    }
 
     async registerAdminUser(){
         try {
@@ -85,9 +86,9 @@ module.exports = class CryptoCA {
             return response;
         }catch(err){
             console.error(err);
-        }    
+        }
     }
-    
+
     async registerUser(user){
         try {
             let caService = this.getFabricCaService();
@@ -105,9 +106,9 @@ module.exports = class CryptoCA {
             return response;
         }catch(err){
             console.error(err);
-        }    
-    }    
-    
+        }
+    }
+
     async enrollUser(user){
     	let caService = this.getFabricCaService();
     	try{
@@ -118,7 +119,7 @@ module.exports = class CryptoCA {
     	    return null;
     	}
     }
-    
+
     async postContainerStart(){
         let result = {};
         if(!this.bootstrapEnrollment){
@@ -129,4 +130,4 @@ module.exports = class CryptoCA {
         result.enrollment = await this.enrollUser(this.adminUser);
         return result;
     }
-}
+};

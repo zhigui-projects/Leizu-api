@@ -116,11 +116,11 @@ const generatePeerContainerOptionsForDocker = ({port, peerName, workingDir, mspi
 const generatePeerContainerOptionsForSSH = ({peerName, mspid, port, workingDir}) => {
     return [
         'create',
-        '--name', `peer-${peerName}`,
+        '--name', peerName,
         '--hostname', peerName,
-        '-p', `${port}:${port}`,
+        '-p', `${port}:7051`,
         '-w', workingDir,
-        '-v', `${workingDir}/data:/data`,
+        '-v', `${workingDir}:/data`,
         '-v', '/var/run:/var/run',
         '-e', `CORE_PEER_ID=${peerName}`,
         '-e', `CORE_PEER_ADDRESS=${peerName}:${port}`,
