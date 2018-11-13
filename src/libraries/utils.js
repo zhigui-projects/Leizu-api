@@ -58,6 +58,7 @@ module.exports.generateCertAuthContainerCreateOptions = (options) => {
         '--name', 'ca-' + options.name,
         '-e', 'FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server',
         '-e', 'FABRIC_CA_SERVER_CA_NAME=ca-' + options.name,
+        '-e', 'FABRIC_CA_SERVER_CSR_HOSTS=ca-' + options.domainName,
         '-p', options.port + ':7054',
         'hyperledger/fabric-ca',
         '/bin/bash', '-c',
