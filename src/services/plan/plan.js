@@ -23,7 +23,38 @@ module.exports = class NodePlan {
         this.plan._flights = [];
     }
 
-    fullCommand(command, parameters){
-        return [command].concat(shellEscape(parameters)).join(' ');
+    buildCreateContainerCommand(){
+        let command = [];
+        command.push('docker');
+        command.push('create');
+        command.concat(this.parameters.createContainerOptions);
+        return this.fullCommand(command);
+    }
+
+    buildStartContainerCommand(containerId){
+        let command = [];
+        command.push('docker');
+        command.push('start');
+        command.push(containerId);
+        return this.fullCommand(command);
+    }
+
+    fullCommand(args){
+        return shellEscape(args);
+    }
+
+    shellEscape(a) {
+        var ret = [];
+
+        a.forEach(function(s) {
+            if (/[^A-Za-z0-9_\/:=-]/.test(s)) {
+                s = "'"+s.replace(/'/g,"'\\''")+"'";
+                s = s.replace(/^(?:'')+/g, '')
+                    .replace(/\\'''/g, "\\'" );
+            }
+            ret.push(s);
+        });
+
+        return ret.join(' ');
     }
 };
