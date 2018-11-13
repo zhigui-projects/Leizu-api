@@ -106,7 +106,7 @@ router.post('/', async ctx => {
                 orgDto.adminKey = result.enrollment.key.toBytes();
                 orgDto.adminCert = result.enrollment.certificate;
                 orgDto.rootCert = result.enrollment.rootCertificate;
-                orgDto.mspPath = await CredentialHelper.storeCredentials(name, orgDto);
+                orgDto.mspPath = await CredentialHelper.storeCredentials(orgDto);
             }
             certAuthDto.url = options.url;
         }

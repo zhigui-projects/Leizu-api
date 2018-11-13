@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const ChannelService = require('./join-channel');
 const CredentialHelper = require('./credential-helper');
@@ -28,7 +28,7 @@ module.exports = class PeerService {
             }
             let organizationName = (org && org.name) || null;
             let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id)))
-                .map(channel => channel.name);
+            .map(channel => channel.name);
             let cpuMetric = cpuMetrics.find(data => peer.location.includes(data.metric.name));
             let cpu = 0;
             if (cpuMetric) {
@@ -64,12 +64,11 @@ module.exports = class PeerService {
     }
 
     static async create(params) {
-        const {organizationId, username, password, host, port} = params;
-
+        const {name, organizationId, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
-        const peerName = `${org.name}-${host.replace(/\./g, '-')}`;
+        const peerName = `${name}-${org.name}`;
         let containerOptions = {
-            workingDir: common.PEER_HOME,
+            workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}`,
             peerName: peerName,
             mspid: org.msp_id,
             port: common.PORT_PEER
@@ -112,23 +111,24 @@ module.exports = class PeerService {
 
     static async preContainerStart(params) {
         const {org, connectionOptions} = params;
-        const certs = {
-            adminKey: org.admin_key,
-            adminCert: org.admin_cert,
-            rootCert: org.root_cert
-        };
-        const certPath = await CredentialHelper.storeCredentials(org.msp_id, certs);
-        const remotePath = `${common.PEER_HOME}/${org.msp_id}.zip`;
+        const certFile = `${org.msp_path}.zip`;
+        const remoteFile = `${common.PEER_HOME}/${org.consortium_id}/${org.name}.zip`;
+        const remotePath = `${common.PEER_HOME}/${org.consortium_id}/${org.name}`;
         await DockerClient.getInstance(connectionOptions).transferFile({
-            local: certPath,
-            remote: remotePath
+            local: certFile,
+            remote: remoteFile
         });
         const bash = DockerClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
+        await bash.exec(['-c', `mkdir -p ${remotePath}/msp ${remotePath}/tls`]);
+        await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}/msp`]);
+        await bash.exec(['-c', `cp ${remotePath}/msp/signcerts/* ${remotePath}/tls/server.crt`]);
+        await bash.exec(['-c', `cp ${remotePath}/msp/keystore/* ${remotePath}/tls/server.key`]);
+        await bash.exec(['-c', `cp ${remotePath}/msp/cacerts/* ${remotePath}/tls/ca.pem`]);
 
-        await bash.exec(['-c', `unzip -o ${remotePath} -d ${common.PEER_HOME}/data/msp`]);
-        await bash.exec(['-c', `mkdir -p ${common.PEER_HOME}/data/tls`]);
-        await bash.exec(['-c', `cp ${common.PEER_HOME}/data/msp/signcerts/* ${common.PEER_HOME}/data/tls/server.crt`]);
-        await bash.exec(['-c', `cp ${common.PEER_HOME}/data/msp/keystore/* ${common.PEER_HOME}/data/tls/server.key`]);
-        await bash.exec(['-c', `cp ${common.PEER_HOME}/data/msp/cacerts/* ${common.PEER_HOME}/data/tls/ca.pem`]);
+        const configTxPath = `${config.configtxlator.dataPath}/${org.consortium_id}/${org.name}`;
+        await DockerClient.getInstance(config.configtxlator.connectionOptions).transferDirectory({
+            localDir: org.msp_path,
+            remoteDir: configTxPath
+        });
     }
 };
