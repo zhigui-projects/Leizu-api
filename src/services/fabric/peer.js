@@ -60,7 +60,7 @@ module.exports = class PeerService {
     };
 
     static async joinChannel(channelName, params) {
-        ChannelService.joinChannel(channelName, params);
+        return await ChannelService.joinChannel(channelName, params);
     }
 
     static async create(params) {
@@ -75,7 +75,7 @@ module.exports = class PeerService {
             port: common.PORT_PEER
         };
 
-        let connectionOptions, parameters = null;
+        let connectionOptions = null;
         if (config.docker.enabled) {
             connectionOptions = {
                 mode: common.MODES.DOCKER,
@@ -83,7 +83,6 @@ module.exports = class PeerService {
                 host: host,
                 port: port || config.docker.port
             };
-            parameters = utils.generatePeerContainerOptions(containerOptions);
         } else {
             connectionOptions = {
                 mode: common.MODES.SSH,
@@ -92,12 +91,12 @@ module.exports = class PeerService {
                 password: password,
                 port: port || config.ssh.port
             };
-            parameters = utils.generatePeerContainerCreateOptions(containerOptions);
         }
 
         await this.preContainerStart({org, connectionOptions});
 
         const client = DockerClient.getInstance(connectionOptions);
+        const parameters = utils.generatePeerContainerOptions(containerOptions, connectionOptions.mode);
         const container = await client.createContainer(parameters);
         await utils.wait(`${common.PROTOCOL.TCP}:${host}:${common.PORT_PEER}`);
         if (container) {
