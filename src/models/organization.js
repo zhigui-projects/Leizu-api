@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const organizationSchema = new mongoose.Schema({
     uuid: String,
     name: String,
+    domain_name: String,
     msp_id: String,
     admin_key: String,
     admin_cert: String,
