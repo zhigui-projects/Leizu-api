@@ -60,7 +60,7 @@ module.exports = class PeerService {
     };
 
     static async joinChannel(channelName, params) {
-        ChannelService.joinChannel(channelName, params);
+        return await ChannelService.joinChannel(channelName, params);
     }
 
     static async create(params) {
