@@ -69,7 +69,7 @@ var config = {
     newConfig: {
         mspid: 'Org3MSP',
         url: 'grpcs://39.106.149.201:9051',
-        'server-hostname': 'peer0-org3',
+        'server-hostname': 'org3-39-106-149-201',
         pem: '-----BEGIN CERTIFICATE-----\n' +
         'MIICYjCCAgmgAwIBAgIUB3CTDOU47sUC5K4kn/Caqnh114YwCgYIKoZIzj0EAwIw\n' +
         'fzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh\n' +
