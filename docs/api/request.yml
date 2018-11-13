@@ -1,0 +1,40 @@
+PostRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      example: sample-consortium
+
+PostResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 5bc6980172b780d909aeab0f
+        name:
+          type: string
+          example: sample-consortium
+    msg:
+      type: string
+      example: success
+
+400Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+            example: Bad Request
