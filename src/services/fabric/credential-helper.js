@@ -131,12 +131,12 @@ module.exports.CredentialHelper = class CredentialHelper {
 module.exports.storeCredentials = async (credential) => {
     let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.name);
     try {
-        await credentialHelper.writeCaCerts(credential.rootCert);
-        await credentialHelper.writeTlsCaCerts(credential.rootCert);
-        await credentialHelper.writeAdminCerts(credential.adminCert);
-        await credentialHelper.writeKey(credential.adminKey);
-        await credentialHelper.writeSignCerts(credential.adminCert);
-        await credentialHelper.zipDirectoryFiles();
+        credentialHelper.writeCaCerts(credential.rootCert);
+        credentialHelper.writeTlsCaCerts(credential.rootCert);
+        credentialHelper.writeAdminCerts(credential.adminCert);
+        credentialHelper.writeKey(credential.adminKey);
+        credentialHelper.writeSignCerts(credential.adminCert);
+        credentialHelper.zipDirectoryFiles();
         return credentialHelper.dirName;
     } catch (e) {
         return Promise.reject('Failed storeCredentials:', e.message);
