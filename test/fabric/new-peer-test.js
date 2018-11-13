@@ -5,7 +5,6 @@ const app = require('../../src/index');
 const constants = require('./constants');
 const token = 'Bearer ' + constants.token;
 const peer = {
-    name: 'peer0',
     host: "39.106.149.201",
     username: "root",
     password: "Inkchain-passw0rd",
