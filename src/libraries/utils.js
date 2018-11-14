@@ -109,6 +109,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, por
             'CORE_LOGGING_LEVEL=debug',
             'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
             'CORE_VM_DOCKER_ATTACHSTDOUT=true',
+            'GODEBUG=netdns=go',
         ],
     };
 };
@@ -138,6 +139,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         '-e', 'CORE_LOGGING_LEVEL=debug',
         '-e', 'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
         '-e', 'CORE_VM_DOCKER_ATTACHSTDOUT=true',
+        '-e', 'GODEBUG=netdns=go',
 
         'hyperledger/fabric-ca-peer',
         '/bin/bash', '-c', 'peer node start',
