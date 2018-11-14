@@ -20,4 +20,8 @@ module.exports = class RequestDaoService {
         return request;
     }
 
+    async updateStatusById(id, status){
+        await RequestModel.findOneAndUpdate({_id: this.request._id},{status: status});
+    }
+
 };

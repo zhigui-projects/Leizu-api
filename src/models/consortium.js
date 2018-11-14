@@ -13,6 +13,7 @@ const consortiumSchema = new mongoose.Schema({
         default: false
     },
     network_config: String,
+    request_id: mongoose.Schema.ObjectId,
     date: {
         type: Date,
         default: Date.now()
