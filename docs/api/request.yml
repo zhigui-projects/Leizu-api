@@ -10,12 +10,27 @@ PostRequest:
     version:
       type: string
       example: 1.2
-    dbType:
+    db:
       type: string
       example: LevelDB
-    consensusType:
+    consensus:
       type: string
       example: solo
+    ordererOrg:
+      type: object
+      description: definition of orderer organization
+    peerOrgs:
+      type: array
+      description: definition of peer organizations
+    channel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: mychannel
+        orgs:
+          type: array
+          description: collection of organizations
 
 PostResponse:
   type: object

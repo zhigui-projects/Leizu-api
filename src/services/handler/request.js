@@ -1,7 +1,7 @@
 'use strict';
 
 const Handler = require('./handler');
-const Request = require('../db/request');
+const RequestDao = require('../db/request');
 const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
 const ActionFactory = require('../action/factory');
@@ -38,8 +38,8 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async persistRequest(){
-        let request = new Request();
-        this.request = await request.load(this.ctx.request.body);
+        let requestDao = new RequestDao();
+        this.request = await requestDao.addRequest(this.ctx.request.body);
     }
 
     decomposeRequest(){
