@@ -1,7 +1,7 @@
 'use strict';
 
 const Handler = require('./handler');
-const RequestDao = require('../db/request');
+const RequestDaoService = require('../db/request');
 const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
 const ActionFactory = require('../action/factory');
@@ -12,13 +12,14 @@ module.exports = class RequestHandler extends Handler {
     constructor(ctx){
         super(ctx);
         this.request = null;
+        this.requestDaoService = null;
         this.organizations = {};
         this.peers = {};
     }
 
     async handlerRequest(){
-        await this.persistRequest();
         try{
+            await this.persistRequest();
             this.decomposeRequest();
             await this.provisionNetwork();
         }catch(err){
@@ -38,8 +39,8 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async persistRequest(){
-        let requestDao = new RequestDao();
-        this.request = await requestDao.addRequest(this.ctx.request.body);
+        this.requestDaoService = new RequestDaoService();
+        this.request = await this.requestDaoService.addRequest(this.ctx.request.body);
     }
 
     decomposeRequest(){
@@ -48,7 +49,7 @@ module.exports = class RequestHandler extends Handler {
 
     async updateRequestStatus(status){
         this.request.status = status;
-        this.request = await Request.findOneAndUpdate({_id: this.request._id},{status: status});
+        this.request = await this.requestDaoService.updateStatusById(this.request._id,status);
     }
 
     async provisionNetwork(){
