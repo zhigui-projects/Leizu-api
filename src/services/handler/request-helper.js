@@ -6,6 +6,8 @@ module.exports = class RequestHelper {
         let result = {};
         result.OrgOrderer = {};
         result.OrgPeer = [];
+        result.orgs = {};
+        result.peers = {};
         return result;
     }
 

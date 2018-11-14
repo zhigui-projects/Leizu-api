@@ -25,30 +25,30 @@ module.exports = class ActionFactory {
     }
 
     static getRequestRollbackAction(params){
-        let rollBackAction = module.exports.ActionFactory.getAction(Registry.RESOURCE.REQUEST,Registry.TYPE.ROLLBACK);
-        let actionContext = module.exports.ActionFactory.createActionContext();
+        let rollBackAction = ActionFactory.getAction(Registry.RESOURCE.REQUEST,Registry.TYPE.ROLLBACK);
+        let actionContext = ActionFactory.createActionContext();
         actionContext.set(Registry.CONTEXT.CONSORTIUM_ID,params.id);
         rollBackAction.setActionContext(actionContext);
         return rollBackAction;
     }
 
     static getCAProvisionAction(params){
-        let provisionAction = module.exports.ActionFactory.getAction(Registry.RESOURCE.CA,Registry.TYPE.PROVISION);
-        let actionContext = module.exports.ActionFactory.createActionContext();
+        let provisionAction = ActionFactory.getAction(Registry.RESOURCE.CA,Registry.TYPE.PROVISION);
+        let actionContext = ActionFactory.createActionContext();
         provisionAction.setActionContext(actionContext);
         return provisionAction;
     }
 
     static getOrdererProvisionAction(params){
-        let provisionAction = module.exports.ActionFactory.getAction(Registry.RESOURCE.ORDERER,Registry.TYPE.PROVISION);
-        let actionContext = module.exports.ActionFactory.createActionContext();
+        let provisionAction = ActionFactory.getAction(Registry.RESOURCE.ORDERER,Registry.TYPE.PROVISION);
+        let actionContext = ActionFactory.createActionContext();
         provisionAction.setActionContext(actionContext);
         return provisionAction;
     }
 
     static getPeerProvisionAction(params){
-        let provisionAction = module.exports.ActionFactory.getAction(Registry.RESOURCE.PEER,Registry.TYPE.PROVISION);
-        let actionContext = module.exports.ActionFactory.createActionContext();
+        let provisionAction = ActionFactory.getAction(Registry.RESOURCE.PEER,Registry.TYPE.PROVISION);
+        let actionContext = ActionFactory.createActionContext();
         provisionAction.setActionContext(actionContext);
         return provisionAction;
     }
