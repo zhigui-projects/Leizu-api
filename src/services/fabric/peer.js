@@ -8,7 +8,6 @@ const PromClient = require('../prometheus/client');
 const DockerClient = require('../docker/client');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
-const stringUtil = require('../../libraries/string-util');
 const config = require('../../env');
 
 module.exports = class PeerService {
@@ -139,7 +138,7 @@ module.exports = class PeerService {
     static async prepareCerts(org, peerName) {
         const ca = await DbService.findCertAuthorityByOrg(org._id);
         const peerAdminUser = {
-            enrollmentID: peerName,
+            enrollmentID: `${peerName}.${org.domain_name}`,
             enrollmentSecret: `${peerName}pw`,
         };
         const options = {
