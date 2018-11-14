@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    serviceName: 'my-consortium',
+    name: 'my-consortium',
     version: 'fabric 1.2',
     serviceType: 0,
     ledgerDB: 'goleveldb',
