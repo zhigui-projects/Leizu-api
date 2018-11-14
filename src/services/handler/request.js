@@ -31,6 +31,7 @@ module.exports = class RequestHandler extends Handler {
             }
             throw err;
         }
+        return this.request;
     }
 
     async persistRequest(){

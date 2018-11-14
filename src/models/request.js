@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const requestSchema = new mongoose.Schema({
     uuid: String,
-    serviceName: String,
+    name: String,
     version: String,
     serviceType: Number,
     ledgerDB: String,
