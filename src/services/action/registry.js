@@ -3,7 +3,10 @@
 module.exports = {
     RESOURCE: {
         PEER: 'peer',
-        ORDERER: 'orderer'
+        ORDERER: 'orderer',
+        CONSORTIUM: 'consortium',
+        REQUEST: 'request',
+        CA: 'ca'
     },
     TYPE: {
         PROVISION: 'provision',
