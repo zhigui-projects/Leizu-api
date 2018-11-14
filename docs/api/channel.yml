@@ -100,15 +100,12 @@ Error:
 Create:
   type: object
   properties:
-    consortiumId:
+    organizationId:
       type: string
-      example: 5bc9387fa37c2749d6b69e14
+      example: 5bebdfb07ac700dbd052d63c
     name:
       type: string
       example: mychannel
-    profile:
-      type: string
-      example: OrgsChannel
 Update:
   type: object
   properties:

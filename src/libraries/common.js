@@ -13,6 +13,8 @@ module.exports.CONSENSUS_SOLO = 'solo';
 module.exports.CONSENSUS_SOLO_VALUE = 0;
 module.exports.CONSENSUS_KAFKE = 'kafka';
 module.exports.CONSENSUS_KAFKA_VALUE = 1;
+module.exports.CONFIFTX_OUTPUT_GENESIS_BLOCK = 'OrdererGenesis';
+module.exports.CONFIFTX_OUTPUT_CHANNEL = 'OrgsChannel';
 
 // REQUEST STATUS SECTION
 module.exports.REQUEST_STATUS_PENDING = 'pending';
