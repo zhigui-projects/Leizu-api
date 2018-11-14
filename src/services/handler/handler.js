@@ -7,7 +7,7 @@ module.exports = class HttpHandler{
     constructor(ctx){
         this.ctx = ctx;
         this.context = new RequestContext();
-        this.data = null;
+        this.response = null;
     }
 
     setRequestContext(context){
@@ -18,7 +18,7 @@ module.exports = class HttpHandler{
         await this.preRequest();
         await this.handlerRequest();
         await this.postRequest();
-        return this.data;
+        return this.response;
     }
 
     async preRequest(){

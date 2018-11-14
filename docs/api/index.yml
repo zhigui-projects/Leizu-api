@@ -591,6 +591,31 @@ paths:
         200:
           description: OK
 
+  /request:
+    post:
+      tags:
+      - request
+      summary: Bootstrap blockchain network
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - name: request
+          in: body
+          description: necessary parameters for provisioning blockchain network
+          required: true
+          schema:
+            $ref: "request.yml#/PostRequest"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "request.yml#/PostResponse"
+        400:
+          description: Unauthorized
+          schema:
+            $ref: "request.yml#/400Error"
   /container:
     get:
       tags:
