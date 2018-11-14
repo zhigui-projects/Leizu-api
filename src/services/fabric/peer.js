@@ -2,11 +2,13 @@
 
 const ChannelService = require('./join-channel');
 const CredentialHelper = require('./credential-helper');
+const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
 const PromClient = require('../prometheus/client');
 const DockerClient = require('../docker/client');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
+const stringUtil = require('../../libraries/string-util');
 const config = require('../../env');
 
 module.exports = class PeerService {
@@ -28,7 +30,7 @@ module.exports = class PeerService {
             }
             let organizationName = (org && org.name) || null;
             let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id)))
-            .map(channel => channel.name);
+                .map(channel => channel.name);
             let cpuMetric = cpuMetrics.find(data => peer.location.includes(data.metric.name));
             let cpu = 0;
             if (cpuMetric) {
@@ -93,7 +95,7 @@ module.exports = class PeerService {
             };
         }
 
-        await this.preContainerStart({org, connectionOptions});
+        await this.preContainerStart({org, peerName, connectionOptions});
 
         const client = DockerClient.getInstance(connectionOptions);
         const parameters = utils.generatePeerContainerOptions(containerOptions, connectionOptions.mode);
@@ -110,9 +112,10 @@ module.exports = class PeerService {
         }
     }
 
-    static async preContainerStart(params) {
-        const {org, connectionOptions} = params;
-        const certFile = `${org.msp_path}.zip`;
+    static async preContainerStart({org, peerName, connectionOptions}) {
+        const peerDto = await this.prepareCerts(org, peerName);
+
+        const certFile = peerDto.credentialsPath;
         const remoteFile = `${common.PEER_HOME}/${org.consortium_id}/${org.name}.zip`;
         const remotePath = `${common.PEER_HOME}/${org.consortium_id}/${org.name}`;
         await DockerClient.getInstance(connectionOptions).transferFile({
@@ -122,8 +125,8 @@ module.exports = class PeerService {
         const bash = DockerClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
         await bash.exec(['-c', `mkdir -p ${remotePath}/msp ${remotePath}/tls`]);
         await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}/msp`]);
-        await bash.exec(['-c', `cp ${remotePath}/msp/signcerts/* ${remotePath}/tls/server.crt`]);
-        await bash.exec(['-c', `cp ${remotePath}/msp/keystore/* ${remotePath}/tls/server.key`]);
+        await bash.exec(['-c', `cp ${remotePath}/msp/tls/cert.pem ${remotePath}/tls/server.crt`]);
+        await bash.exec(['-c', `cp ${remotePath}/msp/tls/key.pem ${remotePath}/tls/server.key`]);
         await bash.exec(['-c', `cp ${remotePath}/msp/cacerts/* ${remotePath}/tls/ca.pem`]);
 
         const configTxPath = `${config.configtxlator.dataPath}/${org.consortium_id}/${org.name}`;
@@ -131,5 +134,37 @@ module.exports = class PeerService {
             localDir: org.msp_path,
             remoteDir: configTxPath
         });
+    }
+
+    static async prepareCerts(org, peerName) {
+        const ca = await DbService.findCertAuthorityByOrg(org._id);
+        const peerAdminUser = {
+            enrollmentID: peerName,
+            enrollmentSecret: `${peerName}pw`,
+        };
+        const options = {
+            caName: ca.name,
+            orgName: org.name,
+            url: ca.url,
+            adminUser: peerAdminUser
+        };
+        const caService = new CryptoCaService(options);
+        await caService.bootstrapUserEnrollement();
+        await caService.registerPeerAdminUser();
+        const mspInfo = await caService.enrollUser(peerAdminUser);
+        const tlsInfo = await caService.enrollUser(Object.assign({}, peerAdminUser, {profile: 'tls'}));
+        const peerDto = {
+            name: org.name,
+            consortiumId: org.consortium_id.toString(),
+            tls: {}
+        };
+        peerDto.key = mspInfo.key.toBytes();
+        peerDto.signCert = mspInfo.certificate;
+        peerDto.adminCert = org.admin_cert;
+        peerDto.rootCert = org.root_cert;
+        peerDto.tls.key = tlsInfo.key.toBytes();
+        peerDto.tls.cert = tlsInfo.certificate;
+        peerDto.credentialsPath = await CredentialHelper.storeCredentials(peerDto);
+        return peerDto;
     }
 };

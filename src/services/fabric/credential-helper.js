@@ -16,9 +16,9 @@ module.exports.CERT_PATHS = {
 
 module.exports.CredentialHelper = class CredentialHelper {
 
-    constructor(consortiumId, mspId) {
-        this.dirName = path.join('/tmp/crypto-config', consortiumId, mspId);
-        this.archiveFileName = path.join('/tmp/crypto-config', consortiumId, mspId + '.zip');
+    constructor(consortiumId, orgName) {
+        this.dirName = path.join('/tmp/crypto-config', consortiumId, orgName);
+        this.archiveFileName = path.join('/tmp/crypto-config', consortiumId, orgName + '.zip');
     }
 
     writeCaCerts(caCert) {
@@ -134,10 +134,11 @@ module.exports.storeCredentials = async (credential) => {
         credentialHelper.writeCaCerts(credential.rootCert);
         credentialHelper.writeTlsCaCerts(credential.rootCert);
         credentialHelper.writeAdminCerts(credential.adminCert);
-        credentialHelper.writeKey(credential.adminKey);
-        credentialHelper.writeSignCerts(credential.adminCert);
-        credentialHelper.zipDirectoryFiles();
-        return credentialHelper.dirName;
+        credentialHelper.writeKey(credential.key || credential.adminKey);
+        credentialHelper.writeSignCerts(credential.signCert || credential.adminCert);
+        credentialHelper.writeTlsCert(credential.tls);
+        await credentialHelper.zipDirectoryFiles();
+        return credentialHelper.archiveFileName;
     } catch (e) {
         return Promise.reject('Failed storeCredentials:', e.message);
     }
