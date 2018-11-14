@@ -141,6 +141,7 @@ module.exports = class DbService {
         let organization = new Organization();
         organization.uuid = uuid();
         organization.name = dto.name;
+        organization.domain_name = dto.domainName;
         organization.msp_id = dto.mspId;
         organization.admin_key = dto.adminKey;
         organization.admin_cert = dto.adminCert;
@@ -160,5 +161,9 @@ module.exports = class DbService {
         certAuthority.consortium_id = dto.consortiumId;
         certAuthority = certAuthority.save();
         return certAuthority;
+    }
+
+    static async findCertAuthorityByOrg(orgId) {
+        return await CertAuthority.findOne({org_id: orgId});
     }
 };

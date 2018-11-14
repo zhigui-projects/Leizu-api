@@ -75,7 +75,7 @@ module.exports.generatePeerContainerOptions = (options, mode) => {
     }
 };
 
-const generatePeerContainerOptionsForDocker = ({port, peerName, workingDir, mspid}) => {
+const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, port, workingDir}) => {
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
@@ -93,11 +93,11 @@ const generatePeerContainerOptionsForDocker = ({port, peerName, workingDir, mspi
             ],
         },
         Env: [
-            `CORE_PEER_ID=${peerName}`,
-            `CORE_PEER_ADDRESS=${peerName}:${port}`,
+            `CORE_PEER_ID=${peerName}.${domainName}`,
+            `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
             `CORE_PEER_LOCALMSPID=${mspid}`,
             `CORE_PEER_MSPCONFIGPATH=/data/msp`,
-            `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}:${port}`,
+            `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
             'CORE_PEER_GOSSIP_USELEADERELECTION=true',
             'CORE_PEER_GOSSIP_ORGLEADER=false',
             'CORE_PEER_TLS_ENABLED=true',
@@ -113,20 +113,20 @@ const generatePeerContainerOptionsForDocker = ({port, peerName, workingDir, mspi
     };
 };
 
-const generatePeerContainerOptionsForSSH = ({peerName, mspid, port, workingDir}) => {
+const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, workingDir}) => {
     return [
         'create',
-        '--name', peerName,
-        '--hostname', peerName,
+        '--name', `${peerName}.${domainName}`,
+        '--hostname', `${peerName}.${domainName}`,
         '-p', `${port}:7051`,
         '-w', workingDir,
         '-v', `${workingDir}:/data`,
         '-v', '/var/run:/var/run',
-        '-e', `CORE_PEER_ID=${peerName}`,
-        '-e', `CORE_PEER_ADDRESS=${peerName}:${port}`,
+        '-e', `CORE_PEER_ID=${peerName}.${domainName}`,
+        '-e', `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
         '-e', `CORE_PEER_LOCALMSPID=${mspid}`,
         '-e', `CORE_PEER_MSPCONFIGPATH=/data/msp`,
-        '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}:${port}`,
+        '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
         '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
         '-e', 'CORE_PEER_GOSSIP_ORGLEADER=false',
         '-e', 'CORE_PEER_TLS_ENABLED=true',

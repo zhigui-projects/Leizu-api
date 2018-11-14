@@ -66,10 +66,11 @@ module.exports = class PeerService {
     static async create(params) {
         const {organizationId, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
-        const peerName = `${org.name}-${host.replace(/\./g, '-')}`;
+        const peerName = `peer-${host.replace(/\./g, '-')}`;
         let containerOptions = {
             workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}`,
             peerName: peerName,
+            domainName: org.domain_name,
             mspid: org.msp_id,
             port: common.PORT_PEER
         };
