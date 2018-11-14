@@ -18,6 +18,8 @@ module.exports.wait = async (resources) => {
     }
 };
 
+module.exports.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 module.exports.extend = (target, source) => {
     if (source === null || typeof source !== 'object') return target;
 
@@ -125,6 +127,8 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         '-e', `CORE_PEER_ID=${peerName}.${domainName}`,
         '-e', `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
         '-e', `CORE_PEER_LOCALMSPID=${mspid}`,
+        '-e', `CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_default`,
+        '-e', `GODEBUG=netdns=go`,
         '-e', `CORE_PEER_MSPCONFIGPATH=/data/msp`,
         '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
         '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
