@@ -42,6 +42,12 @@ module.exports.asyncForEach = async (array, callback) => {
     return results;
 };
 
+module.exports.generateDomainName = (prefixName) => {
+    let parts = [];
+    parts.push(prefixName);
+    parts.push(common.BASE_DOMAIN_NAME);
+    return parts.join(common.SEPARATOR_DOT);
+};
 
 module.exports.generateCertAuthContainerOptions = (options) => {
     return {
@@ -70,6 +76,16 @@ module.exports.generateCertAuthContainerCreateOptions = (options) => {
     ];
 };
 
+module.exports.generateContainerNetworkOptions = (options) => {
+    options = options || {};
+    return [
+        'network',
+        'create',
+        '--driver', options.driver || common.DEFAULT_NETWORK.DRIVER,
+        options.name || common.DEFAULT_NETWORK.NAME
+    ]
+};
+
 module.exports.generatePeerContainerOptions = (options, mode) => {
     switch (mode) {
         case common.MODES.DOCKER:
@@ -90,6 +106,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, por
         WorkingDir: workingDir,
         Cmd: ['/bin/bash', '-c', 'peer node start'],
         HostConfig: {
+            NetworkMode: common.DEFAULT_NETWORK.NAME,
             PortBindings: portBindings,
             Binds: [
                 `${workingDir}/data:/data`,
@@ -113,6 +130,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, por
             'CORE_LOGGING_LEVEL=debug',
             'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
             'CORE_VM_DOCKER_ATTACHSTDOUT=true',
+            'GODEBUG=netdns=go',
         ],
     };
 };
@@ -122,6 +140,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         'create',
         '--name', `${peerName}.${domainName}`,
         '--hostname', `${peerName}.${domainName}`,
+        '--network', common.DEFAULT_NETWORK.NAME,
         '-p', `${port}:7051`,
         '-w', workingDir,
         '-v', `${workingDir}:/data`,
@@ -144,6 +163,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         '-e', 'CORE_LOGGING_LEVEL=debug',
         '-e', 'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
         '-e', 'CORE_VM_DOCKER_ATTACHSTDOUT=true',
+        '-e', 'GODEBUG=netdns=go',
 
         'hyperledger/fabric-ca-peer',
         '/bin/bash', '-c', 'peer node start',

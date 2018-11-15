@@ -1,9 +1,9 @@
 'use strict';
 
+const logger = require('../../libraries/log4js');
+logger.category = 'RequestHandler';
 const Handler = require('./handler');
 const RequestDaoService = require('../db/request');
-const logger = require('../../libraries/log4js');
-const common = require('../../libraries/common');
 const ActionFactory = require('../action/factory');
 const RequestHelper = require('./request-helper');
 
@@ -13,8 +13,12 @@ module.exports = class RequestHandler extends Handler {
         super(ctx);
         this.request = null;
         this.requestDaoService = null;
-        this.organizations = {};
+        this.organizations = {
+            peerOrgs: [],
+            ordererOrg: {}
+        };
         this.peers = {};
+        this.orderer = {};
     }
 
     async handlerRequest(){
@@ -23,13 +27,14 @@ module.exports = class RequestHandler extends Handler {
             this.decomposeRequest();
             await this.provisionNetwork();
         }catch(err){
-            logger.error(err);
             try{
-                let rollBackAction = ActionFactory.getRequestRollbackAction({id:'to-be-id'});
+                let rollBackAction = ActionFactory.getRequestRollbackAction({id:this.request._id});
                 await rollBackAction.execute();
             }catch(ex){
+                logger.error(ex);
                 throw ex;
             }
+            logger.error(err);
             throw err;
         }
     }
@@ -53,18 +58,25 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async provisionNetwork(){
-        await this.provisionOrganizations();
+        await this.provisionPeerOrganizations();
         await this.provisionPeers();
+        await this.provisionOrdererOrganization();
         await this.prepareGenesisBlocks();
         await this.provisionOrderers();
         await this.makePeersJoinChannel();
     }
 
-    async provisionOrganizations(){
-        for(let org in this.parsedRequest.orgs){
-            let provisionAction = ActionFactory.getCAProvisionAction(org);
-            this.organizations[org.name] = await provisionAction.execute();
+    async provisionPeerOrganizations(){
+        for(let peer of this.parsedRequest.peers){
+            let provisionAction = ActionFactory.getCAProvisionAction(peer);
+            this.organizations.peerOrgs[peer.orgName] = await provisionAction.execute();
         }
+    }
+
+    async provisionOrdererOrganization(){
+        let orderer = this.parsedRequest.orderer;
+        let provisionAction = ActionFactory.getCAProvisionAction(orderer);
+        this.organizations.ordererOrg[orderer.orgName] = await provisionAction.execute();
     }
 
     async prepareGenesisBlocks(){
@@ -72,14 +84,14 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async provisionPeers(){
-        for(let peer in this.parsedRequest.peers){
+        for(let peer of this.parsedRequest.peers){
             let provisionAction = ActionFactory.getPeerProvisionAction(peer);
             this.peers[peer.name] = await provisionAction.execute();
         }
     }
 
     async provisionOrderers(){
-        let provisionAction = ActionFactory.getOrdererProvisionAction(this.parsedRequest.OrgOrderer);
+        let provisionAction = ActionFactory.getOrdererProvisionAction(this.parsedRequest.orderer);
         this.orderer = await provisionAction.execute();
     }
 
