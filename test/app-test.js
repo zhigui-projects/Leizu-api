@@ -1,7 +1,6 @@
 'use strict';
 
 require('should');
-'use strict';
 
 const request = require('supertest');
 const app = require('../src/index');
