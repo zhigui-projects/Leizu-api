@@ -17,10 +17,11 @@ async function testCryptoCaService() {
     let result = await cryptoCaService.postContainerStart();
     if (result) {
         let credential = {};
+        credential.name = name;
         credential.adminKey = result.enrollment.key.toBytes();
         credential.adminCert = result.enrollment.certificate;
         credential.rootCert = result.enrollment.rootCertificate;
-        let filePath = CredentialHelper.storeCredentials(name,credential);
+        let filePath = CredentialHelper.storeCredentials(credential);
         console.log(filePath);
     }
 }

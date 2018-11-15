@@ -25,15 +25,6 @@ module.exports = class DbService {
         return channel;
     }
 
-    static async addChannel(dto) {
-        let channel = new Channel();
-        channel.uuid = uuid();
-        channel.name = dto.name;
-        channel.consortium_id = dto.consortiumId;
-        channel = await channel.save();
-        return channel;
-    }
-
     static async countChannelByConsortiumId(consortiumId) {
         let count = await Channel.count({consortium_id: consortiumId});
         return count;
@@ -151,6 +142,7 @@ module.exports = class DbService {
         let organization = new Organization();
         organization.uuid = uuid();
         organization.name = dto.name;
+        organization.domain_name = dto.domainName;
         organization.msp_id = dto.mspId;
         organization.admin_key = dto.adminKey;
         organization.admin_cert = dto.adminCert;
@@ -170,5 +162,9 @@ module.exports = class DbService {
         certAuthority.consortium_id = dto.consortiumId;
         certAuthority = certAuthority.save();
         return certAuthority;
+    }
+
+    static async findCertAuthorityByOrg(orgId) {
+        return await CertAuthority.findOne({org_id: orgId});
     }
 };

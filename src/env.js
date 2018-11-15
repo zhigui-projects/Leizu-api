@@ -20,25 +20,17 @@ module.exports = {
     },
     configtxlator: {
         url: 'http://59.110.164.211:7059',
-        host:'59.110.164.211',
-        username:'root',
-        password:'Zigcompile-passw0rd'
+        dataPath: '/tmp/configtxlator/data',
+        connectionOptions: {
+            mode: 'ssh',
+            host: '59.110.164.211',
+            username: 'root',
+            password: 'Zigcompile-passw0rd',
+            port: 22
+        }
     },
-    configTx: {
-        dir: '../../../configtx',
-        name: 'configtx.yaml'
-    },
-    neworg: {
-        path: '../../../build/configtxlator/newOrg/configtx.yaml'
-    },
-    genesisFileSaveDir: {
-        path: '../../../tmp/'
-    },
-    genesisProfile: 'OrgsOrdererGenesis',
-    genesisChannel: 'OrgsChannel',
-    mspFile: {
-        localDir:'../../../mspDir',
-        serverDir: '/tmp/configtxlator/data',
-        containerPath:'/work/data/$cId/orgs/$org/msp'
-    },
+    cryptoConfig: {
+        name: 'configtx.yaml',
+        path: '/tmp/crypto-config'
+    }
 };

@@ -1,7 +1,7 @@
 let handler = require('../../src/services/fabric/create-channel');
-let config = require('./env-dev');
+let config = require('./env-sample');
 
-handler.createChannel('OrgsChannel', 'mychannel', config.config).then(result => {
+handler.createChannel('TwoOrgsChannel', 'mychannel', config.config).then(result => {
     console.log(result);
 }, err => {
     console.log(err);

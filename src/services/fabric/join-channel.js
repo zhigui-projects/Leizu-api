@@ -8,22 +8,20 @@ var Client = require('fabric-client');
 /*
  * Have an organization join a channel
  */
-var joinChannel = async function (channelName, config, peers) {
+var joinChannel = async function (channelName, config) {
     var errorMessage = null;
     try {
         // first setup the client for this org
         let client = new Client();
-        client.setAdminSigningIdentity(config.peerConfig.adminKey, config.peerConfig.adminCert, config.peerConfig.mspid);
+        client.setAdminSigningIdentity(config.newConfig.adminKey, config.newConfig.adminCert, config.newConfig.mspid);
         let orderer = await query.newOrderer(client, config);
         let channel = client.newChannel(channelName);
         channel.addOrderer(orderer);
 
         let targets = [];
-        for (let i of peers) {
-            let peer = await query.newPeer(client, config.caConfig, i);
-            targets.push(peer);
-            channel.addPeer(peer);
-        }
+        let peer = await query.newPeer(client, config.caConfig, config.newConfig);
+        targets.push(peer);
+        channel.addPeer(peer);
 
         // next step is to get the genesis_block from the orderer,
         // the starting point for the channel that we want to join

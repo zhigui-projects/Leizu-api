@@ -16,13 +16,12 @@
  *        superagent-promise
  */
 
-var fs = require('fs');
-var path = require('path');
 var query = require('./query');
-var configTx = require('../../env').neworg;
 var logger = require('../../libraries/log4js').getLogger('Update-Channel');
 var configtxlator = require('./configtxlator');
 var Client = require('fabric-client');
+var stringUtil = require('../../libraries/string-util');
+var ConfigTxBuilder = require('./configtxgen');
 
 /*
  *  C H A N N E L  U P D A T E
@@ -51,7 +50,7 @@ var Client = require('fabric-client');
  *    the "ConfigUpdate" object.
  */
 
-module.exports.updateChannel = async (orgName, channelName, config) => {
+module.exports.updateChannel = async (org, channelName, config) => {
     try {
         let client = new Client();
         client.setAdminSigningIdentity(config.peerConfig.adminKey, config.peerConfig.adminCert, config.peerConfig.mspid);
@@ -76,9 +75,12 @@ module.exports.updateChannel = async (orgName, channelName, config) => {
         // now edit the config -- add one of the organizations
         //Add a new org, you should prepare a related msp for the target org first
         //Build a new organisation group for application group section
-        var configtx = fs.readFileSync(path.join(__dirname, configTx.path));
+        var configtxgen = new ConfigTxBuilder(org);
+        var configtx = Buffer.from(configtxgen.buildPrintOrg());
+        let orgName = org.Organizations[0].Name;
         let orgBytes = await configtxlator.printOrg(orgName, configtx, '');
-        updatedConfig.channel_group.groups.Application.groups[orgName] = JSON.parse(orgBytes);
+        let orgMsp = stringUtil.getMspId(orgName);
+        updatedConfig.channel_group.groups.Application.groups[orgMsp] = JSON.parse(orgBytes);
 
         updatedConfigJson = JSON.stringify(updatedConfig);
         // logger.debug(' updated_config_json :: %s', updatedConfigJson);

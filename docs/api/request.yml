@@ -1,0 +1,67 @@
+PostRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      example: my-consortium
+    type:
+      type: string
+      example: fabric
+    version:
+      type: string
+      example: 1.2
+    db:
+      type: string
+      example: LevelDB
+    consensus:
+      type: string
+      example: solo
+    ordererOrg:
+      type: object
+      description: definition of orderer organization
+    peerOrgs:
+      type: array
+      description: definition of peer organizations
+    channel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: mychannel
+        orgs:
+          type: array
+          description: collection of organizations
+
+PostResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 5bc6980172b780d909aeab0f
+        name:
+          type: string
+          example: my-consortium
+    msg:
+      type: string
+      example: success
+
+400Error:
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+            example: Bad Request

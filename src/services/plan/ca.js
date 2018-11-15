@@ -2,12 +2,12 @@
 
 const NodePlan = require('./plan');
 
-module.exports = class OrdererPlan extends NodePlan {
+module.exports = class CAPlan extends NodePlan {
 
     constructor(target){
         super(target);
-        this.planName = 'OrdererPlan';
-        this.targetName = 'OrdererTarget';
+        this.planName = 'CAPlan';
+        this.targetName = 'CATarget';
     }
 
     init(){
@@ -25,5 +25,6 @@ module.exports = class OrdererPlan extends NodePlan {
         this.plan.run(this.planName,this.targetName);
         this.flushFinishedTasks();
     }
+
 
 };
