@@ -236,16 +236,16 @@ module.exports.newOrderer = async (client, config) => {
 
 module.exports.newPeer = async (client, caConfig, peerConfig) => {
     // let enrollment = await module.exports.getClientKeyAndCert(caConfig);
-    // let options = {
-    //     pem: enrollment.rootCertificate,
-    //     'clientCert': enrollment.certificate,
-    //     'clientKey': enrollment.key,
-    //     'ssl-target-name-override': peerConfig['server-hostname']
-    // };
-    // return client.newPeer(peerConfig.url, options);
-    return client.newPeer(peerConfig.url, {
-        'pem': peerConfig.pem,
-        'ssl-target-name-override': peerConfig['server-hostname'],
-        name: peerConfig['server-hostname']
-    });
+    let options = {
+        pem: peerConfig.pem,
+        'clientCert': peerConfig.tlsCert,
+        'clientKey': peerConfig.tlsKey,
+        'ssl-target-name-override': peerConfig['server-hostname']
+    };
+    return client.newPeer(peerConfig.url, options);
+    // return client.newPeer(peerConfig.url, {
+    //     'pem': peerConfig.pem,
+    //     'ssl-target-name-override': peerConfig['server-hostname'],
+    //     name: peerConfig['server-hostname']
+    // });
 };

@@ -60,7 +60,7 @@ router.get('/:id', async ctx => {
 router.post('/', async ctx => {
     const {name, consortiumId, domainName, host, port, username, password} = ctx.request.body;
     let orgDto = {
-        name: name,
+        orgName: name,
         domainName: domainName,
         mspId: stringUtil.getMspId(name),
         consortiumId: consortiumId
@@ -118,6 +118,7 @@ router.post('/', async ctx => {
         }
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
+        console.log('error: ', err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }

@@ -89,6 +89,30 @@ module.exports = class CryptoCA {
         }
     }
 
+    async registerPeerAdminUser(){
+        try {
+            let caService = this.getFabricCaService();
+            let attrs = [
+                { name: HFCAIdentityAttributes.HFREGISTRARROLES, value: HFCAIdentityType.PEER },
+                { name: HFCAIdentityAttributes.HFREGISTRARATTRIBUTES, value: '*'},
+                { name: HFCAIdentityAttributes.HFREVOKER, value: 'true'},
+                { name: HFCAIdentityAttributes.HFGENCRL, value: 'true'},
+                { name: 'admin', value: 'true:ecert'},
+                { name: 'abac.init', value: 'true:ecert'}
+            ];
+            let identity = {
+        		enrollmentID: this.adminUser.enrollmentID,
+        		enrollmentSecret: this.adminUser.enrollmentSecret,
+        		affiliation: this.orgName,
+                maxEnrollments: -1,
+        		attrs: attrs
+    	    };
+            return await caService.register(identity, this.bootstrapEnrollment);
+        }catch(err){
+            console.error(err);
+        }
+    }
+
     async registerUser(user){
         try {
             let caService = this.getFabricCaService();
