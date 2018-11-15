@@ -35,6 +35,7 @@ module.exports = class ActionFactory {
     static getCAProvisionAction(params){
         let provisionAction = ActionFactory.getAction(Registry.RESOURCE.CA,Registry.TYPE.PROVISION);
         let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS,params);
         provisionAction.setActionContext(actionContext);
         return provisionAction;
     }
@@ -42,6 +43,7 @@ module.exports = class ActionFactory {
     static getOrdererProvisionAction(params){
         let provisionAction = ActionFactory.getAction(Registry.RESOURCE.ORDERER,Registry.TYPE.PROVISION);
         let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS,params);
         provisionAction.setActionContext(actionContext);
         return provisionAction;
     }
@@ -49,6 +51,7 @@ module.exports = class ActionFactory {
     static getPeerProvisionAction(params){
         let provisionAction = ActionFactory.getAction(Registry.RESOURCE.PEER,Registry.TYPE.PROVISION);
         let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS,params);
         provisionAction.setActionContext(actionContext);
         return provisionAction;
     }

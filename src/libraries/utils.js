@@ -40,6 +40,12 @@ module.exports.asyncForEach = async (array, callback) => {
     return results;
 };
 
+module.exports.generateDomainName = (prefixName) => {
+    let parts = [];
+    parts.push(prefixName);
+    parts.push(common.BASE_DOMAIN_NAME);
+    return parts.join(common.SEPARATOR_DOT);
+};
 
 module.exports.generateCertAuthContainerOptions = (options) => {
     return {
