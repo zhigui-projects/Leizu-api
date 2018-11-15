@@ -27,7 +27,7 @@ module.exports = class ActionFactory {
     static getRequestRollbackAction(params){
         let rollBackAction = ActionFactory.getAction(Registry.RESOURCE.REQUEST,Registry.TYPE.ROLLBACK);
         let actionContext = ActionFactory.createActionContext();
-        actionContext.set(Registry.CONTEXT.CONSORTIUM_ID,params.id);
+        actionContext.set(Registry.CONTEXT.REQUEST_ID,params.id);
         rollBackAction.setActionContext(actionContext);
         return rollBackAction;
     }
