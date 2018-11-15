@@ -134,12 +134,12 @@ module.exports.CredentialHelper = class CredentialHelper {
 };
 
 module.exports.storeCredentials = async (credential) => {
-    let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.name);
+    let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.orgName);
     try {
         credentialHelper.writeCaCerts(credential.rootCert);
         credentialHelper.writeTlsCaCerts(credential.rootCert);
         credentialHelper.writeAdminCerts(credential.adminCert);
-        credentialHelper.writeKey(credential.key || credential.adminKey);
+        credentialHelper.writeKey(credential.signkey || credential.adminKey);
         credentialHelper.writeSignCerts(credential.signCert || credential.adminCert);
         credentialHelper.writeTlsCert(credential.tls);
         await credentialHelper.zipDirectoryFiles();

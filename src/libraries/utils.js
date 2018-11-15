@@ -86,6 +86,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, por
         WorkingDir: workingDir,
         Cmd: ['/bin/bash', '-c', 'peer node start'],
         HostConfig: {
+            NetworkMode: common.DEFAULT_NETWORK,
             PortBindings: portBindings,
             Binds: [
                 `${workingDir}/data:/data`,
@@ -119,6 +120,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         'create',
         '--name', `${peerName}.${domainName}`,
         '--hostname', `${peerName}.${domainName}`,
+        '--network', common.DEFAULT_NETWORK,
         '-p', `${port}:7051`,
         '-w', workingDir,
         '-v', `${workingDir}:/data`,
