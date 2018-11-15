@@ -118,6 +118,7 @@ router.post('/', async ctx => {
         }
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
+        console.log('error: ', err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
