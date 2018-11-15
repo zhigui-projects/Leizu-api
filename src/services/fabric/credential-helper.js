@@ -5,6 +5,7 @@ const shell = require('shelljs');
 const path = require('path');
 const archiver = require('archiver');
 const stringUtil = require('../../libraries/string-util');
+const logger = require('../../libraries/log4js').getLogger('CredentialHelper');
 
 module.exports.CERT_PATHS = {
     cacerts: 'cacerts',
@@ -62,6 +63,10 @@ module.exports.CredentialHelper = class CredentialHelper {
     }
 
     writeTlsCert(tls) {
+        if (!tls) {
+            logger.warn('Failed to write TLS cert because tls content is empty');
+            return;
+        }
         let dirName = path.join(this.dirName, 'tls');
         if (this.isDirExists(dirName)) {
             this.removeDir(dirName);
@@ -140,6 +145,7 @@ module.exports.storeCredentials = async (credential) => {
         await credentialHelper.zipDirectoryFiles();
         return credentialHelper.archiveFileName;
     } catch (e) {
-        return Promise.reject('Failed storeCredentials:', e.message);
+        logger.error(e);
+        return Promise.reject(`Failed storeCredentials: ${e}`);
     }
 };
