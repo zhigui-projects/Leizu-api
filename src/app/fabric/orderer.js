@@ -9,7 +9,7 @@ const common = require('../../libraries/common');
 const DbService = require('../../services/db/dao');
 const DockerClient = require('../../services/docker/client');
 const Configtxlator = require('../../services/fabric/configtxlator');
-const CreateConfigtx = require('../../services/fabric/create-configtx');
+const CreateConfigtx = require('../../services/fabric/configtxgen');
 const SshProvider = require('../../services/docker/ssh-provider');
 
 

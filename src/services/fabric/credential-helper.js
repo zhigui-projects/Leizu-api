@@ -5,6 +5,7 @@ const shell = require('shelljs');
 const path = require('path');
 const archiver = require('archiver');
 const stringUtil = require('../../libraries/string-util');
+const cryptoConfig = require('../../env').cryptoConfig;
 
 module.exports.CERT_PATHS = {
     cacerts: 'cacerts',
@@ -17,8 +18,8 @@ module.exports.CERT_PATHS = {
 module.exports.CredentialHelper = class CredentialHelper {
 
     constructor(consortiumId, mspId) {
-        this.dirName = path.join('/tmp/crypto-config', consortiumId, mspId);
-        this.archiveFileName = path.join('/tmp/crypto-config', consortiumId, mspId + '.zip');
+        this.dirName = path.join(cryptoConfig.path, consortiumId, mspId);
+        this.archiveFileName = path.join(cryptoConfig.path, consortiumId, mspId + '.zip');
     }
 
     writeCaCerts(caCert) {

@@ -25,15 +25,6 @@ module.exports = class DbService {
         return channel;
     }
 
-    static async addChannel(dto) {
-        let channel = new Channel();
-        channel.uuid = uuid();
-        channel.name = dto.name;
-        channel.consortium_id = dto.consortiumId;
-        channel = await channel.save();
-        return channel;
-    }
-
     static async countChannelByConsortiumId(consortiumId) {
         let count = await Channel.count({consortium_id: consortiumId});
         return count;
