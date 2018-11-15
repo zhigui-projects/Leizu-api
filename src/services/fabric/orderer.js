@@ -6,8 +6,9 @@ const env = require('../../env');
 const common = require('../../libraries/common');
 const DbService = require('../db/dao');
 const DockerClient = require('../docker/client');
-const ConfigTxlator = require('../fabric/configtxlator');
-const configTxgen = require('../fabric/configtxgen');
+
+const ConfigTxlator = require('./configtxlator');
+const CreateConfigTx = require('./configtxgen');
 const SshProvider = require('../docker/ssh-provider');
 const stringUtils = require('../../libraries/string-util');
 

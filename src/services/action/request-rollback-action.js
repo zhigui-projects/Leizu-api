@@ -17,7 +17,7 @@ module.exports = class RequestRollBackAction extends Action {
     }
 
     async execute(){
-        let consortiumId = this.getConsortiumId();
+        let consortiumId = await this.getConsortiumId();
         let condition = {consortium_id: consortiumId};
         await Organization.remove(condition);
         await Channel.remove(condition);
@@ -28,8 +28,14 @@ module.exports = class RequestRollBackAction extends Action {
         await Request.findByIdAndUpdate(requestId,{status: common.REQUEST_STATUS_ERROR});
     }
 
-    getConsortiumId(){
-        return this.context.get(this.registry.CONTEXT.CONSORTIUM_ID);
+    async getConsortiumId(){
+        let condition = {request_id: this.getRequestId()};
+        let consortium = await Consortium.findOne(condition);
+        if(consortium){
+            return consortium._id;
+        }else{
+            return null;
+        }
     }
 
     getRequestId(){
