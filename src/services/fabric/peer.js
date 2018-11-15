@@ -114,7 +114,7 @@ module.exports = class PeerService {
     static async preContainerStart({org, peerName, connectionOptions}) {
         const peerDto = await this.prepareCerts(org, peerName);
 
-        const certFile = peerDto.credentialsPath;
+        const certFile = `${peerDto.credentialsPath}.zip`;
         const remoteFile = `${common.PEER_HOME}/${org.consortium_id}/${org.name}.zip`;
         const remotePath = `${common.PEER_HOME}/${org.consortium_id}/${org.name}`;
         await DockerClient.getInstance(connectionOptions).transferFile({

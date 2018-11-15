@@ -143,7 +143,7 @@ module.exports.storeCredentials = async (credential) => {
         credentialHelper.writeSignCerts(credential.signCert || credential.adminCert);
         credentialHelper.writeTlsCert(credential.tls);
         await credentialHelper.zipDirectoryFiles();
-        return credentialHelper.archiveFileName;
+        return credentialHelper.dirName;
     } catch (e) {
         logger.error(e);
         return Promise.reject(`Failed storeCredentials: ${e}`);
