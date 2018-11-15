@@ -66,6 +66,16 @@ module.exports.generateCertAuthContainerCreateOptions = (options) => {
     ];
 };
 
+module.exports.generateContainerNetworkOptions = (options) => {
+    options = options || {};
+    return [
+        'network',
+        'create',
+        '--driver', options.driver || common.DEFAULT_NETWORK.DRIVER,
+        options.name || common.DEFAULT_NETWORK.NAME
+    ]
+};
+
 module.exports.generatePeerContainerOptions = (options, mode) => {
     switch (mode) {
         case common.MODES.DOCKER:
@@ -86,7 +96,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, por
         WorkingDir: workingDir,
         Cmd: ['/bin/bash', '-c', 'peer node start'],
         HostConfig: {
-            NetworkMode: common.DEFAULT_NETWORK,
+            NetworkMode: common.DEFAULT_NETWORK.NAME,
             PortBindings: portBindings,
             Binds: [
                 `${workingDir}/data:/data`,
@@ -120,7 +130,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         'create',
         '--name', `${peerName}.${domainName}`,
         '--hostname', `${peerName}.${domainName}`,
-        '--network', common.DEFAULT_NETWORK,
+        '--network', common.DEFAULT_NETWORK.NAME,
         '-p', `${port}:7051`,
         '-w', workingDir,
         '-v', `${workingDir}:/data`,

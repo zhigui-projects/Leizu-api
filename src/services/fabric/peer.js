@@ -112,6 +112,8 @@ module.exports = class PeerService {
     }
 
     static async preContainerStart({org, peerName, connectionOptions}) {
+        await this.createContainerNetwork(connectionOptions);
+
         const peerDto = await this.prepareCerts(org, peerName);
 
         const certFile = `${peerDto.credentialsPath}.zip`;
@@ -134,6 +136,11 @@ module.exports = class PeerService {
             remoteDir: configTxPath
         });
         return peerDto;
+    }
+
+    static async createContainerNetwork(connectionOptions) {
+        const parameters = utils.generateContainerNetworkOptions({name: common.DEFAULT_NETWORK.NAME});
+        await DockerClient.getInstance(connectionOptions).createContainerNetwork(parameters);
     }
 
     static async prepareCerts(org, peerName) {
