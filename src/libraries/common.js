@@ -41,7 +41,10 @@ module.exports.MODES = {
     SSH: 'ssh'
 };
 
-module.exports.DEFAULT_NETWORK = 'fabric_network';
+module.exports.DEFAULT_NETWORK = {
+    NAME: 'fabric_network',
+    DRIVER: 'bridge'
+};
 
 module.exports.PEER_HOME = '/opt/crypto-config';
 module.exports.PEER_TYPE_ORDER = 1;

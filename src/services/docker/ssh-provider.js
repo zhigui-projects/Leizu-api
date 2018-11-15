@@ -1,6 +1,6 @@
 'use strict';
 
-const logger = require('../../libraries/log4js');
+const logger = require('../../libraries/log4js').getLogger('SshProvider');
 const Client = require('../ssh/client');
 
 module.exports = class SshProvider {
@@ -16,6 +16,15 @@ module.exports = class SshProvider {
     async createContainer(parameters) {
         try {
             return await this.ssh.createContainer(parameters);
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+    }
+
+    async createContainerNetwork(parameters) {
+        try {
+            return await this.ssh.createContainerNetwork(parameters);
         } catch (err) {
             logger.error(err);
             throw err;
