@@ -29,22 +29,8 @@ module.exports = {
             port: 22
         }
     },
-    configTx: {
-        dir: '../../../configtx',
+    cryptoConfig: {
         name: 'configtx.yaml',
-        path: '../../../build/configtxlator/configtx.yaml'
-    },
-    neworg: {
-        path: '../../../build/configtxlator/newOrg/configtx.yaml'
-    },
-    genesisFileSaveDir: {
-        path: '../../../tmp/'
-    },
-    genesisProfile: 'OrgsOrdererGenesis',
-    genesisChannel: 'OrgsChannel',
-    mspFile: {
-        localDir:'../../../mspDir',
-        serverDir: '/tmp/configtxlator/data',
-        containerPath:'/work/data/$cId/orgs/$org/msp'
-    },
+        path: '/tmp/crypto-config'
+    }
 };

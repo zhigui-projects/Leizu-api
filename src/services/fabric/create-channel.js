@@ -1,21 +1,25 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
 var query = require('./query');
-var configTx = require('../../env').configTx;
 var configtxlator = require('./configtxlator');
 var logger = require('../../libraries/log4js').getLogger('Create-Channel');
 var Client = require('fabric-client');
+var ConfigTxBuilder = require('./configtxgen');
+const common = require('../../libraries/common');
+const utils = require('../../libraries/utils');
+const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 
-module.exports.createChannel = async function (profile, channelName, config) {
+module.exports.createChannel = async function (channelCreateTx, channelName, config) {
     try {
         let client = new Client();
         client.setAdminSigningIdentity(config.peerConfig.adminKey, config.peerConfig.adminCert, config.peerConfig.mspid);
+        let orderer = await query.newOrderer(client, config);
+        let channel = client.newChannel(channelName);
+        channel.addOrderer(orderer);
 
-        // read configtx
-        var configtx = fs.readFileSync(path.join(__dirname, configTx.path));
-        var envelope = await configtxlator.outputChannelCreateTx(profile, channelName, configtx, '.', '');
+        var configtxgen = new ConfigTxBuilder(channelCreateTx);
+        var configtx = Buffer.from(configtxgen.buildChannelCreateTx());
+        var envelope = await configtxlator.outputChannelCreateTx(common.CONFIFTX_OUTPUT_CHANNEL, channelName, configtx, '.', '');
 
         // extract the channel config bytes from the envelope to be signed
         var channelConfig = client.extractChannelConfig(envelope);
@@ -28,7 +32,7 @@ module.exports.createChannel = async function (profile, channelName, config) {
         let request = {
             config: channelConfig,
             signatures: [signature],
-            orderer: await query.newOrderer(client, config),
+            orderer: orderer,
             name: channelName,
             txId: client.newTransactionID(true) // get an admin based transactionID
         };
@@ -38,11 +42,12 @@ module.exports.createChannel = async function (profile, channelName, config) {
         logger.debug('Response ::%j', response);
         if (response && response.status === 'SUCCESS') {
             logger.debug('Successfully created the channel \'' + channelName + '\'');
-            let response = {
-                success: true,
-                message: 'Channel \'' + channelName + '\' created successfully'
-            };
-            return response;
+            await utils.sleep(1000);
+            const configEnvelope = await channel.getChannelConfigFromOrderer();
+            if (configEnvelope) {
+                let configJson = BlockDecoder.HeaderType.decodePayloadBasedOnType(configEnvelope.toBuffer(), 1);
+                return configJson;
+            }
         } else {
             logger.error('Failed to create the channel \'' + channelName + '\'');
             throw new Error('Failed to create the channel \'' + channelName + '\', ' + JSON.stringify(response));
