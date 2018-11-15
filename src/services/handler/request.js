@@ -27,13 +27,14 @@ module.exports = class RequestHandler extends Handler {
             this.decomposeRequest();
             await this.provisionNetwork();
         }catch(err){
-            logger.error(err);
             try{
-                let rollBackAction = ActionFactory.getRequestRollbackAction({id:'to-be-id'});
+                let rollBackAction = ActionFactory.getRequestRollbackAction({id:this.request._id});
                 await rollBackAction.execute();
             }catch(ex){
+                logger.error(ex);
                 throw ex;
             }
+            logger.error(err);
             throw err;
         }
     }
