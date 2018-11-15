@@ -20,8 +20,8 @@ module.exports.CredentialHelper = class CredentialHelper {
 
 
     constructor(consortiumId, orgName) {
-        this.dirName = path.join('/tmp/crypto-config', consortiumId, orgName);
-        this.archiveFileName = path.join('/tmp/crypto-config', consortiumId, orgName + '.zip');
+        this.dirName = path.join(cryptoConfig.path, consortiumId, orgName);
+        this.archiveFileName = path.join(cryptoConfig.path, consortiumId, orgName + '.zip');
     }
 
     writeCaCerts(caCert) {
