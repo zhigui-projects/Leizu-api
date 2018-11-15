@@ -9,20 +9,22 @@ const sshInfo = {
     password: '***REMOVED***'
 };
 const options = {
-    consortiumId: 'xxxxxxxxxx',
-    profile: 'OrgsOrdererGenesis',
-    channel: 'OrgsChannel',
     ordererType: 'kafka',
     orderOrg: 'org0',
     orderer: {
         host: 'order1-org0',
         port: 7051
     },
-    initOrg: 'org1',
-    initOrgAnchorPeer: {
-        host: 'peer1-org1',
-        port: 7050
-    },
+    peerOrgs: [
+        {
+            name: 'org1',
+            anchorPeer: {
+                host: 'peer1-org1',
+                port: 7050
+            },
+        }
+    ],
+
     kafka: [
         {
             host: '127.0.2.1',
