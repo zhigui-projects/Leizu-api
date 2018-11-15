@@ -50,6 +50,9 @@ module.exports.PORT_CA = 7080;
 module.exports.PORT_ORDERER = 7050;
 module.exports.PORT_PEER = 9051;
 
+module.exports.NODE_TYPE_PEER = 'peer';
+module.exports.NODE_TYPE_ORDERER = 'orderer';
+
 module.exports.success = (data, msg) => {
     return {
         code: 200,
