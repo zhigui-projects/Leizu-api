@@ -6,6 +6,7 @@ const path = require('path');
 const archiver = require('archiver');
 const stringUtil = require('../../libraries/string-util');
 const cryptoConfig = require('../../env').cryptoConfig;
+const logger = require('../../libraries/log4js').getLogger('CredentialHelper');
 
 module.exports.CERT_PATHS = {
     cacerts: 'cacerts',
@@ -17,9 +18,10 @@ module.exports.CERT_PATHS = {
 
 module.exports.CredentialHelper = class CredentialHelper {
 
-    constructor(consortiumId, mspId) {
-        this.dirName = path.join(cryptoConfig.path, consortiumId, mspId);
-        this.archiveFileName = path.join(cryptoConfig.path, consortiumId, mspId + '.zip');
+
+    constructor(consortiumId, orgName) {
+        this.dirName = path.join(cryptoConfig.path, consortiumId, orgName);
+        this.archiveFileName = path.join(cryptoConfig.path, consortiumId, orgName + '.zip');
     }
 
     writeCaCerts(caCert) {
@@ -63,6 +65,10 @@ module.exports.CredentialHelper = class CredentialHelper {
     }
 
     writeTlsCert(tls) {
+        if (!tls) {
+            logger.warn('Failed to write TLS cert because tls content is empty');
+            return;
+        }
         let dirName = path.join(this.dirName, 'tls');
         if (this.isDirExists(dirName)) {
             this.removeDir(dirName);
@@ -130,16 +136,18 @@ module.exports.CredentialHelper = class CredentialHelper {
 };
 
 module.exports.storeCredentials = async (credential) => {
-    let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.name);
+    let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.orgName);
     try {
         credentialHelper.writeCaCerts(credential.rootCert);
         credentialHelper.writeTlsCaCerts(credential.rootCert);
         credentialHelper.writeAdminCerts(credential.adminCert);
-        credentialHelper.writeKey(credential.adminKey);
-        credentialHelper.writeSignCerts(credential.adminCert);
-        credentialHelper.zipDirectoryFiles();
+        credentialHelper.writeKey(credential.signkey || credential.adminKey);
+        credentialHelper.writeSignCerts(credential.signCert || credential.adminCert);
+        credentialHelper.writeTlsCert(credential.tls);
+        await credentialHelper.zipDirectoryFiles();
         return credentialHelper.dirName;
     } catch (e) {
-        return Promise.reject('Failed storeCredentials:', e.message);
+        logger.error(e);
+        return Promise.reject(`Failed storeCredentials: ${e}`);
     }
 };

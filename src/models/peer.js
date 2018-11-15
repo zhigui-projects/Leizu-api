@@ -11,9 +11,10 @@ const peerSchema = new mongoose.Schema({
     },
     consortium_id: mongoose.Schema.ObjectId,
     org_id: mongoose.Schema.ObjectId,
-    server_crt_path: String,
-    client_cert_path: String,
-    client_key_path: String,
+    sign_key: String,
+    sign_cert: String,
+    tls_key: String,
+    tls_cert: String,
     date: {
         type: Date,
         default: Date.now()
