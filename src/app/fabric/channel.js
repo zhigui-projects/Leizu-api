@@ -4,6 +4,7 @@ const common = require('../../libraries/common');
 const logger = require('../../libraries/log4js');
 const ChannelService = require('../../services/fabric/channel');
 const DbService = require('../../services/db/dao');
+const FabricService = require('../../services/db/fabric');
 const router = require('koa-router')({prefix: '/channel'});
 
 router.get('/', async ctx => {
@@ -37,14 +38,18 @@ router.get('/:id', async ctx => {
 router.post('/', async ctx => {
     let parameters = ctx.request.body;
     try {
-        let consortiumId = parameters.consortiumId;
+        let organizationId = parameters.organizationId;
         let channelName = parameters.name;
-        let profile = parameters.profile;
-        let channelService = await ChannelService.getInstance(consortiumId, channelName);
-        await channelService.createChannel(profile);
-        let channel = await DbService.addChannel({
+        let channelService = await ChannelService.getInstance(organizationId, channelName);
+        let configEnvelope = await channelService.createChannel();
+        let fabricService = new FabricService(channelService._consortium_id);
+        let channel = await fabricService.addChannel({
             name: parameters.name,
-            consortiumId: parameters.consortiumId
+            configuration: configEnvelope
+        }, {
+            orderers: [],
+            peers: [],
+            organizations: []
         });
         ctx.body = common.success(channel, common.SUCCESS);
     } catch (err) {

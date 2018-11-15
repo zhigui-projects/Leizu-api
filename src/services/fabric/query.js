@@ -219,24 +219,33 @@ module.exports.getTlsCACerts = async (client) => {
 };
 
 module.exports.newOrderer = async (client, config) => {
-    let enrollment = await module.exports.getClientKeyAndCert(config.ordererCaConfig);
-    let options = {
-        pem: enrollment.rootCertificate,
-        'clientCert': enrollment.certificate,
-        'clientKey': enrollment.key,
-        'ssl-target-name-override': config.ordererConfig['server-hostname']
-    };
-    client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
-    return client.newOrderer(config.ordererConfig.url, options);
+    // let enrollment = await module.exports.getClientKeyAndCert(config.ordererCaConfig);
+    // let options = {
+    //     pem: enrollment.rootCertificate,
+    //     'clientCert': enrollment.certificate,
+    //     'clientKey': enrollment.key,
+    //     'ssl-target-name-override': config.ordererConfig['server-hostname']
+    // };
+    // client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
+    // return client.newOrderer(config.ordererConfig.url, options);
+    return client.newOrderer(config.orderConfig.url, {
+        'pem': config.orderConfig.pem,
+        'ssl-target-name-override': config.orderConfig['server-hostname']
+    });
 };
 
 module.exports.newPeer = async (client, caConfig, peerConfig) => {
-    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
-    let options = {
-        pem: enrollment.rootCertificate,
-        'clientCert': enrollment.certificate,
-        'clientKey': enrollment.key,
-        'ssl-target-name-override': peerConfig['server-hostname']
-    };
-    return client.newPeer(peerConfig.url, options);
+    // let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+    // let options = {
+    //     pem: enrollment.rootCertificate,
+    //     'clientCert': enrollment.certificate,
+    //     'clientKey': enrollment.key,
+    //     'ssl-target-name-override': peerConfig['server-hostname']
+    // };
+    // return client.newPeer(peerConfig.url, options);
+    return client.newPeer(peerConfig.url, {
+        'pem': peerConfig.pem,
+        'ssl-target-name-override': peerConfig['server-hostname'],
+        name: peerConfig['server-hostname']
+    });
 };
