@@ -40,6 +40,9 @@ module.exports.MODES = {
     DOCKER: 'docker',
     SSH: 'ssh'
 };
+
+module.exports.DEFAULT_NETWORK = 'fabric_network';
+
 module.exports.PEER_HOME = '/opt/crypto-config';
 module.exports.PEER_TYPE_ORDER = 1;
 module.exports.PEER_TYPE_PEER = 0;

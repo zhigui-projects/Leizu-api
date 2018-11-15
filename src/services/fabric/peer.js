@@ -94,18 +94,18 @@ module.exports = class PeerService {
             };
         }
 
-        await this.preContainerStart({org, peerName, connectionOptions});
+        const peerDto = await this.preContainerStart({org, peerName, connectionOptions});
 
         const client = DockerClient.getInstance(connectionOptions);
         const parameters = utils.generatePeerContainerOptions(containerOptions, connectionOptions.mode);
         const container = await client.createContainer(parameters);
         await utils.wait(`${common.PROTOCOL.TCP}:${host}:${common.PORT_PEER}`);
         if (container) {
-            return await DbService.addPeer({
+            return await DbService.addPeer(Object.assign({}, peerDto, {
                 name: peerName,
                 organizationId: organizationId,
                 location: `${host}:${common.PORT_PEER}`
-            });
+            }));
         } else {
             throw new Error('create peer failed');
         }
@@ -126,13 +126,14 @@ module.exports = class PeerService {
         await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}/msp`]);
         await bash.exec(['-c', `cp ${remotePath}/msp/tls/cert.pem ${remotePath}/tls/server.crt`]);
         await bash.exec(['-c', `cp ${remotePath}/msp/tls/key.pem ${remotePath}/tls/server.key`]);
-        await bash.exec(['-c', `cp ${remotePath}/msp/cacerts/* ${remotePath}/tls/ca.pem`]);
+        await bash.exec(['-c', `cp ${remotePath}/msp/cacerts/ca-cert.pem ${remotePath}/tls/ca.pem`]);
 
         const configTxPath = `${config.configtxlator.dataPath}/${org.consortium_id}/${org.name}`;
         await DockerClient.getInstance(config.configtxlator.connectionOptions).transferDirectory({
             localDir: org.msp_path,
             remoteDir: configTxPath
         });
+        return peerDto;
     }
 
     static async prepareCerts(org, peerName) {
@@ -153,11 +154,11 @@ module.exports = class PeerService {
         const mspInfo = await caService.enrollUser(peerAdminUser);
         const tlsInfo = await caService.enrollUser(Object.assign({}, peerAdminUser, {profile: 'tls'}));
         const peerDto = {
-            name: org.name,
+            orgName: org.name,
             consortiumId: org.consortium_id.toString(),
             tls: {}
         };
-        peerDto.key = mspInfo.key.toBytes();
+        peerDto.signkey = mspInfo.key.toBytes();
         peerDto.signCert = mspInfo.certificate;
         peerDto.adminCert = org.admin_cert;
         peerDto.rootCert = org.root_cert;

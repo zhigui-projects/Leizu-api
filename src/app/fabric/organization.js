@@ -60,7 +60,7 @@ router.get('/:id', async ctx => {
 router.post('/', async ctx => {
     const {name, consortiumId, domainName, host, port, username, password} = ctx.request.body;
     let orgDto = {
-        name: name,
+        orgName: name,
         domainName: domainName,
         mspId: stringUtil.getMspId(name),
         consortiumId: consortiumId

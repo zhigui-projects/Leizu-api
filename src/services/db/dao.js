@@ -79,6 +79,10 @@ module.exports = class DbService {
         peer.name = dto.name;
         peer.location = dto.location;
         peer.org_id = dto.organizationId;
+        peer.sign_key = dto.signkey;
+        peer.sign_cert = dto.signCert;
+        peer.tls_key = dto.tls.key;
+        peer.tls_cert = dto.tls.cert;
         peer = await peer.save();
         return peer;
     }
@@ -140,7 +144,7 @@ module.exports = class DbService {
     static async addOrganization(dto) {
         let organization = new Organization();
         organization.uuid = uuid();
-        organization.name = dto.name;
+        organization.name = dto.orgName;
         organization.domain_name = dto.domainName;
         organization.msp_id = dto.mspId;
         organization.admin_key = dto.adminKey;
