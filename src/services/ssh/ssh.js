@@ -21,4 +21,8 @@ module.exports = class AbstractSSH {
     async createContainer(parameters) {
         throw new Error('abstract function called');
     }
+
+    async createContainerNetwork(parameters) {
+        throw new Error('abstract function called');
+    }
 };
