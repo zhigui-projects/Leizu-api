@@ -4,11 +4,11 @@ const path = require('path');
 const utils = require('../../libraries/utils');
 const env = require('../../env');
 const common = require('../../libraries/common');
-const DbService = require('../../services/db/dao');
-const DockerClient = require('../../services/docker/client');
-const ConfigTxlator = require('../../services/fabric/configtxlator');
-const CreateConfigTx = require('../../services/fabric/create-configtx');
-const SshProvider = require('../../services/docker/ssh-provider');
+const DbService = require('../../db/dao');
+const DockerClient = require('../../docker/client');
+const ConfigTxlator = require('./configtxlator');
+const CreateConfigTx = require('./configtxgen');
+const SshProvider = require('../docker/ssh-provider');
 
 module.exports = class OrdererService {
 
