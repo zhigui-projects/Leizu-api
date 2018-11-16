@@ -1,7 +1,7 @@
 'use strict';
 
 const Action = require('./action');
-const OrdererPlan = require('../plan/orderer');
+const SshClient = require('../ssh/client');
 const utils = require('../../libraries/utils');
 const common = require('../../libraries/common');
 
@@ -9,7 +9,7 @@ module.exports = class OrdererProvisionAction extends Action {
 
     async execute(){
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
-        let ordererPlan = new OrdererPlan(params);
+        let sshClient = new SshClient(params);
         let containerOptions = {
             name: params.name,
             domainName: utils.generateDomainName(params.name),
@@ -18,8 +18,7 @@ module.exports = class OrdererProvisionAction extends Action {
         let parameters = {
             createContainerOptions: utils.generateOrdererCreateOptions(containerOptions)
         };
-        ordererPlan.setParameters(parameters);
-        ordererPlan.run();
+        await sshClient.createContainer(parameters.createContainerOptions);
     }
 
 };
