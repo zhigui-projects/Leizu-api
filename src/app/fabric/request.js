@@ -18,7 +18,7 @@ router.post('/', async ctx => {
     } catch (err) {
         logger.error(err);
         ctx.status = 400;
-        ctx.body = common.error({}, err.message);
+        ctx.body = common.error({}, err.message || err);
     }
 });
 

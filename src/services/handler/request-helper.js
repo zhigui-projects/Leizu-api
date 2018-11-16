@@ -25,14 +25,15 @@ module.exports = class RequestHelper {
                 username: ordererOrg.ca.ssh_username,
                 password: ordererOrg.ca.ssh_password
             };
-            orderer.nodes = {};
+            orderer.nodes = [];
             if(ordererOrg.orderer){
                 for(let item of ordererOrg.orderer){
-                    orderer.nodes[item.name] = {
+                    orderer.nodes.push({
+                        name: item.name,
                         host: item.ip,
                         username: item.ssh_username,
                         password: item.ssh_password
-                    }
+                    });
                 }
             }
         }
@@ -52,13 +53,14 @@ module.exports = class RequestHelper {
                     username: item.ca.ssh_username,
                     password: item.ca.ssh_password
                 };
-                peer.nodes = {};
+                peer.nodes = [];
                 for(let element of item.peers){
-                    peer.nodes[element.name] = {
+                    peer.nodes.push({
+                        name: element.name,
                         host: element.ip,
                         username: element.ssh_username,
                         password: element.ssh_password
-                    }
+                    });
                 }
                 peers.push(peer);
             }

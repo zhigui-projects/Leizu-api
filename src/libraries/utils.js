@@ -216,7 +216,7 @@ module.exports.generateOrdererContainerOptions = (ordererName) => {
     };
 };
 
-module.exports.generateOrdererCreateOptions = ({ordererName, mspid, port, workingDir}) => {
+module.exports.generateOrdererCreateOptions = (ordererName, mspid, port, workingDir) => {
     return [
         'create',
         '--name', `orderer-${ordererName}`,
