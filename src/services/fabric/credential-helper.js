@@ -18,7 +18,6 @@ module.exports.CERT_PATHS = {
 
 module.exports.CredentialHelper = class CredentialHelper {
 
-
     constructor(consortiumId, orgName) {
         this.dirName = path.join(cryptoConfig.path, consortiumId, orgName);
         this.archiveFileName = path.join(cryptoConfig.path, consortiumId, orgName + '.zip');

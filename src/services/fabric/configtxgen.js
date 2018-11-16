@@ -5,6 +5,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 const cryptoConfig = require('../../env').cryptoConfig;
 const common = require('../../libraries/common');
+const utils = require('../../libraries/utils');
 
 const batch_default = {
     BatchTimeout: '2s',
@@ -123,6 +124,7 @@ module.exports = class ConfigTxBuilder {
             Application: this._buildApplication()
         };
         let yamlData = yaml.safeDump(configtx);
+        utils.createDir(this._filePath);
         let configTxPath = path.join(this._filePath, cryptoConfig.name);
         fs.writeFileSync(configTxPath, yamlData);
         return yamlData;

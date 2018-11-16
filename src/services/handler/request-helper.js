@@ -66,8 +66,4 @@ module.exports = class RequestHelper {
         return peers;
     }
 
-    static generateHostName(){
-
-    }
-
 };

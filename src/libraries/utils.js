@@ -1,6 +1,8 @@
 'use strict';
 
 const common = require('./common');
+const path = require('path');
+const fs = require('fs');
 
 module.exports.wait = async (resources) => {
     const waitOn = require('wait-on');
@@ -40,6 +42,12 @@ module.exports.asyncForEach = async (array, callback) => {
     return results;
 };
 
+module.exports.generateDomainName = (prefixName) => {
+    let parts = [];
+    parts.push(prefixName);
+    parts.push(common.BASE_DOMAIN_NAME);
+    return parts.join(common.SEPARATOR_DOT);
+};
 
 module.exports.generateCertAuthContainerOptions = (options) => {
     return {
@@ -208,7 +216,7 @@ module.exports.generateOrdererContainerOptions = (ordererName) => {
     };
 };
 
-module.exports.generateOrdererCreateOptions = ({ordererName, mspid, port, workingDir}) => function () {
+module.exports.generateOrdererCreateOptions = ({ordererName, mspid, port, workingDir}) => {
     return [
         'create',
         '--name', `orderer-${ordererName}`,
@@ -236,5 +244,22 @@ module.exports.generateOrdererCreateOptions = ({ordererName, mspid, port, workin
         'hyperledger/fabric-ca-peer',
         '/bin/bash', '-c', 'peer node start',
     ];
+};
+
+module.exports.createDir = (dirpath, mode) => {
+    try {
+        let pathTmp;
+        dirpath.split(/[/\\]/).forEach(async function (dirName) {
+            if (!pathTmp && dirName === '') {
+                pathTmp = '/';
+            }
+            pathTmp = path.join(pathTmp, dirName);
+            if (!fs.existsSync(pathTmp)) {
+                fs.mkdirSync(pathTmp, mode);
+            }
+        });
+    } catch (e) {
+        throw e;
+    }
 };
 
