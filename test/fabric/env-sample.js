@@ -128,6 +128,16 @@ var config = {
             'ImNsaWVudCJ9fTAKBggqhkjOPQQDAgNHADBEAiAeexhyEu834hdlXvx2s06kea7b\n' +
             '9oAod9yJeba/yRAkmAIgLEAYQngG9Vtz9Q1baqEYosgf57FoCc2A6kN7T7fbaro=\n' +
             '-----END CERTIFICATE-----\n',
+    },
+    channelCreateTx: {
+        Consortium: 'SampleConsortium',
+        ConsortiumId: '5becd88f8372d112a3b29d2c',
+        Organizations: [{
+            Name: 'Org1MSP',
+            MspId: 'Org1MSP',
+            Type: 0,
+            AnchorPeers: [{Host: 'peer0.org1.example.com', Port: 7051}],
+        }]
     }
 };
 
