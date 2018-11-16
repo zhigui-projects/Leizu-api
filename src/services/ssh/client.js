@@ -20,6 +20,7 @@ module.exports = class SSHClient extends AbstractSSH {
             await sshClient.dispose();
             return container;
         } catch (ex) {
+            await sshClient.dispose();
             logger.error(ex);
             throw ex;
         }
