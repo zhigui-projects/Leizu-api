@@ -12,7 +12,7 @@ module.exports = class CAPlan extends NodePlan {
 
     init(){
         let self = this;
-        this.plan.target(this.targetName,target);
+        this.plan.target(this.targetName,this.target);
         this.plan.remote(this.planName,function(remote){
             let createCommand = self.buildCreateContainerCommand();
             let result = remote.exec(createCommand);
@@ -22,6 +22,7 @@ module.exports = class CAPlan extends NodePlan {
     }
 
     run(){
+        this.init();
         this.plan.run(this.planName,this.targetName);
         this.flushFinishedTasks();
     }
