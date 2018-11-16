@@ -25,7 +25,6 @@ module.exports = class NodePlan {
     buildCreateContainerCommand(){
         let command = [];
         command.push('docker');
-        command.push('create');
         command = command.concat(this.parameters.createContainerOptions);
         return this.fullCommand(command);
     }

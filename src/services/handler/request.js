@@ -84,9 +84,11 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async provisionPeers(){
-        for(let node of this.parsedRequest.peers.nodes){
-            let provisionAction = ActionFactory.getPeerProvisionAction(node);
-            this.peers[node.name] = await provisionAction.execute();
+        for(let item of this.parsedRequest.peers){
+            for(let peer of item.nodes){
+                let provisionAction = ActionFactory.getPeerProvisionAction(node);
+                this.peers[node.name] = await provisionAction.execute();
+            }
         }
     }
 
