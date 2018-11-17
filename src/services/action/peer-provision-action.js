@@ -16,9 +16,18 @@ module.exports = class PeerProvisionAction extends Action {
         let sshClient = new SshClient(params);
         let containerOptions = {
             name: params.name,
+            peerName: params.name,
             domainName: utils.generateDomainName(params.name),
             port: common.PORT_PEER
         };
+        if(this.isDebugMode){
+            containerOptions.port = utils.generateRandomHttpPort();
+            try{
+                sshClient.exec(['rm','--force',params.name + '.' + containerOptions.domainName]);
+            }catch (err) {
+                console.error(err);
+            }
+        }
         let parameters = {
             createContainerOptions: utils.generatePeerContainerOptions(common.MODES.SSH,containerOptions)
         };

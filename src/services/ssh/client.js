@@ -17,12 +17,12 @@ module.exports = class SSHClient extends AbstractSSH {
             await sshClient.connect(this.options);
             let containerId = await sshClient.exec(this.cmd, parameters);
             let container = await sshClient.exec(this.cmd, ['start', containerId]);
-            await sshClient.dispose();
             return container;
         } catch (ex) {
-            await sshClient.dispose();
             logger.error(ex);
             throw ex;
+        }finally {
+            await sshClient.dispose();
         }
     }
 
@@ -69,10 +69,11 @@ module.exports = class SSHClient extends AbstractSSH {
         try {
             await sshClient.connect(this.options);
             await sshClient.exec(this.cmd, parameters);
-            await sshClient.dispose();
         } catch (ex) {
             logger.error(ex);
             throw ex;
+        }finally {
+            await sshClient.dispose();
         }
     }
 };

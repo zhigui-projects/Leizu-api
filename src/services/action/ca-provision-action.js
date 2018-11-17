@@ -19,6 +19,14 @@ module.exports = class CAProvisionAction extends Action {
             domainName: utils.generateDomainName(params.caName),
             port: common.PORT_CA
         };
+        if(this.isDebugMode){
+            containerOptions.port = utils.generateRandomHttpPort();
+            try{
+                sshClient.exec(['rm','--force','ca-'+ params.caName]);
+            }catch (err) {
+                console.error(err);
+            }
+        }
         let parameters = {
             createContainerOptions: utils.generateCertAuthContainerCreateOptions(containerOptions)
         };
