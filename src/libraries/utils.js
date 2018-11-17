@@ -263,3 +263,11 @@ module.exports.createDir = (dirpath, mode) => {
     }
 };
 
+module.exports.generateRandomHttpPort = () => {
+    return exports.generateRandomInteger(1024,65535);
+};
+
+module.exports.generateRandomInteger = (low, high) => {
+    return Math.floor(Math.random() * (high - low) + low);
+};
+

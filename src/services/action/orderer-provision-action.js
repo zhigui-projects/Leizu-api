@@ -13,8 +13,19 @@ module.exports = class OrdererProvisionAction extends Action {
         let containerOptions = {
             name: params.name,
             domainName: utils.generateDomainName(params.name),
-            port: common.PORT_ORDERER
+            port: common.PORT_ORDERER,
+            workingDir: '/opt',
+            ordererName: params.name,
+            mspid: 'OrgOrderer'
         };
+        if(this.isDebugMode){
+            containerOptions.port = utils.generateRandomHttpPort();
+            try{
+                sshClient.exec(['rm','--force','orderer-'+ params.name]);
+            }catch (err) {
+                console.error(err);
+            }
+        }
         let parameters = {
             createContainerOptions: utils.generateOrdererCreateOptions(containerOptions)
         };
