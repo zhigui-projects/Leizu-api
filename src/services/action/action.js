@@ -7,6 +7,7 @@ module.exports = class Action {
     constructor(){
         this.context = null;
         this.registry = Registry;
+        this.isDebugMode = true;
     }
 
     setActionContext(context){

@@ -1,7 +1,7 @@
 'use strict';
 
 const Action = require('./action');
-const CAPlan = require('../plan/ca');
+const SshClient = require('../ssh/client');
 const utils = require('../../libraries/utils');
 const common = require('../../libraries/common');
 
@@ -13,17 +13,24 @@ module.exports = class CAProvisionAction extends Action {
 
     async execute(){
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
-        let caPlan = new CAPlan(params.caNode);
+        let sshClient = new SshClient(params.caNode);
         let containerOptions = {
             name: params.caName,
             domainName: utils.generateDomainName(params.caName),
             port: common.PORT_CA
         };
+        if(this.isDebugMode){
+            containerOptions.port = utils.generateRandomHttpPort();
+            try{
+                sshClient.exec(['rm','--force','ca-'+ params.caName]);
+            }catch (err) {
+                console.error(err);
+            }
+        }
         let parameters = {
             createContainerOptions: utils.generateCertAuthContainerCreateOptions(containerOptions)
         };
-        caPlan.setParameters(parameters);
-        caPlan.run();
+        await sshClient.createContainer(parameters.createContainerOptions);
     }
 
 };

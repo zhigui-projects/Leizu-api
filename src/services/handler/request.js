@@ -84,14 +84,17 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async provisionPeers(){
-        for(let peer of this.parsedRequest.peers){
-            let provisionAction = ActionFactory.getPeerProvisionAction(peer);
-            this.peers[peer.name] = await provisionAction.execute();
+        for(let item of this.parsedRequest.peers){
+            for(let node of item.nodes){
+                let provisionAction = ActionFactory.getPeerProvisionAction(node);
+                this.peers[node.name] = await provisionAction.execute();
+            }
         }
     }
 
     async provisionOrderers(){
-        let provisionAction = ActionFactory.getOrdererProvisionAction(this.parsedRequest.orderer);
+        let node = this.parsedRequest.orderer.nodes[0];
+        let provisionAction = ActionFactory.getOrdererProvisionAction(node);
         this.orderer = await provisionAction.execute();
     }
 
