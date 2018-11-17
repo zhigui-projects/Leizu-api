@@ -216,7 +216,7 @@ module.exports.generateOrdererContainerOptions = (ordererName) => {
     };
 };
 
-module.exports.generateOrdererCreateOptions = ({ordererName, mspid, port, workingDir}) => {
+module.exports.generateOrdererCreateOptions = (ordererName, mspid, port, workingDir) => {
     return [
         'create',
         '--name', `orderer-${ordererName}`,
@@ -261,5 +261,13 @@ module.exports.createDir = (dirpath, mode) => {
     } catch (e) {
         throw e;
     }
+};
+
+module.exports.generateRandomHttpPort = () => {
+    return exports.generateRandomInteger(1024,65535);
+};
+
+module.exports.generateRandomInteger = (low, high) => {
+    return Math.floor(Math.random() * (high - low) + low);
 };
 
