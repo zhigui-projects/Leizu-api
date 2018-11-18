@@ -34,6 +34,10 @@ module.exports = class DockerClient {
         return await this.provider.createContainer(options);
     }
 
+    async createContainerNetwork(options) {
+        return await this.provider.createContainerNetwork(options);
+    }
+
     async transferFile(parameters) {
         await this.provider.transferFile(parameters);
     }

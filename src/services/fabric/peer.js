@@ -68,12 +68,14 @@ module.exports = class PeerService {
         const {organizationId, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `peer-${host.replace(/\./g, '-')}`;
+        let peerPort = common.PORT_PEER;
+        peerPort = utils.generateRandomHttpPort();
         let containerOptions = {
             workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}`,
             peerName: peerName,
             domainName: org.domain_name,
             mspid: org.msp_id,
-            port: common.PORT_PEER
+            port:  peerPort
         };
 
         let connectionOptions = null;
@@ -99,12 +101,12 @@ module.exports = class PeerService {
         const client = DockerClient.getInstance(connectionOptions);
         const parameters = utils.generatePeerContainerOptions(containerOptions, connectionOptions.mode);
         const container = await client.createContainer(parameters);
-        await utils.wait(`${common.PROTOCOL.TCP}:${host}:${common.PORT_PEER}`);
+        await utils.wait(`${common.PROTOCOL.TCP}:${host}:${peerPort}`);
         if (container) {
             return await DbService.addPeer(Object.assign({}, peerDto, {
                 name: peerName,
                 organizationId: organizationId,
-                location: `${host}:${common.PORT_PEER}`
+                location: `${host}:${peerPort}`
             }));
         } else {
             throw new Error('create peer failed');
