@@ -26,16 +26,14 @@ module.exports = class RequestHandler extends Handler {
             await this.persistRequest();
             this.decomposeRequest();
             await this.provisionNetwork();
-        }catch(err){
+        }catch(error){
             try{
                 let rollBackAction = ActionFactory.getRequestRollbackAction({id:this.request._id});
                 await rollBackAction.execute();
-            }catch(ex){
-                logger.error(ex);
-                throw ex;
+            }catch(err){
+                logger.error(err);
             }
-            logger.error(err);
-            throw err;
+            throw error;
         }
     }
 
@@ -49,7 +47,9 @@ module.exports = class RequestHandler extends Handler {
     }
 
     decomposeRequest(){
-        this.parsedRequest = RequestHelper.decomposeRequest(this.ctx,this.request);
+        this.parsedRequest = RequestHelper.decomposeRequest(this.ctx);
+        this.parsedRequest.requestId = this.request._id;
+        this.parsedRequest.consortiumId = this.request.consortiumId;
     }
 
     async updateRequestStatus(status){
