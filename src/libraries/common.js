@@ -48,7 +48,7 @@ module.exports.DEFAULT_NETWORK = {
     DRIVER: 'bridge'
 };
 
-module.exports.PEER_HOME = '/opt/crypto-config';
+module.exports.PEER_HOME = '/etc/hyperledger/crypto';
 module.exports.PEER_TYPE_ORDER = 1;
 module.exports.PEER_TYPE_PEER = 0;
 

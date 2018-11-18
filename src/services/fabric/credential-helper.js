@@ -8,13 +8,17 @@ const stringUtil = require('../../libraries/string-util');
 const cryptoConfig = require('../../env').cryptoConfig;
 const logger = require('../../libraries/log4js').getLogger('CredentialHelper');
 
-module.exports.CERT_PATHS = {
+const certPath = {
     cacerts: 'cacerts',
     admincerts: 'admincerts',
     signcerts: 'signcerts',
     keystore: 'keystore',
-    tlscacerts: 'tlscacerts'
+    tlscacerts: 'tlscacerts',
+    intermediatecerts: 'intermediatecerts',
+    tlsintermediatecerts: 'tlsintermediatecerts'
 };
+
+module.exports.CERT_PATHS = certPath;
 
 module.exports.CredentialHelper = class CredentialHelper {
 
@@ -23,70 +27,47 @@ module.exports.CredentialHelper = class CredentialHelper {
         this.archiveFileName = path.join(cryptoConfig.path, consortiumId, orgName + '.zip');
     }
 
-    writeCaCerts(caCert) {
-        let dirName = path.join(this.dirName, exports.CERT_PATHS.cacerts);
-        if (this.isDirExists(dirName)) {
-            this.removeDir(dirName);
-        }
-        this.createDir(dirName);
-        let filePath = path.join(dirName, 'ca-cert.pem');
-        this.writeFile(filePath, caCert);
-    }
-
-    writeTlsCaCerts(caCert) {
-        let dirName = path.join(this.dirName, exports.CERT_PATHS.tlscacerts);
-        if (this.isDirExists(dirName)) {
-            this.removeDir(dirName);
-        }
-        this.createDir(dirName);
-        let filePath = path.join(dirName, 'cert.pem');
-        this.writeFile(filePath, caCert);
-    }
-
-    writeAdminCerts(adminCert) {
-        let dirName = path.join(this.dirName, exports.CERT_PATHS.admincerts);
-        if (this.isDirExists(dirName)) {
-            this.removeDir(dirName);
-        }
-        this.createDir(dirName);
-        let filePath = path.join(dirName, 'admin-cert.pem');
-        this.writeFile(filePath, adminCert);
-    }
-
-    writeSignCerts(signCert) {
-        let dirName = path.join(this.dirName, exports.CERT_PATHS.signcerts);
-        if (this.isDirExists(dirName)) {
-            this.removeDir(dirName);
-        }
-        this.createDir(dirName);
-        let filePath = path.join(dirName, 'sign-cert.pem');
-        this.writeFile(filePath, signCert);
-    }
-
-    writeTlsCert(tls) {
-        if (!tls) {
-            logger.warn('Failed to write TLS cert because tls content is empty');
+    writeKeyStore(dirName, key) {
+        if (!key) {
+            logger.debug('write keystore failed, because content is empty');
             return;
         }
-        let dirName = path.join(this.dirName, 'tls');
+        if (this.isDirExists(dirName)) {
+            this.removeDir(dirName);
+        }
+        this.createDir(dirName);
+        let filePath = path.join(dirName, stringUtil.hash(key) + '_sk');
+        this.writeFile(filePath, key);
+    }
+
+    writeMspCert(dirName, cert) {
+        if (!cert) {
+            logger.debug('write %s msp cert failed, because content is empty', dirName);
+            return;
+        }
         if (this.isDirExists(dirName)) {
             this.removeDir(dirName);
         }
         this.createDir(dirName);
         let filePath = path.join(dirName, 'cert.pem');
-        this.writeFile(filePath, tls.cert);
-        let keyPath = path.join(dirName, 'key.pem');
-        this.writeFile(keyPath, tls.key);
+        this.writeFile(filePath, cert);
     }
 
-    writeKey(key) {
-        let dirName = path.join(this.dirName, exports.CERT_PATHS.keystore);
+    writeTlsCert(dirName, tls) {
+        if (!tls) {
+            logger.debug('write TLS cert failed, because tls content is empty');
+            return;
+        }
         if (this.isDirExists(dirName)) {
             this.removeDir(dirName);
         }
         this.createDir(dirName);
-        let filePath = path.join(dirName, stringUtil.hash(key) + '.pem');
-        this.writeFile(filePath, key);
+        let caPath = path.join(dirName, 'ca.pem');
+        this.writeFile(caPath, tls.cacert);
+        let filePath = path.join(dirName, 'server.crt');
+        this.writeFile(filePath, tls.cert);
+        let keyPath = path.join(dirName, 'server.key');
+        this.writeFile(keyPath, tls.key);
     }
 
     isDirExists(dirName) {
@@ -122,28 +103,44 @@ module.exports.CredentialHelper = class CredentialHelper {
         fs.unlinkSync(filePath);
     }
 
-    async zipDirectoryFiles() {
-        let output = fs.createWriteStream(this.archiveFileName);
+    async zipDirectoryFiles(isPeer, peerName) {
+        let archiveFileName = this.archiveFileName;
+        let dirName = this.dirName;
+        if (isPeer && isPeer === true) {
+            archiveFileName = path.join(dirName, 'peers', peerName + '.zip');
+            dirName = path.join(dirName, 'peers', peerName);
+        }
+        let output = fs.createWriteStream(archiveFileName);
         let archive = archiver('zip', {
             zlib: {level: 9}
         });
         archive.pipe(output);
-        archive.directory(this.dirName, false);
+        archive.directory(dirName, false);
         await archive.finalize();
+        return dirName;
     }
 
 };
 
-module.exports.storeCredentials = async (credential) => {
+// @param isPeer, 'peer-true' or 'org-false'
+module.exports.storeCredentials = async (credential, isPeer) => {
     let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.orgName);
     try {
-        credentialHelper.writeCaCerts(credential.rootCert);
-        credentialHelper.writeTlsCaCerts(credential.rootCert);
-        credentialHelper.writeAdminCerts(credential.adminCert);
-        credentialHelper.writeKey(credential.signkey || credential.adminKey);
-        credentialHelper.writeSignCerts(credential.signCert || credential.adminCert);
-        credentialHelper.writeTlsCert(credential.tls);
-        await credentialHelper.zipDirectoryFiles();
+        let dirName = credentialHelper.dirName;
+        if (isPeer && isPeer === true) {
+            dirName = path.join(dirName, 'peers', credential.peerName);
+        }
+        credentialHelper.writeKeyStore(path.join(dirName, 'msp', certPath.keystore), credential.adminKey);
+        credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.cacerts), credential.rootCert);
+        credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.tlscacerts), credential.tlsRootCert);
+        credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.admincerts), credential.adminCert);
+        credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.signcerts), credential.signcerts);
+        credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.intermediatecerts), credential.intermediateCerts);
+        credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.tlsintermediatecerts), credential.tlsintermediatecerts);
+        credentialHelper.writeTlsCert(path.join(dirName, 'tls'), credential.tls);
+        if (isPeer && isPeer === true) {
+            return credentialHelper.zipDirectoryFiles(isPeer, credential.peerName);
+        }
         return credentialHelper.dirName;
     } catch (e) {
         logger.error(e);
