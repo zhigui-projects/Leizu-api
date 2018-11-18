@@ -56,6 +56,7 @@ module.exports = class RequestHelper {
                 peer.nodes = [];
                 for(let element of item.peers){
                     peer.nodes.push({
+                        orgName: item.name,
                         name: element.name,
                         host: element.ip,
                         username: element.ssh_username,

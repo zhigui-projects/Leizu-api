@@ -23,11 +23,13 @@ module.exports = class OrganizationService {
             name: stringUtil.getCaName(name),
             consortiumId: consortiumId
         };
+        let caPort = common.PORT_CA;
+        caPort = utils.generateRandomHttpPort();
         try {
             let containerOptions = {
                 name: name,
                 domainName: domainName,
-                port: common.PORT_CA
+                port: caPort
             };
             let parameters, connectOptions = null;
             if (config.docker.enabled) {
@@ -52,7 +54,7 @@ module.exports = class OrganizationService {
                 let options = {
                     caName: stringUtil.getCaName(name),
                     orgName: name,
-                    url: stringUtil.getUrl(common.PROTOCOL.HTTP, host, common.PORT_CA)
+                    url: stringUtil.getUrl(common.PROTOCOL.HTTP, host, caPort)
                 };
                 await utils.wait(`${options.url}/api/v1/cainfo`);
                 let cryptoCaService = new CryptoCaService(options);
