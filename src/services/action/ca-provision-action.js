@@ -1,9 +1,9 @@
 'use strict';
 
 const Action = require('./action');
-const SshClient = require('../ssh/client');
 const utils = require('../../libraries/utils');
 const common = require('../../libraries/common');
+const OrganizationService = require('../fabric/organization');
 
 module.exports = class CAProvisionAction extends Action {
 
@@ -13,24 +13,18 @@ module.exports = class CAProvisionAction extends Action {
 
     async execute(){
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
-        let sshClient = new SshClient(params.caNode);
-        let containerOptions = {
+        let options = {
             name: params.caName,
+            consortiumId: params.consortiumId.toString(),
             domainName: utils.generateDomainName(params.caName),
-            port: common.PORT_CA
+            caPort: common.PORT_CA
         };
+        utils.extend(options,params.caNode);
         if(this.isDebugMode){
-            containerOptions.port = utils.generateRandomHttpPort();
-            try{
-                sshClient.exec(['rm','--force','ca-'+ params.caName]);
-            }catch (err) {
-                console.error(err);
-            }
+            options.caPort = utils.generateRandomHttpPort();
+            console.info(">>>debug info", options);
         }
-        let parameters = {
-            createContainerOptions: utils.generateCertAuthContainerCreateOptions(containerOptions)
-        };
-        await sshClient.createContainer(parameters.createContainerOptions);
+        return await OrganizationService.create(options);
     }
 
 };

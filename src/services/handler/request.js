@@ -61,13 +61,13 @@ module.exports = class RequestHandler extends Handler {
         await this.provisionPeerOrganizations();
         await this.provisionPeers();
         await this.provisionOrdererOrganization();
-        await this.prepareGenesisBlocks();
         await this.provisionOrderers();
         await this.makePeersJoinChannel();
     }
 
     async provisionPeerOrganizations(){
         for(let peer of this.parsedRequest.peers){
+            peer.consortiumId = this.parsedRequest.consortiumId;
             let provisionAction = ActionFactory.getCAProvisionAction(peer);
             this.organizations.peerOrgs[peer.orgName] = await provisionAction.execute();
         }
@@ -75,17 +75,16 @@ module.exports = class RequestHandler extends Handler {
 
     async provisionOrdererOrganization(){
         let orderer = this.parsedRequest.orderer;
+        orderer.consortiumId = this.parsedRequest.consortiumId;
         let provisionAction = ActionFactory.getCAProvisionAction(orderer);
         this.organizations.ordererOrg[orderer.orgName] = await provisionAction.execute();
-    }
-
-    async prepareGenesisBlocks(){
-
     }
 
     async provisionPeers(){
         for(let item of this.parsedRequest.peers){
             for(let node of item.nodes){
+                let organization = this.organizations.peerOrgs[node.orgName];
+                node.organizationId = organization._id;
                 let provisionAction = ActionFactory.getPeerProvisionAction(node);
                 this.peers[node.name] = await provisionAction.execute();
             }
