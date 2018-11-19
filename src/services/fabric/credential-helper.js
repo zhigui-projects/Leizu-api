@@ -122,8 +122,16 @@ module.exports.CredentialHelper = class CredentialHelper {
 
 };
 
+module.exports.storePeerCredentials = async (credential) => {
+    return storeCredentials(credential, true);
+};
+
+module.exports.storeOrgCredentials = async (credential) => {
+    return storeCredentials(credential, false);
+};
+
 // @param isPeer, 'peer-true' or 'org-false'
-module.exports.storeCredentials = async (credential, isPeer) => {
+var storeCredentials = async (credential, isPeer) => {
     let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.orgName);
     try {
         let dirName = credentialHelper.dirName;
