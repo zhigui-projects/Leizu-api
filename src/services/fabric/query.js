@@ -221,19 +221,18 @@ module.exports.getTlsCACerts = async (client) => {
     client.setTlsClientCertAndKey(cert, key);
 };
 
-module.exports.newOrderer = async (client, consortiumId) => {
-    let orderer = await DbService.getOrderer(consortiumId);
-    let tlsPath = path.join(orderer.mspPath, 'tls');
+module.exports.newOrderer = async (client, config) => {
+    let tlsPath = path.join(config.orderer.msp_path, 'tls');
     if (!fs.existsSync(tlsPath)) {
-        let ordererCa = await DbService.getCaByOrgId(orderer.orgId);
+        let ordererCa = await DbService.getCaByOrgId(config.orderer._id);
         let enrollment = await module.exports.getClientKeyAndCert(ordererCa);
         let options = {
             pem: enrollment.rootCertificate,
             'clientCert': enrollment.certificate,
             'clientKey': enrollment.key,
-            'ssl-target-name-override': orderer['server-hostname']
+            'ssl-target-name-override': config['server-hostname']
         };
-        let credentialHelper = new CredentialHelper(consortiumId.toString(), orderer.orgName);
+        let credentialHelper = new CredentialHelper(consortiumId.toString(), config.orderer.name);
         let tlsCerts = {
             cacert: enrollment.rootCertificate,
             key: enrollment.key,
@@ -241,7 +240,7 @@ module.exports.newOrderer = async (client, consortiumId) => {
         };
         credentialHelper.writeTlsCert(path.join(credentialHelper.dirName, 'tls'), tlsCerts);
         client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
-        return client.newOrderer(orderer.url, options);
+        return client.newOrderer(config.url, options);
     } else {
         let pem = fs.readFileSync(path.join(tlsPath, 'ca.pem')).toString();
         let clientCert = fs.readFileSync(path.join(tlsPath, 'server.crt')).toString();
@@ -250,10 +249,10 @@ module.exports.newOrderer = async (client, consortiumId) => {
             pem: pem,
             'clientCert': clientCert,
             'clientKey': clientKey,
-            'ssl-target-name-override': orderer['server-hostname']
+            'ssl-target-name-override': config['server-hostname']
         };
         client.setTlsClientCertAndKey(clientCert, clientKey);
-        return client.newOrderer(orderer.url, options);
+        return client.newOrderer(config.url, options);
     }
 };
 

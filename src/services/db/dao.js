@@ -186,9 +186,7 @@ module.exports = class DbService {
         return {
             url: peer.url,
             'server-hostname': peer.name,
-            orgName: organization.name,
-            mspPath: organization.msp_path,
-            orgId: organization._id
+            orderer: organization
         };
     }
 

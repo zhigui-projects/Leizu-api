@@ -8,12 +8,14 @@ var ConfigTxBuilder = require('./configtxgen');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
+const DbService = require('../db/dao');
 
 module.exports.createChannel = async function (channelCreateTx, channelName, org) {
     try {
         let client = new Client();
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
-        let orderer = await query.newOrderer(client, org.consortium_id);
+        var ordererConfig = await DbService.getOrderer(org.consortium_id);
+        let orderer = await query.newOrderer(client, ordererConfig);
         let channel = client.newChannel(channelName);
         channel.addOrderer(orderer);
 

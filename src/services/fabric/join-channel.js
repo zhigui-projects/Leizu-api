@@ -12,12 +12,12 @@ const DbService = require('../db/dao');
 var joinChannel = async function (channelName, org) {
     var errorMessage = null;
     var ordererConfig = await DbService.getOrderer(org.consortium_id);
-    var response = {peers: [], organizations: [ordererConfig.orgId, org._id]};
+    var response = {peers: [], organizations: [ordererConfig.orderer._id, org._id]};
     try {
         // first setup the client for this org
         let client = new Client();
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
-        let orderer = await query.newOrderer(client, org.consortium_id);
+        let orderer = await query.newOrderer(client, ordererConfig);
         let channel = client.newChannel(channelName);
         channel.addOrderer(orderer);
 
