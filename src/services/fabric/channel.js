@@ -18,22 +18,21 @@ module.exports = class ChannelService {
 
     async init() {
         try {
-            let organizations = await DbService.getOrganizationsByIds(this._organization_id);
-            if (!organizations || organizations.length !== 1) {
-                throw new Error('The organization does not exist.');
+            let organization = await DbService.findOrganizationById(this._organization_id);
+            if (!organization) {
+                throw new Error('The organization does not exist: ' + this._organization_id);
             }
-            this._organization = organizations[0];
-            let consortium = await DbService.getConsortiumById(organizations[0].consortium_id);
+            this._organization = organization;
+            let consortium = await DbService.getConsortiumById(organization.consortium_id);
             if (consortium) {
                 // this._network_config = JSON.parse(consortium.network_config);
-                this._consortium_id = organizations[0].consortium_id.toString();
+                this._consortium_id = organization.consortium_id.toString();
                 this._consortium_name = consortium.name;
             } else {
                 throw new Error('The consortium does not exist.');
             }
 
-            let anchorPeer = await this.getOrgAnchorPeers();
-            this._anchor_peers = anchorPeer;
+            this._anchor_peers = await this.getOrgAnchorPeers();
 
         } catch (e) {
             throw e;
@@ -53,16 +52,15 @@ module.exports = class ChannelService {
     async getOrgAnchorPeers() {
         try {
             let peer = await DbService.findPeersByOrgId(this._organization_id);
-            if (!peer) {
-                throw new Error('The organization is invalid, not found any peer.');
-            }
             let anchorPeers = [];
-            peer.map(item => {
-                let flag = item.location.indexOf(common.SEPARATOR_COLON);
-                let host = item.location.slice(0, flag);
-                let port = item.location.slice(flag + common.SEPARATOR_COLON.length);
-                anchorPeers.push({Host: host, Port: port});
-            });
+            if (peer) {
+                peer.map(item => {
+                    let flag = item.location.indexOf(common.SEPARATOR_COLON);
+                    let host = item.location.slice(0, flag);
+                    let port = item.location.slice(flag + common.SEPARATOR_COLON.length);
+                    anchorPeers.push({Host: host, Port: port});
+                });
+            }
             return anchorPeers;
         } catch (e) {
             throw e;
@@ -89,5 +87,16 @@ module.exports = class ChannelService {
 
     updateChannel(orgName) {
         return UpdateChannel.updateChannel(orgName, this._channel_name, this._network_config);
+    }
+
+    updateSysChannel() {
+        return UpdateChannel.updateSysChannel({
+            ConsortiumId: this._consortium_id,
+            Organizations: [{
+                Name: this._organization.name,
+                MspId: this._organization.msp_id,
+                Type: 0
+            }]
+        });
     }
 };

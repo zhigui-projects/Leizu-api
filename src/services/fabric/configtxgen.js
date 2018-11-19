@@ -29,7 +29,7 @@ module.exports = class ConfigTxBuilder {
             ID: org.MspId,
             MSPDir: this._getMspPath(org.Name)
         };
-        if (org.Type === common.PEER_TYPE_PEER) {
+        if (org.Type === common.PEER_TYPE_PEER && org.AnchorPeers && org.AnchorPeers.length > 0) {
             obj.AnchorPeers = org.AnchorPeers;
         }
         return obj;

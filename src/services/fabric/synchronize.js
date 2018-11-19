@@ -12,6 +12,7 @@ module.exports.syncFabric = async (consortiumId, networkConfig) => {
     }
     let peerConfig = discoverConfig.peer;
     let caConfig = discoverConfig.ca;
+    // TODO Discovery system channel
     let channelResult = await query.getChannels(peerConfig, caConfig);
     let channels = channelResult.channels || [];
     for (let i = 0; i < channels.length; i++) {
