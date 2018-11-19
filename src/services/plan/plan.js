@@ -25,8 +25,7 @@ module.exports = class NodePlan {
     buildCreateContainerCommand(){
         let command = [];
         command.push('docker');
-        command.push('create');
-        command.concat(this.parameters.createContainerOptions);
+        command = command.concat(this.parameters.createContainerOptions);
         return this.fullCommand(command);
     }
 
@@ -34,7 +33,7 @@ module.exports = class NodePlan {
         let command = [];
         command.push('docker');
         command.push('start');
-        command.push(containerId);
+        command.push(containerId.replace('\n',''));
         return this.fullCommand(command);
     }
 
@@ -44,7 +43,6 @@ module.exports = class NodePlan {
 
     shellEscape(a) {
         var ret = [];
-
         a.forEach(function(s) {
             if (/[^A-Za-z0-9_\/:=-]/.test(s)) {
                 s = "'"+s.replace(/'/g,"'\\''")+"'";
@@ -53,7 +51,6 @@ module.exports = class NodePlan {
             }
             ret.push(s);
         });
-
         return ret.join(' ');
     }
 };

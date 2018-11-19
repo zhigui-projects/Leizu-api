@@ -1,9 +1,9 @@
 'use strict';
 
 const Action = require('./action');
-const CAPlan = require('../plan/ca');
 const utils = require('../../libraries/utils');
 const common = require('../../libraries/common');
+const OrganizationService = require('../fabric/organization');
 
 module.exports = class CAProvisionAction extends Action {
 
@@ -13,17 +13,18 @@ module.exports = class CAProvisionAction extends Action {
 
     async execute(){
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
-        let caPlan = new CAPlan(params.caNode);
-        let containerOptions = {
+        let options = {
             name: params.caName,
+            consortiumId: params.consortiumId.toString(),
             domainName: utils.generateDomainName(params.caName),
-            port: common.PORT_CA
+            caPort: common.PORT_CA
         };
-        let parameters = {
-            createContainerOptions: utils.generateCertAuthContainerCreateOptions(containerOptions)
-        };
-        caPlan.setParameters(parameters);
-        caPlan.run();
+        utils.extend(options,params.caNode);
+        if(this.isDebugMode){
+            options.caPort = utils.generateRandomHttpPort();
+            console.info(">>>debug info", options);
+        }
+        return await OrganizationService.create(options);
     }
 
 };

@@ -19,10 +19,10 @@ module.exports = class RequestRollBackAction extends Action {
     async execute(){
         let consortiumId = await this.getConsortiumId();
         let condition = {consortium_id: consortiumId};
-        await Organization.remove(condition);
-        await Channel.remove(condition);
-        await Peer.remove(condition);
-        await CertAuthority.remove(condition);
+        await Organization.deleteOne(condition);
+        await Channel.deleteOne(condition);
+        await Peer.deleteOne(condition);
+        await CertAuthority.deleteOne(condition);
         await Consortium.findByIdAndDelete(consortiumId);
         let requestId = this.getRequestId();
         await Request.findByIdAndUpdate(requestId,{status: common.REQUEST_STATUS_ERROR});

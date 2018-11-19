@@ -1,12 +1,8 @@
 'use strict';
 
 const common = require('../../libraries/common');
-const utils = require('../../libraries/utils');
-const stringUtil = require('../../libraries/string-util');
 const DbService = require('../../services/db/dao');
-const DockerClient = require('../../services/docker/client');
-const CryptoCaService = require('../../services/fabric/crypto-ca');
-const CredentialHelper = require('../../services/fabric/credential-helper');
+const OrganizationService = require('../../services/fabric/organization');
 const router = require('koa-router')({prefix: '/organization'});
 
 router.get('/', async ctx => {
@@ -58,64 +54,8 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
-    const {name, consortiumId, domainName, host, port, username, password} = ctx.request.body;
-    let orgDto = {
-        orgName: name,
-        domainName: domainName,
-        mspId: stringUtil.getMspId(name),
-        consortiumId: consortiumId
-    };
-    let certAuthDto = {
-        name: stringUtil.getCaName(name),
-        consortiumId: consortiumId
-    };
     try {
-        let containerOptions = {
-            name: name,
-            domainName: domainName,
-            port: common.PORT_CA
-        };
-        let parameters, connectOptions = null;
-        if (ctx.app.config.docker.enabled) {
-            connectOptions = {
-                protocol: common.PROTOCOL.HTTP,
-                host: host,
-                port: port || ctx.app.config.docker.port
-            };
-            parameters = utils.generateCertAuthContainerOptions(containerOptions);
-        } else {
-            connectOptions = {
-                username: username,
-                password: password,
-                host: host,
-                port: port
-            };
-            parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
-        }
-
-        let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
-        if (container) {
-            let options = {
-                caName: stringUtil.getCaName(name),
-                orgName: name,
-                url: stringUtil.getUrl(common.PROTOCOL.HTTP, host, common.PORT_CA)
-            };
-            await utils.wait(`${options.url}/api/v1/cainfo`);
-            let cryptoCaService = new CryptoCaService(options);
-            let result = await cryptoCaService.postContainerStart();
-            if (result) {
-                orgDto.adminKey = result.enrollment.key.toBytes();
-                orgDto.adminCert = result.enrollment.certificate;
-                orgDto.rootCert = result.enrollment.rootCertificate;
-                orgDto.mspPath = await CredentialHelper.storeCredentials(orgDto);
-            }
-            certAuthDto.url = options.url;
-        }
-        let organization = await DbService.addOrganization(orgDto);
-        if (organization) {
-            certAuthDto.orgId = organization._id;
-            organization.ca = await DbService.addCertAuthority(certAuthDto);
-        }
+        let organization = await OrganizationService.create(ctx.request.body);
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
         console.log('error: ', err);
