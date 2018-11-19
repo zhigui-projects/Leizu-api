@@ -5,6 +5,8 @@ const certAuthoritySchema = new mongoose.Schema({
     uuid: String,
     name: String,
     url: String,
+    enroll_id: String,
+    enroll_secret: String,
     org_id: mongoose.Schema.ObjectId,
     consortium_id: mongoose.Schema.ObjectId,
     date: {

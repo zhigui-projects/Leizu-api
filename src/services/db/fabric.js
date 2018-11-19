@@ -7,11 +7,11 @@ const Channel = require('../../models/channel');
 const Organization = require('../../models/organization');
 const Orderer = require('../../models/orderer');
 const Peer = require('../../models/peer');
-const Ca = require('../../models/ca');
 const stringUtil = require('../../libraries/string-util');
 const CredentialHelper = require('../fabric/credential-helper');
 const config = require('../../env');
 const DockerClient = require('../docker/client');
+const DbService = require('./dao');
 
 module.exports = class FabricService {
 
@@ -65,7 +65,6 @@ module.exports = class FabricService {
         organization.admin_cert = dto.admins;
         organization.root_cert = dto.rootCerts;
         organization.msp_path = dto.mspPath;
-        organization.ca_id = dto.caId;
         try {
             organization = await organization.save();
             return organization;
@@ -88,16 +87,6 @@ module.exports = class FabricService {
             };
 
             dto.mspPath = await CredentialHelper.storeOrgCredentials(orgDto);
-        } catch (err) {
-            logger.error(err);
-            return null;
-        }
-    }
-
-    async findOrganizationByName(name) {
-        try {
-            let organization = await Organization.findOne({consortium_id: this.consortiumId, name: name});
-            return organization;
         } catch (err) {
             logger.error(err);
             return null;
@@ -138,7 +127,7 @@ module.exports = class FabricService {
         peer.name = dto.host;
         peer.consortium_id = this.consortiumId;
         peer.type = 1;
-        let organization = await this.findOrganizationByName(stringUtil.getOrgName(dto.mspid));
+        let organization = await DbService.findOrganizationByName(this.consortiumId, stringUtil.getOrgName(dto.mspid));
         if (organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();
@@ -161,7 +150,7 @@ module.exports = class FabricService {
         peer.url = dto.url;
         peer.location = dto.endpoint;
         peer.consortium_id = this.consortiumId;
-        let organization = await this.findOrganizationByName(stringUtil.getOrgName(dto.mspid));
+        let organization = await DbService.findOrganizationByName(this.consortiumId, stringUtil.getOrgName(dto.mspid));
         if (organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();
@@ -172,31 +161,25 @@ module.exports = class FabricService {
         }
     }
 
-    async addCa(dto) {
-        let ca = new Ca();
-        ca.uuid = uuid();
-        ca.url = dto.url;
-        ca.name = dto.name;
-        ca.enroll_id = dto.enrollId;
-        ca.enroll_secret = dto.enrollSecret;
-        try {
-            return ca.save();
-        } catch (err) {
-            logger.error(err);
-            return null;
-        }
-    }
-
-    async getOrgAdminKeyAndCa(networkConfig, org) {
+    static async getOrgAdminKey(networkConfig, org) {
         for (let item of networkConfig.orgs) {
             if (item.mspId === org.id) {
                 org.adminKey = item.signIdentity.adminKey;
-                let ca = await this.addCa(item.ca);
-                org.caId = ca._id;
                 return;
             }
         }
         logger.warn('Not provide sign identity private key for ' + org.id);
+    }
+
+    static async addCertAuthority(networkConfig, org) {
+        for (let item of networkConfig.orgs) {
+            if (item.mspId === org.msp_id) {
+                let ca = item.ca;
+                ca.orgId = org._id;
+                ca.consortiumId = org.consortium_id;
+                return DbService.addCertAuthority(ca);
+            }
+        }
     }
 
     static getPeerUrl(networkConfig, dto) {
@@ -221,11 +204,12 @@ module.exports = class FabricService {
             for (let index = 0; index < results.organizations.length; index++) {
                 let org = results.organizations[index];
                 org.name = stringUtil.getOrgName(org.id);
-                let organization = await this.findOrganizationByName(org.name);
+                let organization = await DbService.findOrganizationByName(this.consortiumId, org.name);
                 if (!organization) {
-                    await this.getOrgAdminKeyAndCa(networkConfig, org);
+                    await FabricService.getOrgAdminKey(networkConfig, org);
                     await this.storeCredentials(org);
                     organization = await this.addOrganization(org);
+                    await FabricService.addCertAuthority(networkConfig, organization);
                 }
                 result.organizations.push(organization);
             }

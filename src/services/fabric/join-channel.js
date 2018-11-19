@@ -11,6 +11,8 @@ const DbService = require('../db/dao');
  */
 var joinChannel = async function (channelName, org) {
     var errorMessage = null;
+    var ordererConfig = await DbService.getOrderer(org.consortium_id);
+    var response = {peers: [], organizations: [ordererConfig.orgId, org._id]};
     try {
         // first setup the client for this org
         let client = new Client();
@@ -25,6 +27,7 @@ var joinChannel = async function (channelName, org) {
             let peer = await query.newPeer(client, org._id, {url: item.url, 'server-hostname': item.name});
             targets.push(peer);
             channel.addPeer(peer);
+            response.peers.push(item._id);
         });
 
         // next step is to get the genesis_block from the orderer,
@@ -69,14 +72,7 @@ var joinChannel = async function (channelName, org) {
     }
 
     if (!errorMessage) {
-        let message = util.format(
-            'Successfully joined peers in organization  to the channel:%s', channelName);
-        logger.info(message);
-        // build a response to send back to the REST caller
-        let response = {
-            success: true,
-            message: message
-        };
+        logger.info('Successfully joined peers in organization  to the channel:%s', channelName);
         return response;
     } else {
         let message = util.format('Failed to join all peers to channel. cause:%s', errorMessage);

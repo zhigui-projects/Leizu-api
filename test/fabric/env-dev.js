@@ -40,7 +40,6 @@ const org1 = {
     }]
 };
 
-
 const orderer = {
     name: 'org0',
     mspId: 'org0MSP',
@@ -63,20 +62,9 @@ const orderer = {
     }]
 };
 
-// just use for test create-channel
-// let channelCreateTx = {
-//     Consortium: 'SampleConsortium',
-//     ConsortiumId: '5bebdf9cf6a23bdbc1d64af5',
-//     Organizations: [{
-//         Name: 'org1',
-//         MspId: 'org1MSP',
-//         Type: 0,
-//         AnchorPeers: [{Host: 'peer1-org1', Port: 7051}],
-//     }]
-// };
-
 module.exports = {
     name: 'SampleConsortium',
+    sysChannel: 'testchainid',
     discoverPeer: 'peer1-org1',
     orgs: [orderer, org1]
 };
