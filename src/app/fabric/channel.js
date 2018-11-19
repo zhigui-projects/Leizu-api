@@ -42,6 +42,7 @@ router.post('/', async ctx => {
         let channelName = parameters.name;
         let channelService = await ChannelService.getInstance(organizationId, channelName);
         let configEnvelope = await channelService.createChannel();
+        await channelService.joinChannel();
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: parameters.name,
