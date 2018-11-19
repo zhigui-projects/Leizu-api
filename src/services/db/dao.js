@@ -7,7 +7,6 @@ const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
 const Common = require('../../libraries/common');
-const Ca = require('../../models/ca');
 
 module.exports = class DbService {
 
@@ -165,6 +164,8 @@ module.exports = class DbService {
         certAuthority.url = dto.url;
         certAuthority.org_id = dto.orgId;
         certAuthority.consortium_id = dto.consortiumId;
+        certAuthority.enroll_id = dto.enrollId || Common.BOOTSTRAPUSER.enrollmentID;
+        certAuthority.enroll_secret = dto.enrollSecret || Common.BOOTSTRAPUSER.enrollmentSecret;
         certAuthority = certAuthority.save();
         return certAuthority;
     }
@@ -192,13 +193,9 @@ module.exports = class DbService {
     }
 
     static async getCaByOrgId(orgId) {
-        let org = await Organization.findOne({_id: orgId});
-        if (!org) {
-            throw new Error('can not found organization: ' + orgId);
-        }
-        let ca = await Ca.findOne({_id: org.ca_id});
+        let ca = await CertAuthority.findOne({org_id: orgId});
         if (!ca) {
-            throw new Error('can not found ca server: ' + org.ca_id);
+            throw new Error('can not found ca server for ' + orgId);
         }
         return {
             url: ca.url,
@@ -206,6 +203,15 @@ module.exports = class DbService {
             enrollId: ca.enroll_id,
             enrollSecret: ca.enroll_secret
         };
+    }
+
+    static async findOrganizationByName(consortiumId, name) {
+        try {
+            let organization = await Organization.findOne({consortium_id: consortiumId, name: name});
+            return organization;
+        } catch (err) {
+            return null;
+        }
     }
 
 };
