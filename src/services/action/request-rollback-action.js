@@ -7,7 +7,7 @@ const Organization = require('../../models/organization');
 const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
-const Request = require('../../models/certauthority');
+const Request = require('../../models/request');
 const common = require('../../libraries/common');
 
 module.exports = class RequestRollBackAction extends Action {

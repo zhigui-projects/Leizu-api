@@ -7,6 +7,11 @@ const Channel = require('../../models/channel');
 const Organization = require('../../models/organization');
 const Orderer = require('../../models/orderer');
 const Peer = require('../../models/peer');
+const stringUtil = require('../../libraries/string-util');
+const CredentialHelper = require('../fabric/credential-helper');
+const config = require('../../env');
+const DockerClient = require('../docker/client');
+const DbService = require('./dao');
 
 module.exports = class FabricService {
 
@@ -51,12 +56,15 @@ module.exports = class FabricService {
     }
 
     async addOrganization(dto) {
-        let existedOrganization = await this.findOrganizationByName(dto.id);
-        if(existedOrganization) return existedOrganization;
         let organization = new Organization();
         organization.uuid = uuid();
-        organization.name = dto.id;
+        organization.name = dto.name;
+        organization.msp_id = dto.id;
         organization.consortium_id = this.consortiumId;
+        organization.admin_key = dto.adminKey;
+        organization.admin_cert = dto.admins;
+        organization.root_cert = dto.rootCerts;
+        organization.msp_path = dto.mspPath;
         try {
             organization = await organization.save();
             return organization;
@@ -66,10 +74,19 @@ module.exports = class FabricService {
         }
     }
 
-    async findOrganizationByName(name) {
+    async storeCredentials(dto) {
         try {
-            let organization = await Organization.findOne({name: name});
-            return organization;
+            let orgDto = {
+                orgName: dto.name,
+                consortiumId: this.consortiumId,
+                adminKey: dto.adminKey,
+                adminCert: dto.admins,
+                signcerts: dto.admins,
+                rootCert: dto.rootCerts,
+                tlsRootCert: dto.rootCerts
+            };
+
+            dto.mspPath = await CredentialHelper.storeOrgCredentials(orgDto);
         } catch (err) {
             logger.error(err);
             return null;
@@ -89,27 +106,29 @@ module.exports = class FabricService {
         }
     }
 
-    async findPeerByName(name){
+    async findPeerByName(name) {
         try {
-            let peer = await Peer.findOne({name: name});
+            let peer = await Peer.findOne({consortium_id: this.consortiumId, name: name});
             return peer ? peer : null;
         } catch (err) {
             logger.error(err);
             return null;
-        }        
+        }
     }
-    
-    async addOrdererPeer(dto) {
+
+    async addOrdererPeer(networkConfig, dto) {
         let existedPeer = await this.findPeerByName(dto.host);
-        if(existedPeer) return existedPeer;
+        if (existedPeer) return existedPeer;
+        FabricService.getPeerUrl(networkConfig, dto);
         let peer = new Peer();
         peer.uuid = uuid();
+        peer.url = dto.url;
         peer.location = dto.host + common.SEPARATOR_COLON + dto.port;
         peer.name = dto.host;
         peer.consortium_id = this.consortiumId;
         peer.type = 1;
-        let organization = await this.findOrganizationByName(dto.mspid);
-        if(organization) peer.org_id = organization._id;
+        let organization = await DbService.findOrganizationByName(this.consortiumId, stringUtil.getOrgName(dto.mspid));
+        if (organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();
             return peer;
@@ -119,18 +138,20 @@ module.exports = class FabricService {
         }
     }
 
-    async addPeer(dto) {
+    async addPeer(networkConfig, dto) {
         let name = dto.endpoint.slice(0, dto.endpoint.indexOf(common.SEPARATOR_COLON));
+        dto.host = name;
         let existedPeer = await this.findPeerByName(name);
-        if(existedPeer) return existedPeer;
+        if (existedPeer) return existedPeer;
+        FabricService.getPeerUrl(networkConfig, dto);
         let peer = new Peer();
         peer.uuid = uuid();
-        peer.consortium_id = this.consortiumId;
         peer.name = name;
+        peer.url = dto.url;
         peer.location = dto.endpoint;
         peer.consortium_id = this.consortiumId;
-        let organization = await this.findOrganizationByName(dto.mspid);
-        if(organization) peer.org_id = organization._id;
+        let organization = await DbService.findOrganizationByName(this.consortiumId, stringUtil.getOrgName(dto.mspid));
+        if (organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();
             return peer;
@@ -140,7 +161,40 @@ module.exports = class FabricService {
         }
     }
 
-    async handleDiscoveryResults(channelInfo, results) {
+    static async getOrgAdminKey(networkConfig, org) {
+        for (let item of networkConfig.orgs) {
+            if (item.mspId === org.id) {
+                org.adminKey = item.signIdentity.adminKey;
+                return;
+            }
+        }
+        logger.warn('Not provide sign identity private key for ' + org.id);
+    }
+
+    static async addCertAuthority(networkConfig, org) {
+        for (let item of networkConfig.orgs) {
+            if (item.mspId === org.msp_id) {
+                let ca = item.ca;
+                ca.orgId = org._id;
+                ca.consortiumId = org.consortium_id;
+                return DbService.addCertAuthority(ca);
+            }
+        }
+    }
+
+    static getPeerUrl(networkConfig, dto) {
+        for (let item of networkConfig.orgs) {
+            for (let peer of item.peers) {
+                if (peer['server-hostname'] === dto.host) {
+                    dto.url = peer.url;
+                    return;
+                }
+            }
+        }
+        logger.warn('Not provide peer url for ' + dto.host);
+    }
+
+    async handleDiscoveryResults(networkConfig, channelInfo, results) {
         let result = {
             organizations: [],
             orderers: [],
@@ -148,15 +202,28 @@ module.exports = class FabricService {
         };
         if (results) {
             for (let index = 0; index < results.organizations.length; index++) {
-                let organization = await this.addOrganization(results.organizations[index]);
+                let org = results.organizations[index];
+                org.name = stringUtil.getOrgName(org.id);
+                let organization = await DbService.findOrganizationByName(this.consortiumId, org.name);
+                if (!organization) {
+                    await FabricService.getOrgAdminKey(networkConfig, org);
+                    await this.storeCredentials(org);
+                    organization = await this.addOrganization(org);
+                    await FabricService.addCertAuthority(networkConfig, organization);
+                }
                 result.organizations.push(organization);
             }
+            // transfer certs file to configtxlator for update channel
+            await DockerClient.getInstance(config.configtxlator.connectionOptions).transferDirectory({
+                localDir: `${config.cryptoConfig.path}/${this.consortiumId}`,
+                remoteDir: `${config.configtxlator.dataPath}/${this.consortiumId}`
+            });
             for (let index = 0; index < results.orderers.length; index++) {
-                let orderer = await this.addOrdererPeer(results.orderers[index]);
+                let orderer = await this.addOrdererPeer(networkConfig, results.orderers[index]);
                 result.orderers.push(orderer);
             }
             for (let index = 0; index < results.peers.length; index++) {
-                let peer = await this.addPeer(results.peers[index]);
+                let peer = await this.addPeer(networkConfig, results.peers[index]);
                 result.peers.push(peer);
             }
         }
@@ -166,7 +233,6 @@ module.exports = class FabricService {
         };
         let channelDb = await this.addChannel(channelDto, result);
         result.channel_id = channelDb._id;
-        //await this.updateChannel(channelDb._id, result);
 
         return result;
     }

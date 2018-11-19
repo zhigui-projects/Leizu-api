@@ -4,24 +4,31 @@ var util = require('util');
 var query = require('./query');
 var logger = require('../../libraries/log4js').getLogger('Join-Channel');
 var Client = require('fabric-client');
+const DbService = require('../db/dao');
 
 /*
  * Have an organization join a channel
  */
-var joinChannel = async function (channelName, config) {
+var joinChannel = async function (channelName, org) {
     var errorMessage = null;
     try {
         // first setup the client for this org
         let client = new Client();
-        client.setAdminSigningIdentity(config.newConfig.adminKey, config.newConfig.adminCert, config.newConfig.mspid);
-        let orderer = await query.newOrderer(client, config);
+        var ordererConfig = await DbService.getOrderer(org.consortium_id);
+        var response = {peers: [], organizations: [ordererConfig.orderer._id, org._id]};
+        client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
+        let orderer = await query.newOrderer(client, ordererConfig);
         let channel = client.newChannel(channelName);
         channel.addOrderer(orderer);
 
         let targets = [];
-        let peer = await query.newPeer(client, config.caConfig, config.newConfig);
-        targets.push(peer);
-        channel.addPeer(peer);
+        let peers = await DbService.findPeersByOrgId(org._id);
+        peers.forEach(async item => {
+            let peer = await query.newPeer(client, org._id, {url: item.url, 'server-hostname': item.name});
+            targets.push(peer);
+            channel.addPeer(peer);
+            response.peers.push(item._id);
+        });
 
         // next step is to get the genesis_block from the orderer,
         // the starting point for the channel that we want to join
@@ -65,14 +72,7 @@ var joinChannel = async function (channelName, config) {
     }
 
     if (!errorMessage) {
-        let message = util.format(
-            'Successfully joined peers in organization  to the channel:%s', channelName);
-        logger.info(message);
-        // build a response to send back to the REST caller
-        let response = {
-            success: true,
-            message: message
-        };
+        logger.info('Successfully joined peers in organization  to the channel:%s', channelName);
         return response;
     } else {
         let message = util.format('Failed to join all peers to channel. cause:%s', errorMessage);
