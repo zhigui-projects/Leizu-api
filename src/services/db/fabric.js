@@ -221,11 +221,12 @@ module.exports = class FabricService {
             for (let index = 0; index < results.organizations.length; index++) {
                 let org = results.organizations[index];
                 org.name = stringUtil.getOrgName(org.id);
-                let existedOrganization = await this.findOrganizationByName(org.name);
-                if (existedOrganization) continue;
-                await this.getOrgAdminKeyAndCa(networkConfig, org);
-                await this.storeCredentials(org);
-                let organization = await this.addOrganization(org);
+                let organization = await this.findOrganizationByName(org.name);
+                if (!organization) {
+                    await this.getOrgAdminKeyAndCa(networkConfig, org);
+                    await this.storeCredentials(org);
+                    organization = await this.addOrganization(org);
+                }
                 result.organizations.push(organization);
             }
             // transfer certs file to configtxlator for update channel
