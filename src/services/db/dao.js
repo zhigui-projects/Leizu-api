@@ -44,7 +44,7 @@ module.exports = class DbService {
         let consortium = new Consortium();
         consortium.name = dto.name;
         consortium.uuid = uuid();
-        consortium.network_config = JSON.stringify(dto.config);
+        consortium.network_config = JSON.stringify(dto);
         consortium = await consortium.save();
         return consortium;
     }
