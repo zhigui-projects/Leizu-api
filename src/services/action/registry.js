@@ -10,11 +10,13 @@ module.exports = {
     },
     TYPE: {
         PROVISION: 'provision',
+        JOIN: 'join',
         ROLLBACK: 'rollback'
     },
     CONTEXT: {
         PARAMS: 'params',
         CONSORTIUM_ID: 'consortiumId',
-        REQUEST_ID: 'requestId'
+        REQUEST_ID: 'requestId',
+        ORGANIZATION_ID: 'organizationId'
     }
 };
