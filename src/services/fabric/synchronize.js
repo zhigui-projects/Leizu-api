@@ -6,8 +6,12 @@ const FabricService = require('../db/fabric');
 module.exports.syncFabric = async (consortiumId, networkConfig) => {
     let syncResults = [];
     let fabricService = new FabricService(consortiumId);
-    let peerConfig = generatePeerConfig(networkConfig);
-    let caConfig = generateCAConfig(networkConfig);
+    let discoverConfig = generateDiscoverConfig(networkConfig);
+    if (!discoverConfig) {
+        throw new Error('Invalid consortium config');
+    }
+    let peerConfig = discoverConfig.peer;
+    let caConfig = discoverConfig.ca;
     let channelResult = await query.getChannels(peerConfig, caConfig);
     let channels = channelResult.channels || [];
     for (let i = 0; i < channels.length; i++) {
@@ -16,18 +20,27 @@ module.exports.syncFabric = async (consortiumId, networkConfig) => {
         channelInfo.channelConfig = channelConfig || {};
         let rawResults = await query.serviceDiscovery(channelInfo.channel_id, peerConfig, caConfig);
         let results = module.exports.processDiscoveryResults(rawResults);
-        let dbResult = await fabricService.handleDiscoveryResults(channelInfo, results);
+        let dbResult = await fabricService.handleDiscoveryResults(networkConfig, channelInfo, results);
         syncResults.push(dbResult);
     }
     return syncResults;
 };
 
-const generatePeerConfig = (networkConfig) => {
-    return networkConfig.peerConfig;
-};
-
-const generateCAConfig = (networkConfig) => {
-    return networkConfig.caConfig;
+const generateDiscoverConfig = (networkConfig) => {
+    for (let item of networkConfig.orgs) {
+        for (let peer of item.peers) {
+            if (peer['server-hostname'] !== networkConfig.discoverPeer) {
+                continue;
+            }
+            peer.mspid = item.mspId;
+            peer.adminKey = item.signIdentity.adminKey;
+            peer.adminCert = item.signIdentity.adminCert;
+            return {
+                ca: item.ca,
+                peer: peer
+            };
+        }
+    }
 };
 
 module.exports.processDiscoveryResults = (rawResults) => {
@@ -56,7 +69,7 @@ module.exports.processDiscoveryResults = (rawResults) => {
 
     if (rawResults.peers_by_org) {
         for (let mspid in rawResults.peers_by_org) {
-            for(let peer of rawResults.peers_by_org[mspid].peers){
+            for (let peer of rawResults.peers_by_org[mspid].peers) {
                 peer.mspid = mspid;
                 results.peers.push(peer);
             }
