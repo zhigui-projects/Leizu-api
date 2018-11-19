@@ -36,7 +36,7 @@ module.exports = class ConfigTxBuilder {
     }
 
     _getMspPath(orgName) {
-        return path.join('data', this._options.ConsortiumId, orgName);
+        return path.join('data', this._options.ConsortiumId, orgName, 'msp');
     }
 
     //build orderer's information

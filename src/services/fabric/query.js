@@ -11,10 +11,13 @@
  *
  */
 
+const fs = require('fs');
+const path = require('path');
 const Client = require('fabric-client');
 const Peer = require('fabric-client/lib/Peer');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 const FabricCAServices = require('fabric-ca-client');
+const FabricService = require('../../services/db/fabric');
 
 module.exports.getBlockChainInfo = async (channelName, peerConfig, caConfig) => {
     let client = new Client();
@@ -218,34 +221,62 @@ module.exports.getTlsCACerts = async (client) => {
     return;
 };
 
-module.exports.newOrderer = async (client, config) => {
-    // let enrollment = await module.exports.getClientKeyAndCert(config.ordererCaConfig);
-    // let options = {
-    //     pem: enrollment.rootCertificate,
-    //     'clientCert': enrollment.certificate,
-    //     'clientKey': enrollment.key,
-    //     'ssl-target-name-override': config.ordererConfig['server-hostname']
-    // };
-    // client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
-    // return client.newOrderer(config.ordererConfig.url, options);
-    return client.newOrderer(config.orderConfig.url, {
-        'pem': config.orderConfig.pem,
-        'ssl-target-name-override': config.orderConfig['server-hostname']
-    });
+module.exports.newOrderer = async (client, consortiumId) => {
+    let orderer = await FabricService.getOrderer(consortiumId);
+    let tlsPath = path.join(orderer.mspPath, 'tls');
+    if (!fs.existsSync(tlsPath)) {
+        let ordererCa = await FabricService.getCaByOrgId(orderer.orgId);
+        let enrollment = await module.exports.getClientKeyAndCert(ordererCa);
+        let options = {
+            pem: enrollment.rootCertificate,
+            'clientCert': enrollment.certificate,
+            'clientKey': enrollment.key,
+            'ssl-target-name-override': orderer['server-hostname']
+        };
+        client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
+        return client.newOrderer(orderer.url, options);
+    } else {
+        let pem = fs.readFileSync(path.join(tlsPath, 'ca.pem'));
+        let clientCert = fs.readFileSync(path.join(tlsPath, 'server.crt'));
+        let clientKey = fs.readFileSync(path.join(tlsPath, 'server.key'));
+        let options = {
+            pem: pem,
+            'clientCert': clientCert,
+            'clientKey': clientKey,
+            'ssl-target-name-override': orderer['server-hostname']
+        };
+        client.setTlsClientCertAndKey(clientCert, clientKey);
+        return client.newOrderer(orderer.url, options);
+    }
+
+    // return client.newOrderer(orderer.url, {
+    //     'pem': orderer.pem,
+    //     'ssl-target-name-override': orderer['server-hostname']
+    // });
 };
 
-module.exports.newPeer = async (client, caConfig, peerConfig) => {
-    // let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+module.exports.newPeer = async (client, caConfig, config) => {
     let options = {
-        pem: peerConfig.pem,
-        'clientCert': peerConfig.tlsCert,
-        'clientKey': peerConfig.tlsKey,
+        pem: config.pem,
+        'clientCert': config.tlsCert,
+        'clientKey': config.tlsKey,
+        'ssl-target-name-override': config['server-hostname']
+    };
+    return client.newPeer(config.url, options);
+    // return client.newPeer(config.url, {
+    //     'pem': config.pem,
+    //     'ssl-target-name-override': config['server-hostname'],
+    //     name: config['server-hostname']
+    // });
+};
+
+module.exports.newPeerByEnroll = async (client, caConfig, peerConfig) => {
+    let enrollment = await module.exports.getClientKeyAndCert(caConfig);
+    let options = {
+        pem: enrollment.rootCertificate,
+        'clientCert': enrollment.certificate,
+        'clientKey': enrollment.key,
         'ssl-target-name-override': peerConfig['server-hostname']
     };
     return client.newPeer(peerConfig.url, options);
-    // return client.newPeer(peerConfig.url, {
-    //     'pem': peerConfig.pem,
-    //     'ssl-target-name-override': peerConfig['server-hostname'],
-    //     name: peerConfig['server-hostname']
-    // });
 };
