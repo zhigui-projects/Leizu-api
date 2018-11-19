@@ -29,7 +29,9 @@ module.exports = class OrganizationService {
             consortiumId: consortiumId
         };
         let caPort = common.PORT_CA;
-        // caPort = utils.generateRandomHttpPort();
+        if (utils.isSingleMachineTest()) {
+            caPort = utils.generateRandomHttpPort();
+        }
         try {
             let containerOptions = {
                 name: name,

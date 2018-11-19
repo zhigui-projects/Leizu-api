@@ -1,5 +1,6 @@
 'use strict';
 
+const {HFCAIdentityType} = require('fabric-ca-client/lib/IdentityService');
 const ChannelService = require('./join-channel');
 const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
@@ -69,13 +70,16 @@ module.exports = class PeerService {
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `peer-${host.replace(/\./g, '-')}`;
         let peerPort = common.PORT_PEER;
-        peerPort = utils.generateRandomHttpPort();
+        if (utils.isSingleMachineTest()) {
+            peerPort = utils.generateRandomHttpPort();
+        }
+
         let containerOptions = {
             workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`,
             peerName: peerName,
             domainName: org.domain_name,
             mspid: org.msp_id,
-            port:  peerPort
+            port: peerPort
         };
 
         let connectionOptions = null;
@@ -106,7 +110,8 @@ module.exports = class PeerService {
             return await DbService.addPeer(Object.assign({}, peerDto, {
                 name: peerName,
                 organizationId: organizationId,
-                location: `${host}:${peerPort}`
+                location: `${host}:${peerPort}`,
+                consortiumId: org.consortium_id,
             }));
         } else {
             throw new Error('create peer failed');
@@ -148,7 +153,7 @@ module.exports = class PeerService {
         };
         const caService = new CryptoCaService(options);
         await caService.bootstrapUserEnrollement();
-        await caService.registerPeerAdminUser();
+        await caService.registerAdminUser(HFCAIdentityType.PEER);
         const mspInfo = await caService.enrollUser(peerAdminUser);
         const tlsInfo = await caService.enrollUser(Object.assign({}, peerAdminUser, {profile: 'tls'}));
         const peerDto = {

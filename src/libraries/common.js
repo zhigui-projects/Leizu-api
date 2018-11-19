@@ -1,5 +1,7 @@
 'use strict';
 
+module.exports.SYSTEM_CHANNEL = 'systemchainid';
+
 //constant variables
 module.exports.SUCCESS = 'success';
 module.exports.ERROR = 'error';
