@@ -109,7 +109,8 @@ module.exports = class PeerService {
             return await DbService.addPeer(Object.assign({}, peerDto, {
                 name: peerName,
                 organizationId: organizationId,
-                location: `${host}:${peerPort}`
+                location: `${host}:${peerPort}`,
+                consortiumId: org.consortium_id,
             }));
         } else {
             throw new Error('create peer failed');
