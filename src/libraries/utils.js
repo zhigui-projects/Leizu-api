@@ -271,3 +271,7 @@ module.exports.generateRandomInteger = (low, high) => {
     return Math.floor(Math.random() * (high - low) + low);
 };
 
+module.exports.isSingleMachineTest = () => {
+    return true;
+};
+
