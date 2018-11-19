@@ -108,7 +108,7 @@ module.exports = class RequestHandler extends Handler {
         let orderOrgObject = orderOrganization.toObject();
         let orderConfig =  {
             mspid: orderOrgObject.msp_id,
-            sysChannel: 'testchainid',
+            sysChannel: common.SYSTEM_CHANNEL,
             url: orderObject.location,
             pem: orderObject.root_cert
         };
