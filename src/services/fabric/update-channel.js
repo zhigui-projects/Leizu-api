@@ -13,13 +13,15 @@ var stringUtil = require('../../libraries/string-util');
 var ConfigTxBuilder = require('./configtxgen');
 const DbService = require('../db/dao');
 
-async function updateAppChannel(org, channelName, config) {
+async function updateAppChannel(channelName, org, orgId) {
     try {
         let client = new Client();
-        client.setAdminSigningIdentity(config.peerConfig.adminKey, config.peerConfig.adminCert, config.peerConfig.mspid);
-        let peer = await query.newOrderer(client, config.ordererConfig);
+        let config = await DbService.findOrganizationById(orgId);
+        var ordererConfig = await DbService.getOrderer(org.ConsortiumId);
+        client.setAdminSigningIdentity(config.admin_key, config.admin_cert, config.msp_id);
+        let orderer = await query.newOrderer(client, ordererConfig);
         let channel = client.newChannel(channelName);
-        channel.addOrderer(peer);
+        channel.addOrderer(orderer);
         const envelopeConfig = await channel.getChannelConfigFromOrderer();
 
         // we just need the config from the envelope and configtxlator works with bytes
@@ -109,8 +111,8 @@ async function updateSysChannel(org) {
         // make our changes
         let originalConfigJson = await configtxlator.decode(originalConfigProto, 'common.Config');
         logger.debug('Successfully decoded the current configuration config proto into JSON');
-        logger.debug(' original_config_json :: %s', originalConfigJson);
-        return;
+        // logger.debug(' original_config_json :: %s', originalConfigJson);
+
         // make a copy of the original so we can edit it
         let updatedConfigJson = originalConfigJson;
         const updatedConfig = JSON.parse(updatedConfigJson);

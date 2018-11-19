@@ -85,8 +85,16 @@ module.exports = class ChannelService {
         return JoinChannel.joinChannel(this._channel_name, this._organization);
     }
 
-    updateChannel(orgName) {
-        return UpdateChannel.updateChannel(orgName, this._channel_name, this._network_config);
+    updateAppChannel() {
+        return UpdateChannel.updateAppChannel(this._channel_name, {
+            ConsortiumId: this._consortium_id,
+            Organizations: [{
+                Name: this._organization.name,
+                MspId: this._organization.msp_id,
+                Type: 0,
+                AnchorPeers: this._anchor_peers,
+            }]
+        }, this._organization_id);
     }
 
     updateSysChannel() {

@@ -73,8 +73,8 @@ router.put('/:id', async ctx => {
     try {
         let channel = await DbService.getChannelById(id);
         if (channel) {
-            let channelService = await ChannelService.getInstance(channel.consortium_id, channel.name);
-            await channelService.updateChannel(params.orgName);
+            let channelService = await ChannelService.getInstance(params.organizationId, channel.name);
+            await channelService.updateAppChannel();
             ctx.body = common.success({id: id}, common.SUCCESS);
         } else {
             logger.error('The channelId does not exist.');
