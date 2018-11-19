@@ -33,8 +33,8 @@ module.exports = class PeerJoinAction extends Action {
             caConfig: {
                 url: certAuthObject.url,
                 name: certAuthObject.name,
-                enrollId: 'admin',
-                enrollSecret: 'adminpw'
+                enrollId: common.BOOTSTRAPUSER.enrollmentID,
+                enrollSecret: common.BOOTSTRAPUSER.enrollmentSecret
             },
             newConfig: {
                 mspid: orgObject.msp_id,
