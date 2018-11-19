@@ -2,9 +2,9 @@
 
 const DbService = require('../db/dao');
 const CreateChannel = require('./create-channel');
+const JoinChannel = require('./join-channel');
 const UpdateChannel = require('./update-channel');
 const common = require('../../libraries/common');
-const stringUtil = require('../../libraries/string-util');
 
 module.exports = class ChannelService {
     constructor(organizationId, channelId) {
@@ -81,6 +81,10 @@ module.exports = class ChannelService {
             }]
         };
         return CreateChannel.createChannel(channelCreateTx, this._channel_name, this._organization);
+    }
+
+    joinChannel() {
+        return JoinChannel.joinChannel(this._channel_name, this._organization);
     }
 
     updateChannel(orgName) {

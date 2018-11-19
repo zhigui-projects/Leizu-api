@@ -252,37 +252,6 @@ module.exports = class FabricService {
         return result;
     }
 
-    static async getOrderer(consortiumId) {
-        let peer = await Peer.findOne({consortium_id: consortiumId, type: common.PEER_TYPE_ORDER});
-        if (!peer) {
-            throw new Error('can not found any orderer for consortium: ' + consortiumId);
-        }
-
-        let organization = await Organization.findOne({consortium_id: consortiumId, _id: peer.org_id});
-        if (!organization) {
-            throw new Error('can not found organization: ' + peer.org_id);
-        }
-        return {url: peer.url, 'server-hostname': peer.name, mspPath: organization.msp_path, orgId: organization._id};
-    }
-
-    static async getCaByOrgId(orgId) {
-        let org = await Organization.findOne({_id: orgId});
-        if (!org) {
-            throw new Error('can not found organization: ' + orgId);
-        }
-
-        let ca = await Ca.findOne({_id: org.ca_id});
-        if (!ca) {
-            throw new Error('can not found ca server: ' + org.ca_id);
-        }
-        return {
-            url: ca.url,
-            name: ca.name,
-            enrollId: ca.enroll_id,
-            enrollSecret: ca.enroll_secret
-        };
-    }
-
     async updateChannel(channelId, mapData) {
         let peerIds = [];
         let orgIds = [];
