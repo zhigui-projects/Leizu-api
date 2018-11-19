@@ -87,7 +87,7 @@ module.exports = class FabricService {
                 tlsRootCert: dto.rootCerts
             };
 
-            dto.mspPath = await CredentialHelper.storeCredentials(orgDto);
+            dto.mspPath = await CredentialHelper.storeOrgCredentials(orgDto);
         } catch (err) {
             logger.error(err);
             return null;
@@ -136,7 +136,7 @@ module.exports = class FabricService {
         peer.name = dto.host;
         peer.consortium_id = this.consortiumId;
         peer.type = 1;
-        let organization = await this.findOrganizationByName(dto.mspid);
+        let organization = await this.findOrganizationByName(stringUtil.getOrgName(dto.mspid));
         if (organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();
@@ -157,7 +157,7 @@ module.exports = class FabricService {
         peer.name = name;
         peer.location = dto.endpoint;
         peer.consortium_id = this.consortiumId;
-        let organization = await this.findOrganizationByName(dto.mspid);
+        let organization = await this.findOrganizationByName(stringUtil.getOrgName(dto.mspid));
         if (organization) peer.org_id = organization._id;
         try {
             peer = await peer.save();

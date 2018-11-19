@@ -165,7 +165,7 @@ module.exports = class PeerService {
         peerDto.tls.cacert = org.root_cert;
         peerDto.tls.key = tlsInfo.key.toBytes();
         peerDto.tls.cert = tlsInfo.certificate;
-        peerDto.credentialsPath = await CredentialHelper.storeCredentials(peerDto, true);
+        peerDto.credentialsPath = await CredentialHelper.storePeerCredentials(peerDto);
         return peerDto;
     }
 };
