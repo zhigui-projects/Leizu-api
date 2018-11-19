@@ -42,17 +42,19 @@ router.post('/', async ctx => {
         let channelName = parameters.name;
         let channelService = await ChannelService.getInstance(organizationId, channelName);
         let configEnvelope = await channelService.createChannel();
-        await channelService.joinChannel();
+        let result = await channelService.joinChannel();
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: parameters.name,
             configuration: configEnvelope
-        }, {
-            orderers: [],
-            peers: [],
-            organizations: []
-        });
-        ctx.body = common.success(channel, common.SUCCESS);
+        }, result);
+
+        ctx.body = common.success({
+            _id: channel._id,
+            name: channel.name,
+            uuid: channel.uuid,
+            date: channel.date
+        }, common.SUCCESS);
     } catch (err) {
         logger.error(err.stack ? err.stack : err);
         ctx.status = 400;
