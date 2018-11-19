@@ -21,7 +21,7 @@ async function testCryptoCaService() {
         credential.adminKey = result.enrollment.key.toBytes();
         credential.adminCert = result.enrollment.certificate;
         credential.rootCert = result.enrollment.rootCertificate;
-        let filePath = CredentialHelper.storeCredentials(credential);
+        let filePath = CredentialHelper.storeOrgCredentials(credential);
         console.log(filePath);
     }
 }

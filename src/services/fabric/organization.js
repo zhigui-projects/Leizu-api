@@ -11,16 +11,21 @@ const DockerClient = require('../docker/client');
 
 module.exports = class OrganizationService {
 
-    static async create(payload){
+    static async create(payload) {
         const {name, consortiumId, domainName, host, port, username, password} = payload;
+        let consortium = await DbService.getConsortiumById(consortiumId);
+        if (!consortium) {
+            throw  new Error('The consortium not exist');
+        }
+        let organization = await DbService.findOrganizationByName(consortiumId, name);
+        if (organization) {
+            throw  new Error('The organization name already exists.');
+        }
+
         let orgDto = {
             orgName: name,
             domainName: domainName,
             mspId: stringUtil.getMspId(name),
-            consortiumId: consortiumId
-        };
-        let certAuthDto = {
-            name: stringUtil.getCaName(name),
             consortiumId: consortiumId
         };
         let caPort = common.PORT_CA;
@@ -64,17 +69,28 @@ module.exports = class OrganizationService {
                 if (result) {
                     orgDto.adminKey = result.enrollment.key.toBytes();
                     orgDto.adminCert = result.enrollment.certificate;
+                    orgDto.signcerts = result.enrollment.certificate;
                     orgDto.rootCert = result.enrollment.rootCertificate;
-                    orgDto.mspPath = await CredentialHelper.storeCredentials(orgDto);
+                    orgDto.tlsRootCert = result.enrollment.rootCertificate;
+                    orgDto.mspPath = await CredentialHelper.storeOrgCredentials(orgDto);
+                    // transfer certs file to configtxlator for update channel
+                    const configTxPath = `${config.configtxlator.dataPath}/${consortiumId}/${name}`;
+                    await DockerClient.getInstance(config.configtxlator.connectionOptions).transferDirectory({
+                        localDir: orgDto.mspPath,
+                        remoteDir: configTxPath
+                    });
                 }
-                certAuthDto.url = options.url;
+                let organization = await DbService.addOrganization(orgDto);
+                if (organization) {
+                    await DbService.addCertAuthority({
+                        name: options.caName,
+                        url: options.url,
+                        orgId: organization._id,
+                        consortiumId: consortiumId
+                    });
+                }
+                return organization;
             }
-            let organization = await DbService.addOrganization(orgDto);
-            if (organization) {
-                certAuthDto.orgId = organization._id;
-                organization.ca = await DbService.addCertAuthority(certAuthDto);
-            }
-            return organization;
         } catch (err) {
             throw err;
         }
