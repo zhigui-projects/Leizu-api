@@ -98,6 +98,26 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async makePeersJoinChannel(){
+        if(!this.parsedRequest.channel){
+            throw new Error('no channel definition');
+        }
+        let channelData = this.parsedRequest.channel;
+        let channelName = channelData.name;
+        let orderObject = this.orderer.toObject();
+        let orderOrganization = this.organizations.ordererOrg[this.parsedRequest.orderer.orgName];
+        let orderOrgObject = orderOrganization.toObject();
+        let orderConfig =  {
+            mspid: orderOrgObject.msp_id,
+            sysChannel: 'testchainid',
+            url: orderObject.location,
+            pem: orderObject.root_cert
+        };
+        for(let peer of this.peers){
+            peer.channelName = channelName;
+            peer.orderConfig = orderConfig;
+            let joinAction = ActionFactory.getPeerJoinAction(peer);
+            await joinAction.execute();
+        }
 
     }
     
