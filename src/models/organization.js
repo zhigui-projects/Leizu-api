@@ -11,6 +11,7 @@ const organizationSchema = new mongoose.Schema({
     root_cert: String,
     msp_path: String,
     consortium_id: mongoose.Schema.ObjectId,
+    ca_id: mongoose.Schema.ObjectId,
     date: {
         type: Date,
         default: Date.now()

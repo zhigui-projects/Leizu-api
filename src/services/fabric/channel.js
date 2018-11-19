@@ -9,30 +9,25 @@ const stringUtil = require('../../libraries/string-util');
 module.exports = class ChannelService {
     constructor(organizationId, channelId) {
         this._organization_id = organizationId;
-        this._organization_name = '';
-        this._network_config = null;
+        this._organization = null;
         this._channel_name = channelId;
         this._consortium_id = '';
         this._consortium_name = '';
         this._anchor_peers = [];
     }
 
-    async loadConfigFrmDB() {
+    async init() {
         try {
             let organizations = await DbService.getOrganizationsByIds(this._organization_id);
-            if (!organizations) {
+            if (!organizations || organizations.length !== 1) {
                 throw new Error('The organization does not exist.');
             }
-            this._organization_name = organizations[0].name;
+            this._organization = organizations[0];
             let consortium = await DbService.getConsortiumById(organizations[0].consortium_id);
             if (consortium) {
-                if (consortium.synced) {
-                    this._network_config = JSON.parse(consortium.network_config);
-                    this._consortium_id = organizations[0].consortium_id.toString();
-                    this._consortium_name = consortium.name;
-                } else {
-                    throw new Error('The consortium does not sync.');
-                }
+                // this._network_config = JSON.parse(consortium.network_config);
+                this._consortium_id = organizations[0].consortium_id.toString();
+                this._consortium_name = consortium.name;
             } else {
                 throw new Error('The consortium does not exist.');
             }
@@ -48,7 +43,7 @@ module.exports = class ChannelService {
     static async getInstance(organizationId, channelId) {
         try {
             let channelService = new ChannelService(organizationId, channelId);
-            await channelService.loadConfigFrmDB();
+            await channelService.init();
             return channelService;
         } catch (e) {
             throw e;
@@ -79,13 +74,13 @@ module.exports = class ChannelService {
             Consortium: this._consortium_name,
             ConsortiumId: this._consortium_id,
             Organizations: [{
-                Name: stringUtil.getOrgName(this._organization_name),
-                MspId: this._organization_name,
+                Name: this._organization.name,
+                MspId: this._organization.msp_id,
                 Type: 0,
                 AnchorPeers: this._anchor_peers,
             }]
         };
-        return CreateChannel.createChannel(channelCreateTx, this._channel_name, this._network_config);
+        return CreateChannel.createChannel(channelCreateTx, this._channel_name, this._organization);
     }
 
     updateChannel(orgName) {

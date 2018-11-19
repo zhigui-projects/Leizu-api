@@ -9,11 +9,11 @@ const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 
-module.exports.createChannel = async function (channelCreateTx, channelName, config) {
+module.exports.createChannel = async function (channelCreateTx, channelName, org) {
     try {
         let client = new Client();
-        client.setAdminSigningIdentity(config.peerConfig.adminKey, config.peerConfig.adminCert, config.peerConfig.mspid);
-        let orderer = await query.newOrderer(client, config);
+        client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
+        let orderer = await query.newOrderer(client, org.consortium_id);
         let channel = client.newChannel(channelName);
         channel.addOrderer(orderer);
 
