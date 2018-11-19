@@ -65,11 +65,11 @@ module.exports = class CryptoCA {
         }
     }
 
-    async registerAdminUser(){
+    async registerAdminUser(hfCAIdentityType){
         try {
             let caService = this.getFabricCaService();
             let attrs = [
-                { name: HFCAIdentityAttributes.HFREGISTRARROLES, value: HFCAIdentityType.CLIENT },
+                { name: HFCAIdentityAttributes.HFREGISTRARROLES, value: hfCAIdentityType },
                 { name: HFCAIdentityAttributes.HFREGISTRARATTRIBUTES, value: '*'},
                 { name: HFCAIdentityAttributes.HFREVOKER, value: 'true'},
                 { name: HFCAIdentityAttributes.HFGENCRL, value: 'true'},
@@ -84,30 +84,6 @@ module.exports = class CryptoCA {
     	    };
             let response = await caService.register(identity, this.bootstrapEnrollment);
             return response;
-        }catch(err){
-            console.error(err);
-        }
-    }
-
-    async registerPeerAdminUser(){
-        try {
-            let caService = this.getFabricCaService();
-            let attrs = [
-                { name: HFCAIdentityAttributes.HFREGISTRARROLES, value: HFCAIdentityType.PEER },
-                { name: HFCAIdentityAttributes.HFREGISTRARATTRIBUTES, value: '*'},
-                { name: HFCAIdentityAttributes.HFREVOKER, value: 'true'},
-                { name: HFCAIdentityAttributes.HFGENCRL, value: 'true'},
-                { name: 'admin', value: 'true:ecert'},
-                { name: 'abac.init', value: 'true:ecert'}
-            ];
-            let identity = {
-        		enrollmentID: this.adminUser.enrollmentID,
-        		enrollmentSecret: this.adminUser.enrollmentSecret,
-        		affiliation: this.orgName,
-                maxEnrollments: -1,
-        		attrs: attrs
-    	    };
-            return await caService.register(identity, this.bootstrapEnrollment);
         }catch(err){
             console.error(err);
         }
@@ -150,7 +126,7 @@ module.exports = class CryptoCA {
             await this.bootstrapUserEnrollement();
         }
         await this.addOrgAffiliation();
-        await this.registerAdminUser();
+        await this.registerAdminUser(HFCAIdentityType.CLIENT);
         result.enrollment = await this.enrollUser(this.adminUser);
         return result;
     }

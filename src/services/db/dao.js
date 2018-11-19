@@ -80,6 +80,7 @@ module.exports = class DbService {
         peer.name = dto.name;
         peer.location = dto.location;
         peer.org_id = dto.organizationId;
+        peer.consortium_id = dto.consortiumId;
         peer.sign_key = dto.signkey;
         peer.sign_cert = dto.signCert;
         peer.tls_key = dto.tls.key;
