@@ -1,5 +1,7 @@
 'use strict';
 
+module.exports.SYSTEM_CHANNEL = 'systemchainid';
+
 //constant variables
 module.exports.SUCCESS = 'success';
 module.exports.ERROR = 'error';
@@ -48,7 +50,14 @@ module.exports.DEFAULT_NETWORK = {
     DRIVER: 'bridge'
 };
 
-module.exports.PEER_HOME = '/opt/crypto-config';
+module.exports.PORT = {
+    CA: 7080,
+    ORDERER: 7050,
+    PEER: 7051,
+};
+
+module.exports.PEER_HOME = '/etc/hyperledger/crypto';
+module.exports.ORDERER_HOME = '/etc/hyperledger/crypto';
 module.exports.PEER_TYPE_ORDER = 1;
 module.exports.PEER_TYPE_PEER = 0;
 

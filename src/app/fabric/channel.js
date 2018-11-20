@@ -42,16 +42,19 @@ router.post('/', async ctx => {
         let channelName = parameters.name;
         let channelService = await ChannelService.getInstance(organizationId, channelName);
         let configEnvelope = await channelService.createChannel();
+        let result = await channelService.joinChannel();
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: parameters.name,
             configuration: configEnvelope
-        }, {
-            orderers: [],
-            peers: [],
-            organizations: []
-        });
-        ctx.body = common.success(channel, common.SUCCESS);
+        }, result);
+
+        ctx.body = common.success({
+            _id: channel._id,
+            name: channel.name,
+            uuid: channel.uuid,
+            date: channel.date
+        }, common.SUCCESS);
     } catch (err) {
         logger.error(err.stack ? err.stack : err);
         ctx.status = 400;
@@ -70,8 +73,8 @@ router.put('/:id', async ctx => {
     try {
         let channel = await DbService.getChannelById(id);
         if (channel) {
-            let channelService = await ChannelService.getInstance(channel.consortium_id, channel.name);
-            await channelService.updateChannel(params.orgName);
+            let channelService = await ChannelService.getInstance(params.organizationId, channel.name);
+            await channelService.updateAppChannel();
             ctx.body = common.success({id: id}, common.SUCCESS);
         } else {
             logger.error('The channelId does not exist.');

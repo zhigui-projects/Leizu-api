@@ -56,4 +56,12 @@ module.exports = class ActionFactory {
         return provisionAction;
     }
 
+    static getPeerJoinAction(params){
+        let joinAction = ActionFactory.getAction(Registry.RESOURCE.PEER,Registry.TYPE.JOIN);
+        let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS,params);
+        joinAction.setActionContext(actionContext);
+        return joinAction;
+    }
+
 };

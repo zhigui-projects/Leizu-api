@@ -17,7 +17,7 @@ module.exports = class CAProvisionAction extends Action {
             name: params.caName,
             consortiumId: params.consortiumId.toString(),
             domainName: utils.generateDomainName(params.caName),
-            caPort: common.PORT_CA
+            caPort: common.PORT.CA
         };
         utils.extend(options,params.caNode);
         if(this.isDebugMode){

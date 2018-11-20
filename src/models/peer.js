@@ -5,6 +5,7 @@ const peerSchema = new mongoose.Schema({
     uuid: String,
     name: String,
     location: String,
+    url: String,
     type: {
         type: Number,
         default: 0

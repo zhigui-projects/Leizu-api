@@ -4,10 +4,6 @@ const request = require('supertest');
 const app = require('../../src/index');
 const constants = require('./constants');
 const token = 'Bearer ' + constants.token;
-const sshInfo = {
-    user: 'root',
-    password: '***REMOVED***'
-};
 const options = {
     ordererType: 'kafka',
     orderOrg: 'org0',
@@ -24,7 +20,6 @@ const options = {
             },
         }
     ],
-
     kafka: [
         {
             host: '127.0.2.1',
@@ -32,11 +27,12 @@ const options = {
         }
     ]
 };
-const requestParam = {
+const orderer = {
+    host: '39.106.149.201',
+    port: 22,
+    username: 'root',
+    password: '***REMOVED***',
     organizationId: '5bd162bdb3ac3d3901a4ff42',
-    host: '47.106.121.33',
-    port: '2375',
-    sshInfo: sshInfo,
     options: options
 };
 
@@ -44,8 +40,8 @@ const requestParam = {
 request(app.callback())
     .post('/api/v1/orderer')
     .set('Authorization', token)
-    .send(requestParam)
-    .end(function (err, response) {
+    .send(orderer)
+    .end((err, response) => {
         if (err) console.error(err);
         console.log(response.body);
         app.mongoose.disconnect();
