@@ -32,9 +32,9 @@ module.exports = class OrdererService {
 
         let containerOptions = {
             workingDir: `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}`,
-            peerName: ordererName,
+            ordererName: ordererName,
             domainName: org.domain_name,
-            mspid: org.msp_id,
+            mspId: org.msp_id,
             port: ordererPort
         };
 
@@ -133,6 +133,7 @@ module.exports = class OrdererService {
         ordererDto.rootCert = org.root_cert;
         ordererDto.tls.key = tlsInfo.key.toBytes();
         ordererDto.tls.cert = tlsInfo.certificate;
+        //TODO: maxpeng
         ordererDto.credentialsPath = await CredentialHelper.storeCredentials(ordererDto);
         return ordererDto;
     }
@@ -165,7 +166,7 @@ module.exports = class OrdererService {
             configtx.peerOrgs.forEach((peerOrg) => {
                 options.Organizations.push({
                     Name: peerOrg.name,
-                    MspId: stringUtils.getMspId(peerOrg.name),
+                    MspId: stringUtils.getMspId(peerOrg.name), //TODO:
                     Type: common.PEER_TYPE_PEER,
                     AnchorPeers: [{Host: peerOrg.anchorPeer.host, Port: peerOrg.anchorPeer.port}]
                 });

@@ -78,7 +78,7 @@ module.exports = class PeerService {
             workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`,
             peerName: peerName,
             domainName: org.domain_name,
-            mspid: org.msp_id,
+            mspId: org.msp_id,
             port: peerPort
         };
 
