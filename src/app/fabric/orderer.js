@@ -3,6 +3,7 @@
 const common = require('../../libraries/common');
 const OrdererService = require('../../services/fabric/orderer');
 const router = require('koa-router')({prefix: '/orderer'});
+const logger = require('log4js').getLogger();
 
 router.get('/', async ctx => {
     try {
@@ -29,6 +30,7 @@ router.post('/', async ctx => {
         const order = await OrdererService.create(ctx.request.body);
         ctx.body = common.success(order, common.SUCCESS);
     } catch (err) {
+        logger.error(err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
