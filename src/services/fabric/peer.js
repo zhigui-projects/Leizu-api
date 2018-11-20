@@ -158,7 +158,7 @@ module.exports = class PeerService {
         const tlsInfo = await caService.enrollUser(Object.assign({}, peerAdminUser, {profile: 'tls'}));
         const peerDto = {
             orgName: org.name,
-            peerName: peerName,
+            name: peerName,
             consortiumId: org.consortium_id.toString(),
             tls: {}
         };
