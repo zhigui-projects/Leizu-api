@@ -6,7 +6,8 @@ module.exports = {
         ORDERER: 'orderer',
         CONSORTIUM: 'consortium',
         REQUEST: 'request',
-        CA: 'ca'
+        CA: 'ca',
+        KAFKA: 'kafka'
     },
     TYPE: {
         PROVISION: 'provision',
