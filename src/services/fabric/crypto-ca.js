@@ -80,6 +80,7 @@ module.exports = class CryptoCA {
         		enrollmentID: this.adminUser.enrollmentID,
         		enrollmentSecret: this.adminUser.enrollmentSecret,
         		affiliation: this.orgName,
+                maxEnrollments: -1,
         		attrs: attrs
     	    };
             let response = await caService.register(identity, this.bootstrapEnrollment);
