@@ -1,8 +1,6 @@
 'use strict';
 
 const Action = require('./action');
-const utils = require('../../libraries/utils');
-const common = require('../../libraries/common');
 const SshClient = require('../ssh/client');
 
 module.exports = class KafkaProvisionAction extends Action {
@@ -14,7 +12,7 @@ module.exports = class KafkaProvisionAction extends Action {
     async execute() {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
         let sshClient = new SshClient();
-        let zookeepers = params.zookeeper;
+        let zookeepers = params.zookeepers;
         let zooServers = [];
         let kafkaZooKeeperConnect = [];
         for(let index = 1; index < zookeepers.length +1; index++){
@@ -39,7 +37,7 @@ module.exports = class KafkaProvisionAction extends Action {
         }
 
         let counter = 0;
-        for(let kafka of params.kafka){
+        for(let kafka of params.kafkas){
             sshClient.setOptions(kafka);
             let parameters = [
                 'create',
@@ -61,7 +59,7 @@ module.exports = class KafkaProvisionAction extends Action {
 
     }
 
-    getKafkaBrokerId(n){
+    getKafkaBrokerId(n) {
         if(n %2 === 0){
             return 1;
         }else{

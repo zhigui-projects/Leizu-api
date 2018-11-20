@@ -10,6 +10,8 @@ module.exports = class RequestHelper {
         let configuration = utils.extend({},ctx.request.body);
         configuration.orderer = RequestHelper.getOrderer(configuration);
         configuration.peers = RequestHelper.getPeers(configuration);
+        configuration.kafkaCluster = RequestHelper.getKafkaCluster(configuration);
+        configuration.isKafkaConsensus = RequestHelper.isKafkaConsensus(configuration);
         return configuration;
     }
 
@@ -69,4 +71,36 @@ module.exports = class RequestHelper {
         return peers;
     }
 
+    static getKafkaCluster(configuration){
+        let cluster = {};
+        let zks = [];
+        for(let zk of configuration.zookeeper){
+            zks.push({
+                name: zk.name,
+                host: zk.ip,
+                username: zk.ssh_username,
+                password: zk.ssh_password
+            });
+        }
+        let kfs = [];
+        for(let kf of configuration.kafka){
+            kfs.push({
+                name: kf.name,
+                host: kf.ip,
+                username: kf.ssh_username,
+                password: kf.ssh_password
+            });
+        }
+        cluster.zookeeper = zks;
+        cluster.kafka = kfs;
+        return cluster;
+    }
+
+    static isKafkaConsensus(configuration){
+        if(configuration.consensus == common.CONSENSUS_KAFKE){
+            return true;
+        }else{
+            return false;
+        }
+    }
 };
