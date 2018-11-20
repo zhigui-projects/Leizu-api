@@ -112,7 +112,7 @@ module.exports = class ConfigTxBuilder {
     }
 
     //build configtx.yaml file for genesis block
-    buildGenesisBlock() {
+    buildConfigtxYaml() {
         let configtx = {Profiles: {}};
         configtx.Profiles[common.CONFIFTX_OUTPUT_GENESIS_BLOCK] = {
             Orderer: this._buildOrderer(),
