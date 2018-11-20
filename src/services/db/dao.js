@@ -44,7 +44,7 @@ module.exports = class DbService {
         let consortium = new Consortium();
         consortium.name = dto.name;
         consortium.uuid = uuid();
-        consortium.network_config = JSON.stringify(dto.config);
+        consortium.network_config = JSON.stringify(dto);
         consortium = await consortium.save();
         return consortium;
     }
@@ -80,6 +80,7 @@ module.exports = class DbService {
         peer.name = dto.name;
         peer.location = dto.location;
         peer.org_id = dto.organizationId;
+        peer.consortium_id = dto.consortiumId;
         peer.sign_key = dto.signkey;
         peer.sign_cert = dto.signCert;
         peer.tls_key = dto.tls.key;
@@ -164,6 +165,8 @@ module.exports = class DbService {
         certAuthority.url = dto.url;
         certAuthority.org_id = dto.orgId;
         certAuthority.consortium_id = dto.consortiumId;
+        certAuthority.enroll_id = dto.enrollId || Common.BOOTSTRAPUSER.enrollmentID;
+        certAuthority.enroll_secret = dto.enrollSecret || Common.BOOTSTRAPUSER.enrollmentSecret;
         certAuthority = certAuthority.save();
         return certAuthority;
     }
@@ -171,4 +174,43 @@ module.exports = class DbService {
     static async findCertAuthorityByOrg(orgId) {
         return await CertAuthority.findOne({org_id: orgId});
     }
+
+    static async getOrderer(consortiumId) {
+        let peer = await Peer.findOne({consortium_id: consortiumId, type: Common.PEER_TYPE_ORDER});
+        if (!peer) {
+            throw new Error('can not found any orderer for consortium: ' + consortiumId);
+        }
+        let organization = await Organization.findOne({_id: peer.org_id});
+        if (!organization) {
+            throw new Error('can not found organization: ' + peer.org_id);
+        }
+        return {
+            url: peer.url,
+            'server-hostname': peer.name,
+            orderer: organization
+        };
+    }
+
+    static async getCaByOrgId(orgId) {
+        let ca = await CertAuthority.findOne({org_id: orgId});
+        if (!ca) {
+            throw new Error('can not found ca server for ' + orgId);
+        }
+        return {
+            url: ca.url,
+            name: ca.name,
+            enrollId: ca.enroll_id,
+            enrollSecret: ca.enroll_secret
+        };
+    }
+
+    static async findOrganizationByName(consortiumId, name) {
+        try {
+            let organization = await Organization.findOne({consortium_id: consortiumId, name: name});
+            return organization;
+        } catch (err) {
+            return null;
+        }
+    }
+
 };

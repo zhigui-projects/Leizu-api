@@ -59,12 +59,8 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
-    let dto = {
-        name: ctx.request.body.name,
-        config: ctx.request.body.config
-    };
     try {
-        let consortium = await DbService.addConsortium(dto);
+        let consortium = await DbService.addConsortium(ctx.request.body);
         ctx.body = common.success(consortium, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;

@@ -95,22 +95,31 @@ module.exports.generatePeerContainerOptions = (options, mode) => {
     }
 };
 
+module.exports.generateOrdererContainerOptions = (options, mode) => {
+    switch (mode) {
+        case common.MODES.DOCKER:
+            return generateOrdererContainerOptionsForDocker(options);
+        case common.MODES.SSH:
+            return generateOrdererContainerOptionsForSSH(options);
+    }
+};
+
 const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, port, workingDir}) => {
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
     return {
-        _query: {name: peerName},
+        _query: {name: `${peerName}.${domainName}`},
         Image: 'hyperledger/fabric-ca-peer',
-        Hostname: peerName,
+        Hostname: `${peerName}.${domainName}`,
         WorkingDir: workingDir,
         Cmd: ['/bin/bash', '-c', 'peer node start'],
         HostConfig: {
             NetworkMode: common.DEFAULT_NETWORK.NAME,
             PortBindings: portBindings,
             Binds: [
-                `${workingDir}/data:/data`,
-                '/var/run:/host/var/run'
+                `${workingDir}:/data`,
+                '/var/run:/var/run'
             ],
         },
         Env: [
@@ -149,7 +158,6 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         '-e', `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
         '-e', `CORE_PEER_LOCALMSPID=${mspid}`,
         '-e', `CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_default`,
-        '-e', `GODEBUG=netdns=go`,
         '-e', `CORE_PEER_MSPCONFIGPATH=/data/msp`,
         '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
         '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
@@ -170,79 +178,72 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
     ];
 };
 
-module.exports.generateOrdererContainerOptions = (ordererName) => {
-    const workingDir = '/etc/hyperledger/orderer';
+const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspid, port, workingDir}) => {
+    const portBindings = {};
+    portBindings[`${port}/tcp`] = [{HostPort: port}];
 
     return {
-        _query: {name: ordererName},
-        Image: 'hyperledger/fabric-ca-orderer', //TODO: replace the image
-        Hostname: ordererName,
+        _query: {name: `${ordererName}.${domainName}`},
+        Image: 'hyperledger/fabric-ca-orderer',
+        Hostname: `${ordererName}.${domainName}`,
         WorkingDir: workingDir,
-        Cmd: ['/bin/bash', '-c', '/scripts/start-orderer-standalone.sh'], //TODO: put the script into the image
+        Cmd: ['/bin/bash', '-c', 'orderer'],
         HostConfig: {
-            NetworkMode: 'host',
+            NetworkMode: common.DEFAULT_NETWORK.NAME,
+            PortBindings: portBindings,
             Binds: [
-                `${workingDir}/scripts:/scripts`,//TODO: replace the workingDir
-                `${workingDir}/data:/data`,//TODO: replace the workingDir
-                '/var/run:/host/var/run'
+                `${workingDir}:/data`,
+                '/var/run:/var/run'
             ],
         },
         Env: [
-            'GODEBUG=netdns=go',
-            `FABRIC_CA_CLIENT_HOME=${workingDir}`,
-            'FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org0-ca-chain.pem', //TODO: generate it automatically
-            `ENROLLMENT_URL=https://${ordererName}:${ordererName}pw@ica-org1:7057`, //TODO: replace the CA url
-            'CA_ADMIN_ENROLLMENT_URL=https://ica-org1-admin:ica-org1-adminpw@ica-org1:7057', //TODO: generate it automatically
-            `ORDERER_HOME=${workingDir}`,
-            `PEER_NAME=${ordererName}`,
-            `ORDERER_HOST=${ordererName}`,
-            'ORDERER_GENERAL_LISTENADDRESS=0.0.0.0',
+            `ORDERER_GENERAL_LISTENADDRESS=${ordererName}.${domainName}`,
+            `ORDERER_GENERAL_LISTENPORT=${port}`,
             'ORDERER_GENERAL_GENESISMETHOD=file',
             'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
-            'ORDERER_GENERAL_LOCALMSPID=org0MSP',
-            'ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/orderer/msp',
+            `ORDERER_GENERAL_LOCALMSPID=${mspid}`,
+            'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
             'ORDERER_GENERAL_TLS_ENABLED=true',
-            'ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/orderer/tls/server.key',
-            'ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/orderer/tls/server.crt',
-            'ORDERER_GENERAL_TLS_ROOTCAS=[/data/org0-ca-chain.pem]',
+            'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
+            'ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server.key',
+            'ORDERER_GENERAL_TLS_ROOTCAS=[/data/tls/ca.pem]',
             'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
-            'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/org0-ca-chain.pem]',
+            'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/ca.pem]',
             'ORDERER_GENERAL_LOGLEVEL=debug',
-            'ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs',
-            'ORG=org0',
-            'ORG_ADMIN_CERT=/data/orgs/org0/msp/admincerts/cert.pem', //TODO: replace org1
-            'ORG_ADMIN_HOME=/data/orgs/org0/admin', //TODO: replace org1
+            'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
+            'GODEBUG=netdns=go',
         ],
     };
 };
 
-module.exports.generateOrdererCreateOptions = (ordererName, mspid, port, workingDir) => {
+const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspid, port, workingDir}) => {
     return [
         'create',
-        '--name', `orderer-${ordererName}`,
-        '--hostname', ordererName,
+        '--name', `${ordererName}.${domainName}`,
+        '--hostname', `${ordererName}.${domainName}`,
+        '--network', common.DEFAULT_NETWORK.NAME,
         '-p', `${port}:${port}`,
         '-w', workingDir,
-        '-v', `${workingDir}/data:/data`,
+        '-v', `${workingDir}:/data`,
         '-v', '/var/run:/var/run',
-        '-e', `CORE_PEER_ID=${ordererName}`,
-        '-e', `CORE_PEER_ADDRESS=${ordererName}:${port}`,
-        '-e', `CORE_PEER_LOCALMSPID=${mspid}`,
-        '-e', 'CORE_PEER_MSPCONFIGPATH=/data/msp',
-        '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${ordererName}:${port}`,
-        '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
-        '-e', 'CORE_PEER_GOSSIP_ORGLEADER=false',
-        '-e', 'CORE_PEER_TLS_ENABLED=true',
-        '-e', 'CORE_PEER_TLS_CERT_FILE=/data/tls/server.crt',
-        '-e', 'CORE_PEER_TLS_KEY_FILE=/data/tls/server.key',
-        '-e', 'CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca.pem',
-        '-e', 'CORE_PEER_TLS_CLIENTAUTHREQUIRED=true',
-        '-e', 'CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/tls/ca.pem',
-        '-e', 'CORE_LOGGING_LEVEL=debug',
-        '-e', 'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
-        '-e', 'CORE_VM_DOCKER_ATTACHSTDOUT=true',
-        'hyperledger/fabric-ca-peer',
-        '/bin/bash', '-c', 'peer node start',
+        '-e', `ORDERER_GENERAL_LISTENADDRESS=${ordererName}.${domainName}`,
+        '-e', `ORDERER_GENERAL_LISTENPORT=${port}`,
+        '-e', 'ORDERER_GENERAL_GENESISMETHOD=file',
+        '-e', 'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
+        '-e', `ORDERER_GENERAL_LOCALMSPID=${mspid}`,
+        '-e', 'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
+        '-e', 'ORDERER_GENERAL_TLS_ENABLED=true',
+        '-e', 'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
+        '-e', 'ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server.key',
+        '-e', 'ORDERER_GENERAL_TLS_ROOTCAS=[/data/tls/ca.pem]',
+        '-e', 'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
+        '-e', 'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/ca.pem]',
+        '-e', 'ORDERER_GENERAL_LOGLEVEL=debug',
+        '-e', 'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
+        '-e', 'GODEBUG=netdns=go',
+
+        'hyperledger/fabric-ca-orderer',
+        '/bin/bash', '-c', 'orderer',
     ];
 };
 
@@ -264,7 +265,7 @@ module.exports.createDir = (dirpath, mode) => {
 };
 
 module.exports.generateRandomHttpPort = () => {
-    return exports.generateRandomInteger(1024,65535);
+    return exports.generateRandomInteger(1024, 65535);
 };
 
 module.exports.generateRandomInteger = (low, high) => {

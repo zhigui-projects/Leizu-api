@@ -4,6 +4,7 @@ const common = require('../../libraries/common');
 const DbService = require('../../services/db/dao');
 const OrganizationService = require('../../services/fabric/organization');
 const router = require('koa-router')({prefix: '/organization'});
+const ChannelService = require('../../services/fabric/channel');
 
 router.get('/', async ctx => {
     let channelId = ctx.query['channelId'];
@@ -56,6 +57,9 @@ router.get('/:id', async ctx => {
 router.post('/', async ctx => {
     try {
         let organization = await OrganizationService.create(ctx.request.body);
+        let channelService = await ChannelService.getInstance(organization._id);
+        // add new org to consortium by update system channel config
+        await channelService.updateSysChannel();
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
         console.log('error: ', err);

@@ -23,5 +23,5 @@ let config = {
 };
 
 let builder = new ConfigTxBuilder(config);
-console.log(builder.buildGenesisBlock());
+console.log(builder.buildConfigtxYaml());
 

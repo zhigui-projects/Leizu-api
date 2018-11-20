@@ -29,14 +29,14 @@ module.exports = class ConfigTxBuilder {
             ID: org.MspId,
             MSPDir: this._getMspPath(org.Name)
         };
-        if (org.Type === common.PEER_TYPE_PEER) {
+        if (org.Type === common.PEER_TYPE_PEER && org.AnchorPeers && org.AnchorPeers.length > 0) {
             obj.AnchorPeers = org.AnchorPeers;
         }
         return obj;
     }
 
     _getMspPath(orgName) {
-        return path.join('data', this._options.ConsortiumId, orgName);
+        return path.join('data', this._options.ConsortiumId, orgName, 'msp');
     }
 
     //build orderer's information
@@ -112,7 +112,7 @@ module.exports = class ConfigTxBuilder {
     }
 
     //build configtx.yaml file for genesis block
-    buildGenesisBlock() {
+    buildConfigtxYaml() {
         let configtx = {Profiles: {}};
         configtx.Profiles[common.CONFIFTX_OUTPUT_GENESIS_BLOCK] = {
             Orderer: this._buildOrderer(),
