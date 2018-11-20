@@ -12,7 +12,7 @@ module.exports = class OrdererProvisionAction extends Action {
         let options = {
             name: params.name,
             domainName: utils.generateDomainName(params.name),
-            port: common.PORT_ORDERER,
+            port: common.PORT.ORDERER,
             workingDir: '/opt',
             ordererName: params.name,
             mspid: 'OrgOrderer'

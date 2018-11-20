@@ -28,7 +28,7 @@ module.exports = class OrganizationService {
             mspId: stringUtil.getMspId(name),
             consortiumId: consortiumId
         };
-        let caPort = common.PORT_CA;
+        let caPort = common.PORT.CA;
         if (utils.isSingleMachineTest()) {
             caPort = utils.generateRandomHttpPort();
         }
