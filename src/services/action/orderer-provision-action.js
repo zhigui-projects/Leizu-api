@@ -20,7 +20,7 @@ module.exports = class OrdererProvisionAction extends Action {
         if(this.isDebugMode){
             options.port = utils.generateRandomHttpPort();
         }
-        //return await OrderService.create(options);
+        return await OrderService.create(options);
     }
 
 };
