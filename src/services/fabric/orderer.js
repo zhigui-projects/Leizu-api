@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const {HFCAIdentityType} = require('fabric-ca-client/lib/IdentityService');
 const utils = require('../../libraries/utils');
-const env = require('../../env');
+const config = require('../../env');
 const common = require('../../libraries/common');
 const stringUtils = require('../../libraries/string-util');
 const CredentialHelper = require('./credential-helper');
@@ -31,7 +31,7 @@ module.exports = class OrdererService {
         const ordererPort = common.PORT.ORDERER;
 
         let containerOptions = {
-            workingDir: `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}`,
+            workingDir: `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}/peers/${ordererName}`,
             ordererName: ordererName,
             domainName: org.domain_name,
             mspId: org.msp_id,
@@ -56,7 +56,7 @@ module.exports = class OrdererService {
             };
         }
 
-        const ordererDto = await this.preContainerStart({org, ordererName, connectionOptions, options});
+        const ordererDto = await this.preContainerStart({org, ordererName, ordererPort, connectionOptions, options});
 
         const client = DockerClient.getInstance(connectionOptions);
         const parameters = utils.generateOrdererContainerOptions(containerOptions, connectionOptions.mode);
@@ -74,29 +74,21 @@ module.exports = class OrdererService {
         }
     }
 
-    static async preContainerStart({org, ordererName, connectionOptions, options}) {
+    static async preContainerStart({org, ordererName, ordererPort, connectionOptions, options}) {
         await this.createContainerNetwork(connectionOptions);
         let ordererDto = await this.prepareCerts(org, ordererName);
-        const genesisBlockFile = await this.prepareGenesisBlock(org, options);
+        const genesisBlockFile = await this.prepareGenesisBlock({org, ordererName, ordererPort, configtx: options});
 
         const certFile = `${ordererDto.credentialsPath}.zip`;
-        const remoteFile = `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}.zip`;
-        const remotePath = `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}`;
-        await DockerClient.getInstance(connectionOptions).transferFile({
-            local: certFile,
-            remote: remoteFile
-        });
-        await DockerClient.getInstance(connectionOptions).transferFile({
-            local: genesisBlockFile,
-            remote: remoteFile
-        });
-        const bash = DockerClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
-        await bash.exec(['-c', `mkdir -p ${remotePath}/msp ${remotePath}/tls`]);
-        await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}/msp`]);
-        await bash.exec(['-c', `cp ${remotePath}/msp/tls/cert.pem ${remotePath}/tls/server.crt`]);
-        await bash.exec(['-c', `cp ${remotePath}/msp/tls/key.pem ${remotePath}/tls/server.key`]);
-        await bash.exec(['-c', `cp ${remotePath}/msp/cacerts/ca-cert.pem ${remotePath}/tls/ca.pem`]);
+        const remoteFile = `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}/peers/${ordererName}.zip`;
+        const remotePath = `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}/peers/${ordererName}`;
+        const client = DockerClient.getInstance(connectionOptions);
+        await client.transferFile({local: certFile, remote: remoteFile});
+        await client.transferFile({local: genesisBlockFile, remote: `${remotePath}/genesis.block`});
 
+
+        const bash = DockerClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
+        await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}`]);
         return ordererDto;
     }
 
@@ -124,27 +116,30 @@ module.exports = class OrdererService {
         const tlsInfo = await caService.enrollUser(Object.assign({}, ordererAdminUser, {profile: 'tls'}));
         const ordererDto = {
             orgName: org.name,
-            consortiumId: org.consortium_id.toString(),
+            name: ordererName,
+            consortiumId: String(org.consortium_id),
             tls: {}
         };
-        ordererDto.signkey = mspInfo.key.toBytes();
-        ordererDto.signCert = mspInfo.certificate;
+        ordererDto.adminKey = mspInfo.key.toBytes();
         ordererDto.adminCert = org.admin_cert;
+        ordererDto.signcerts = mspInfo.certificate;
         ordererDto.rootCert = org.root_cert;
+        ordererDto.tlsRootCert = org.root_cert;
+        ordererDto.tls.cacert = org.root_cert;
         ordererDto.tls.key = tlsInfo.key.toBytes();
         ordererDto.tls.cert = tlsInfo.certificate;
-        //TODO: maxpeng
-        ordererDto.credentialsPath = await CredentialHelper.storeCredentials(ordererDto);
+        ordererDto.credentialsPath = await CredentialHelper.storePeerCredentials(ordererDto);
         return ordererDto;
     }
 
-    static async prepareGenesisBlock(org, configtx) {
+    static async prepareGenesisBlock({org, ordererName, ordererPort, configtx}) {
         let options = {
             ConsortiumId: String(org.consortium_id),
             Consortium: 'SampleConsortium',
             Orderer: {
                 OrdererType: configtx.ordererType,
-                Addresses: `${configtx.orderer.host}:${configtx.orderer.port}`,
+                OrderOrg: org.name,
+                Addresses: `${ordererName}.${org.domain_name}:${ordererPort}`,
                 Kafka: {
                     Brokers: ['127.0.0.1:9092']
                 }
@@ -175,7 +170,7 @@ module.exports = class OrdererService {
 
         let configTxYaml = new CreateConfigTx(options).buildConfigtxYaml();
         let genesis = await ConfigTxlator.outputGenesisBlock(common.CONFIFTX_OUTPUT_GENESIS_BLOCK, common.CONFIFTX_OUTPUT_CHANNEL, configTxYaml, '', '');
-        const genesisBlockPath = path.join(env.cryptoConfig.path, org.consortium_id, org.name, 'genesis.block');
+        const genesisBlockPath = path.join(config.cryptoConfig.path, String(org.consortium_id), org.name, 'genesis.block');
         fs.writeFileSync(genesisBlockPath, genesis);
 
         return genesisBlockPath;
