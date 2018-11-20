@@ -69,7 +69,7 @@ module.exports = class PeerService {
         const {organizationId, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `peer-${host.replace(/\./g, '-')}`;
-        let peerPort = common.PORT_PEER;
+        let peerPort = common.PORT.PEER;
         if (utils.isSingleMachineTest()) {
             peerPort = utils.generateRandomHttpPort();
         }
