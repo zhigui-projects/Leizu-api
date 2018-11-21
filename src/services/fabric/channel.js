@@ -7,10 +7,10 @@ const UpdateChannel = require('./update-channel');
 const common = require('../../libraries/common');
 
 module.exports = class ChannelService {
-    constructor(organizationId, channelId) {
+    constructor(organizationId, channelName) {
         this._organization_id = organizationId;
         this._organization = null;
-        this._channel_name = channelId;
+        this._channel_name = channelName;
         this._consortium_id = '';
         this._consortium_name = '';
         this._anchor_peers = [];
@@ -85,8 +85,8 @@ module.exports = class ChannelService {
         return JoinChannel.joinChannel(this._channel_name, this._organization, peers);
     }
 
-    updateAppChannel() {
-        return UpdateChannel.updateAppChannel(this._channel_name, {
+    updateAppChannel(channelId) {
+        return UpdateChannel.updateAppChannel(channelId, this._organization_id, {
             ConsortiumId: this._consortium_id,
             Organizations: [{
                 Name: this._organization.name,
@@ -94,7 +94,7 @@ module.exports = class ChannelService {
                 Type: 0,
                 AnchorPeers: this._anchor_peers,
             }]
-        }, this._organization_id);
+        });
     }
 
     updateSysChannel() {

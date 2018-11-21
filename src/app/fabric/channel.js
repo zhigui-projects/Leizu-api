@@ -81,24 +81,21 @@ router.post('/join', async ctx => {
     }
 });
 
-/**
- * fn: update existing channel's configuration
- * parameters: configuration
- *
- */
-router.put('/:id', async ctx => {
-    let id = ctx.params.id;
-    let params = ctx.request.body;
+// update channel
+// channelType: 0-application channel, 1-system channel
+// channelType default value 0
+router.post('/update', async ctx => {
+    let {organizationId, channelId, channelType} = ctx.request.body;
     try {
-        let channel = await DbService.getChannelById(id);
-        if (channel) {
-            let channelService = await ChannelService.getInstance(params.organizationId, channel.name);
-            await channelService.updateAppChannel();
-            ctx.body = common.success({id: id}, common.SUCCESS);
+        if (channelType && channelType === 1) {
+            let channelService = await ChannelService.getInstance(organizationId);
+            // add new org to consortium by update system channel config
+            await channelService.updateSysChannel();
+            ctx.body = common.success({}, common.SUCCESS);
         } else {
-            logger.error('The channelId does not exist.');
-            ctx.status = 400;
-            ctx.body = common.error({}, 'The channelId does not exist.');
+            let channelService = await ChannelService.getInstance(organizationId);
+            await channelService.updateAppChannel(channelId);
+            ctx.body = common.success({}, common.SUCCESS);
         }
     } catch (err) {
         logger.error(err);
@@ -106,6 +103,5 @@ router.put('/:id', async ctx => {
         ctx.body = common.error({}, err.message);
     }
 });
-
 
 module.exports = router;
