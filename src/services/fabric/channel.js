@@ -81,8 +81,8 @@ module.exports = class ChannelService {
         return CreateChannel.createChannel(channelCreateTx, this._channel_name, this._organization);
     }
 
-    joinChannel() {
-        return JoinChannel.joinChannel(this._channel_name, this._organization);
+    joinChannel(peers) {
+        return JoinChannel.joinChannel(this._channel_name, this._organization, peers);
     }
 
     updateAppChannel() {

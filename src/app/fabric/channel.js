@@ -32,8 +32,6 @@ router.get('/:id', async ctx => {
 
 /**
  * fn: add the new channel into fabric network
- * parameters: genesis block
- *
  */
 router.post('/', async ctx => {
     let parameters = ctx.request.body;
@@ -42,18 +40,39 @@ router.post('/', async ctx => {
         let channelName = parameters.name;
         let channelService = await ChannelService.getInstance(organizationId, channelName);
         let configEnvelope = await channelService.createChannel();
-        let result = await channelService.joinChannel();
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: parameters.name,
             configuration: configEnvelope
-        }, result);
-
+        });
         ctx.body = common.success({
             _id: channel._id,
             name: channel.name,
             uuid: channel.uuid,
             date: channel.date
+        }, common.SUCCESS);
+    } catch (err) {
+        logger.error(err.stack ? err.stack : err);
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }
+});
+
+// join peers to channel
+router.post('/join', async ctx => {
+    let {organizationId, channelId, peers} = ctx.request.body;
+    try {
+        let channelInfo = await DbService.getChannelById(channelId);
+        if (!channelInfo) {
+            throw new Error('The channel does not exist.');
+        }
+        let channelService = await ChannelService.getInstance(organizationId, channelInfo.name);
+        let result = await channelService.joinChannel(peers);
+        let channel = await FabricService.findChannelAndUpdate(channelId, result);
+        ctx.body = common.success({
+            _id: channel._id,
+            orgs: result.organizations,
+            peers: result.peers
         }, common.SUCCESS);
     } catch (err) {
         logger.error(err.stack ? err.stack : err);

@@ -44,8 +44,10 @@ module.exports = class FabricService {
             channel.configuration = JSON.stringify(dto.configuration.config.channel_group);
         }
         channel.consortium_id = this.consortiumId;
-        channel.orgs = result.organizations.map(org => org._id);
-        channel.peers = result.peers.map(peer => peer._id);
+        if (result) {
+            channel.orgs = result.organizations.map(org => org._id);
+            channel.peers = result.peers.map(peer => peer._id);
+        }
         try {
             channel = await channel.save();
             return channel;
@@ -54,6 +56,19 @@ module.exports = class FabricService {
             return null;
         }
     }
+
+    static async findChannelAndUpdate(channelId, result) {
+        try {
+            let orgs = result.organizations.map(org => org._id);
+            let peers = result.peers.map(peer => peer._id);
+            let channel = await Channel.findByIdAndUpdate(channelId, {orgs: orgs, peers: peers});
+            return channel;
+        } catch (err) {
+            logger.error(err);
+            return null;
+        }
+    }
+
 
     async addOrganization(dto) {
         let organization = new Organization();
@@ -122,8 +137,7 @@ module.exports = class FabricService {
         FabricService.getPeerUrl(networkConfig, dto);
         let peer = new Peer();
         peer.uuid = uuid();
-        peer.url = dto.url;
-        peer.location = dto.host + common.SEPARATOR_COLON + dto.port;
+        peer.location = dto.location || dto.host + common.SEPARATOR_COLON + dto.port;
         peer.name = dto.host;
         peer.consortium_id = this.consortiumId;
         peer.type = 1;
@@ -147,8 +161,7 @@ module.exports = class FabricService {
         let peer = new Peer();
         peer.uuid = uuid();
         peer.name = name;
-        peer.url = dto.url;
-        peer.location = dto.endpoint;
+        peer.location = dto.location || dto.endpoint;
         peer.consortium_id = this.consortiumId;
         let organization = await DbService.findOrganizationByName(this.consortiumId, stringUtil.getOrgName(dto.mspid));
         if (organization) peer.org_id = organization._id;
@@ -186,7 +199,8 @@ module.exports = class FabricService {
         for (let item of networkConfig.orgs) {
             for (let peer of item.peers) {
                 if (peer['server-hostname'] === dto.host) {
-                    dto.url = peer.url;
+                    let flag = `${common.PROTOCOL.GRPCS}://`;
+                    dto.location = peer.url.slice(peer.url.indexOf(flag) + flag.length);
                     return;
                 }
             }
