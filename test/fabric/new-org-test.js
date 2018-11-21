@@ -5,13 +5,13 @@ const app = require('../../src/index');
 const constants = require('./constants');
 const token = 'Bearer ' + constants.token;
 const organization = {
-    name: "org3",
-    domainName: "org3.example.com",
-    host: "39.106.149.201",
-    username: "root",
-    password: "***REMOVED***",
+    name: 'org3',
+    domainName: 'org3.example.com',
+    host: '39.106.149.201',
+    username: 'root',
+    password: '***REMOVED***',
     port: 22,
-    consortiumId: "5be951506d8d2a6eecfff5a5"
+    consortiumId: '5bf3b483e289cf1cb06b38a1'
 };
 
 request(app.callback())

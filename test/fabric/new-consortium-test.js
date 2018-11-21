@@ -3,8 +3,7 @@
 const request = require('supertest');
 const app = require('../../src/index');
 const constants = require('./constants');
-var token = 'Bearer ' + constants.token;
-//const consortium = require("./env-sdk");
+const token = 'Bearer ' + constants.token;
 const consortium = require('./env-dev');
 
 request(app.callback())
