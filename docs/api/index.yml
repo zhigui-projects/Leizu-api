@@ -214,19 +214,6 @@ paths:
       responses:
         200:
           description: OK
-  /peer/join:
-    post:
-      tags:
-      - peer
-      - TODO
-      summary: Peer join channel
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        200:
-          description: OK
   /peer/{peerId}:
     get:
       tags:
@@ -288,19 +275,6 @@ paths:
       responses:
         200:
           description: OK
-  /organization/join:
-    post:
-      tags:
-      - organization
-      - TODO
-      summary: Organization join channel
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        200:
-          description: OK
   /organization/{organizationId}:
     get:
       tags:
@@ -353,7 +327,7 @@ paths:
       parameters:
       - in: body
         name: channel
-        description: Channel elevant information for create
+        description: Create new channel that obtain organization
         required: true
         schema:
           $ref: "channel.yml#/Create"
@@ -361,7 +335,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "channel.yml#/ChannelResponse"
+            $ref: "channel.yml#/ChannelCreateResponse"
         401:
           description: Unauthorized
           schema:
@@ -392,6 +366,34 @@ paths:
           description: Unauthorized
           schema:
             $ref: "channel.yml#/Error"
+  /channel/join:
+    post:
+      tags:
+      - channel
+      summary: Join channel
+      security:
+      - ApiKeyAuth: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: channel
+        description: Join specify the organization's peers into channel, if peers is undefined, default join all the organization's peers
+        required: true
+        schema:
+          $ref: "channel.yml#/Join"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "channel.yml#/ChannelJoinResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "channel.yml#/Error"
+  /channel/update/{channelId}:
     put:
       tags:
       - channel
