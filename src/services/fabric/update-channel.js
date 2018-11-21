@@ -12,17 +12,55 @@ var Client = require('fabric-client');
 var stringUtil = require('../../libraries/string-util');
 var ConfigTxBuilder = require('./configtxgen');
 const DbService = require('../db/dao');
+var common = require('../../libraries/common');
 
-async function updateAppChannel(channelName, org, orgId) {
+async function updateAppChannel(channelId, orgId, org) {
     try {
+        let channelInfo = await DbService.getChannelById(channelId);
+        if (!channelInfo) {
+            throw new Error('The channelId does not exist.');
+        }
+        if (!channelInfo.orgs || channelInfo.orgs.length === 0) {
+            throw new Error('Invalid channel that not found any org');
+        }
+        let channelName = channelInfo.name;
+        var channel, envelopeConfig, ordererConfig;
+        let findPeer = false;
         let client = new Client();
-        let config = await DbService.findOrganizationById(orgId);
-        var ordererConfig = await DbService.getOrderer(org.ConsortiumId);
-        client.setAdminSigningIdentity(config.admin_key, config.admin_cert, config.msp_id);
-        let orderer = await query.newOrderer(client, ordererConfig);
-        let channel = client.newChannel(channelName);
-        channel.addOrderer(orderer);
-        const envelopeConfig = await channel.getChannelConfigFromOrderer();
+        // select discovery peer
+        for (let id of channelInfo.orgs) {
+            if (findPeer === true) break;
+            let peers = await DbService.findPeersByOrgId(id);
+            if (!peers || peers.length === 0) continue;
+            let organization = await DbService.findOrganizationById(id);
+            client.setAdminSigningIdentity(organization.admin_key, organization.admin_cert, organization.msp_id);
+            for (let peerConfig of peers) {
+                if (peerConfig.type === common.PEER_TYPE_ORDER) {
+                    let orderer = await query.newOrderer(client, {
+                        url: `${common.PROTOCOL.GRPCS}://${peerConfig.location}`,
+                        'server-hostname': peerConfig.name,
+                        orderer: organization
+                    });
+                    channel = client.newChannel(channelName);
+                    channel.addOrderer(orderer);
+                    envelopeConfig = await channel.getChannelConfigFromOrderer();
+                    findPeer = true;
+                    ordererConfig = organization;
+                    break;
+                }
+                // else {
+                //     let peer = await query.newPeer(client, peerConfig);
+                //     let channel = client.newChannel(channelName);
+                //     channel.addPeer(peer);
+                //     envelopeConfig = await channel.getChannelConfig();
+                //     findPeer = true;
+                //     break;
+                // }
+            }
+        }
+        if (findPeer === false) {
+            throw new Error('Not found any peer on the channel.');
+        }
 
         // we just need the config from the envelope and configtxlator works with bytes
         let originalConfigProto = envelopeConfig.config.toBuffer();
@@ -60,8 +98,16 @@ async function updateAppChannel(channelName, org, orgId) {
         // will have to now collect the signatures
         let signatures = []; //clear out the above
         // sign and collect signature
-        signatures.push(client.signChannelConfig(updateDelta));
+        for (let id of channelInfo.orgs) {
+            let organization = await DbService.findOrganizationById(id);
+            client._userContext = null;
+            client.setAdminSigningIdentity(organization.admin_key, organization.admin_cert, organization.msp_id);
+            signatures.push(client.signChannelConfig(updateDelta));
+        }
         logger.debug('Successfully signed config update by org admin');
+
+        client._userContext = null;
+        client.setAdminSigningIdentity(ordererConfig.admin_key, ordererConfig.admin_cert, ordererConfig.msp_id);
 
         // build up the create request
         let request = {
