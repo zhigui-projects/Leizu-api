@@ -199,7 +199,7 @@ module.exports = class FabricService {
         for (let item of networkConfig.orgs) {
             for (let peer of item.peers) {
                 if (peer['server-hostname'] === dto.host) {
-                    let flag = `${common.GRPC_TYPE}://`;
+                    let flag = `${common.PROTOCOL.GRPCS}://`;
                     dto.location = peer.url.slice(peer.url.indexOf(flag) + flag.length);
                     return;
                 }
