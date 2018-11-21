@@ -26,7 +26,7 @@ var joinChannel = async function (channelName, org) {
         let peers = await DbService.findPeersByOrgId(org._id);
         peers.forEach(async item => {
             let peer = await query.newPeer(client, org._id, {
-                url: `${common.GRPC_TYPE}://${item.location}`,
+                url: `${common.PROTOCOL.GRPCS}://${item.location}`,
                 'server-hostname': item.name
             });
             targets.push(peer);

@@ -185,7 +185,7 @@ module.exports = class DbService {
             throw new Error('can not found organization: ' + peer.org_id);
         }
         return {
-            url: `${Common.GRPC_TYPE}://${peer.location}`,
+            url: `${Common.PROTOCOL.GRPCS}://${peer.location}`,
             'server-hostname': peer.name,
             orderer: organization
         };
