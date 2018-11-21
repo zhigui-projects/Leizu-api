@@ -232,7 +232,7 @@ module.exports.newOrderer = async (client, config) => {
             'clientKey': enrollment.key,
             'ssl-target-name-override': config['server-hostname']
         };
-        let credentialHelper = new CredentialHelper(consortiumId.toString(), config.orderer.name);
+        let credentialHelper = new CredentialHelper(String(config.orderer.consortium_id), config.orderer.name);
         let tlsCerts = {
             cacert: enrollment.rootCertificate,
             key: enrollment.key,
