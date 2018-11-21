@@ -104,7 +104,7 @@ module.exports.generateOrdererContainerOptions = (options, mode) => {
     }
 };
 
-const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, port, workingDir}) => {
+const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspId, port, workingDir}) => {
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
@@ -125,7 +125,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, por
         Env: [
             `CORE_PEER_ID=${peerName}.${domainName}`,
             `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
-            `CORE_PEER_LOCALMSPID=${mspid}`,
+            `CORE_PEER_LOCALMSPID=${mspId}`,
             `CORE_PEER_MSPCONFIGPATH=/data/msp`,
             `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
             'CORE_PEER_GOSSIP_USELEADERELECTION=true',
@@ -144,7 +144,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspid, por
     };
 };
 
-const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, workingDir}) => {
+const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspId, port, workingDir}) => {
     return [
         'create',
         '--name', `${peerName}.${domainName}`,
@@ -156,8 +156,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
         '-v', '/var/run:/var/run',
         '-e', `CORE_PEER_ID=${peerName}.${domainName}`,
         '-e', `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
-        '-e', `CORE_PEER_LOCALMSPID=${mspid}`,
-        '-e', `CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_default`,
+        '-e', `CORE_PEER_LOCALMSPID=${mspId}`,
         '-e', `CORE_PEER_MSPCONFIGPATH=/data/msp`,
         '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
         '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
@@ -178,7 +177,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspid, port, 
     ];
 };
 
-const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspid, port, workingDir}) => {
+const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspId, port, workingDir}) => {
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
@@ -201,7 +200,7 @@ const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspi
             `ORDERER_GENERAL_LISTENPORT=${port}`,
             'ORDERER_GENERAL_GENESISMETHOD=file',
             'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
-            `ORDERER_GENERAL_LOCALMSPID=${mspid}`,
+            `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
             'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
             'ORDERER_GENERAL_TLS_ENABLED=true',
             'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
@@ -216,7 +215,7 @@ const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspi
     };
 };
 
-const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspid, port, workingDir}) => {
+const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspId, port, workingDir}) => {
     return [
         'create',
         '--name', `${ordererName}.${domainName}`,
@@ -226,19 +225,19 @@ const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspid, 
         '-w', workingDir,
         '-v', `${workingDir}:/data`,
         '-v', '/var/run:/var/run',
+        '-e', 'ORDERER_GENERAL_LOGLEVEL=debug',
         '-e', `ORDERER_GENERAL_LISTENADDRESS=${ordererName}.${domainName}`,
         '-e', `ORDERER_GENERAL_LISTENPORT=${port}`,
         '-e', 'ORDERER_GENERAL_GENESISMETHOD=file',
         '-e', 'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
-        '-e', `ORDERER_GENERAL_LOCALMSPID=${mspid}`,
+        '-e', `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
         '-e', 'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
-        '-e', 'ORDERER_GENERAL_TLS_ENABLED=true',
+        '-e', 'ORDERER_GENERAL_TLS_ENABLED=false',
         '-e', 'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
         '-e', 'ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server.key',
-        '-e', 'ORDERER_GENERAL_TLS_ROOTCAS=[/data/tls/ca.pem]',
-        '-e', 'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
-        '-e', 'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/ca.pem]',
-        '-e', 'ORDERER_GENERAL_LOGLEVEL=debug',
+        '-e', 'ORDERER_GENERAL_TLS_ROOTCAS=[/data/msp/tlscacerts/cert.pem]',
+        '-e', 'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=false',
+        '-e', 'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/msp/tlscacerts/cert.pem]',
         '-e', 'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
         '-e', 'GODEBUG=netdns=go',
 

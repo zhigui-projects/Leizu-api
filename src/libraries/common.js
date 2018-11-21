@@ -51,7 +51,7 @@ module.exports.DEFAULT_NETWORK = {
 };
 
 module.exports.PORT = {
-    CA: 7080,
+    CA: 7054,
     ORDERER: 7050,
     PEER: 7051,
 };
