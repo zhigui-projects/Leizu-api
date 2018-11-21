@@ -1,17 +1,17 @@
 'use strict';
 
 const request = require('supertest');
-const app = require('../../src/index');
-const constants = require('./constants');
+const app = require('../../../src/index');
+const constants = require('../constants');
 const token = 'Bearer ' + constants.token;
 
 const channel = {
-    channelId: '5bf58d8314f85ea4a612223e',
-    organizationId: '5bf5878ff8b47aa29bc13fd2'
+    organizationId: '5bf593d2f468d8a85a20beee',
+    name: 'mychannel-1261'
 };
 
 request(app.callback())
-.post('/api/v1/channel/join')
+.post('/api/v1/channel')
 .set('Authorization', token)
 .send(channel)
 .end(function (err, response) {
