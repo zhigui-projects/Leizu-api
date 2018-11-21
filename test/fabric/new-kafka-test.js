@@ -5,17 +5,17 @@ const ActionFactory = require("../../src/services/action/factory");
 (async function(){
     let params = {
         "consensus": "kafka",
-        "kafka": [{
+        "kafkas": [{
             "name": "kafka1",
-            "ip": "47.254.88.92",
-            "ssh_username": "root",
-            "ssh_password": "Jia@163.com"
+            "host": "39.105.67.252",
+            "username": "root",
+            "password": "Inkchain-passw0rd"
         }],
-        "zookeeper": [{
+        "zookeepers": [{
             "name": "zookeeper1",
-            "ip": "47.254.88.92",
-            "ssh_username": "root",
-            "ssh_password": "Jia@163.com"
+            "host": "39.105.67.252",
+            "username": "root",
+            "password": "Inkchain-passw0rd"
         }],
     };
     let action = ActionFactory.getKafkaProvisionAction(params);
