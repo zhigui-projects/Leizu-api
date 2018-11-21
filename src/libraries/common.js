@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports.SYSTEM_CHANNEL = 'systemchainid';
+module.exports.GRPC_TYPE = 'grpcs';
 
 //constant variables
 module.exports.SUCCESS = 'success';
