@@ -3,8 +3,11 @@
 const common = require('./common');
 const path = require('path');
 const fs = require('fs');
+const logger = require('log4js').getLogger();
 
 module.exports.wait = async (resources) => {
+    logger.info('waiting for resources ready: ', resources);
+
     const waitOn = require('wait-on');
 
     let options = {
@@ -196,8 +199,7 @@ const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspI
             ],
         },
         Env: [
-            `ORDERER_GENERAL_LISTENADDRESS=${ordererName}.${domainName}`,
-            `ORDERER_GENERAL_LISTENPORT=${port}`,
+            `ORDERER_GENERAL_LISTENADDRESS=0.0.0.0`,
             'ORDERER_GENERAL_GENESISMETHOD=file',
             'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
             `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
@@ -221,22 +223,21 @@ const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspId, 
         '--name', `${ordererName}.${domainName}`,
         '--hostname', `${ordererName}.${domainName}`,
         '--network', common.DEFAULT_NETWORK.NAME,
-        '-p', `${port}:${port}`,
+        '-p', `${port}:7050`,
         '-w', workingDir,
         '-v', `${workingDir}:/data`,
         '-v', '/var/run:/var/run',
         '-e', 'ORDERER_GENERAL_LOGLEVEL=debug',
-        '-e', `ORDERER_GENERAL_LISTENADDRESS=${ordererName}.${domainName}`,
-        '-e', `ORDERER_GENERAL_LISTENPORT=${port}`,
+        '-e', `ORDERER_GENERAL_LISTENADDRESS=0.0.0.0`,
         '-e', 'ORDERER_GENERAL_GENESISMETHOD=file',
         '-e', 'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
         '-e', `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
         '-e', 'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
-        '-e', 'ORDERER_GENERAL_TLS_ENABLED=false',
+        '-e', 'ORDERER_GENERAL_TLS_ENABLED=true',
         '-e', 'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
         '-e', 'ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server.key',
         '-e', 'ORDERER_GENERAL_TLS_ROOTCAS=[/data/msp/tlscacerts/cert.pem]',
-        '-e', 'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=false',
+        '-e', 'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
         '-e', 'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/msp/tlscacerts/cert.pem]',
         '-e', 'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
         '-e', 'GODEBUG=netdns=go',

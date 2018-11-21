@@ -1,7 +1,6 @@
 'use strict';
 
 module.exports.SYSTEM_CHANNEL = 'systemchainid';
-module.exports.GRPC_TYPE = 'grpcs';
 
 //constant variables
 module.exports.SUCCESS = 'success';
@@ -36,6 +35,7 @@ module.exports.ADMINUSER = {
 };
 
 module.exports.PROTOCOL = {
+    GRPCS: 'grpcs',
     HTTP: 'http',
     HTTPS: 'https',
     TCP: 'tcp',

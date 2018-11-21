@@ -5,7 +5,6 @@ const {HFCAIdentityType} = require('fabric-ca-client/lib/IdentityService');
 const utils = require('../../libraries/utils');
 const config = require('../../env');
 const common = require('../../libraries/common');
-const stringUtils = require('../../libraries/string-util');
 const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
@@ -139,7 +138,7 @@ module.exports = class OrdererService {
             Orderer: {
                 OrdererType: configtx.ordererType,
                 OrderOrg: org.name,
-                Addresses: `${ordererName}.${org.domain_name}:${ordererPort}`,
+                Addresses: [`${ordererName}.${org.domain_name}:${ordererPort}`],
                 Kafka: {
                     Brokers: ['127.0.0.1:9092']
                 }
@@ -160,8 +159,8 @@ module.exports = class OrdererService {
         } else {
             configtx.peerOrgs.forEach((peerOrg) => {
                 options.Organizations.push({
-                    Name: peerOrg.name,
-                    MspId: stringUtils.getMspId(peerOrg.name), //TODO:
+                    Name: org.name,
+                    MspId: org.msp_id,
                     Type: common.PEER_TYPE_PEER,
                     AnchorPeers: [{Host: peerOrg.anchorPeer.host, Port: peerOrg.anchorPeer.port}]
                 });
@@ -169,7 +168,7 @@ module.exports = class OrdererService {
         }
 
         let configTxYaml = new CreateConfigTx(options).buildConfigtxYaml();
-        let genesis = await ConfigTxlator.outputGenesisBlock(common.CONFIFTX_OUTPUT_GENESIS_BLOCK, common.CONFIFTX_OUTPUT_CHANNEL, configTxYaml, '', '');
+        let genesis = await ConfigTxlator.outputGenesisBlock(common.CONFIFTX_OUTPUT_GENESIS_BLOCK, common.SYSTEM_CHANNEL, configTxYaml, '', '');
         const genesisBlockPath = path.join(config.cryptoConfig.path, String(org.consortium_id), org.name, 'genesis.block');
         fs.writeFileSync(genesisBlockPath, genesis);
 
