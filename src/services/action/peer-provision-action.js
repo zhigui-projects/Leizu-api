@@ -17,7 +17,7 @@ module.exports = class PeerProvisionAction extends Action {
             name: params.name,
             peerName: params.name,
             domainName: utils.generateDomainName(params.name),
-            peerPort: common.PORT_PEER
+            peerPort: common.PORT.PEER
         };
         utils.extend(options,params);
         if(this.isDebugMode){

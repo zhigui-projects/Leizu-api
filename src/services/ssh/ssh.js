@@ -6,6 +6,10 @@ module.exports = class AbstractSSH {
         this.options = options;
     }
 
+    setOptions(options){
+        this.options = options;
+    }
+
     async exec(parameters) {
         throw new Error('not implemented');
     }

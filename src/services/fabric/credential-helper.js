@@ -131,12 +131,12 @@ module.exports.storeOrgCredentials = async (credential) => {
 };
 
 // @param isPeer, 'peer-true' or 'org-false'
-var storeCredentials = async (credential, isPeer) => {
+const storeCredentials = async (credential, isPeer) => {
     let credentialHelper = new module.exports.CredentialHelper(credential.consortiumId, credential.orgName);
     try {
         let dirName = credentialHelper.dirName;
         if (isPeer && isPeer === true) {
-            dirName = path.join(dirName, 'peers', credential.peerName);
+            dirName = path.join(dirName, 'peers', credential.name);
         }
         credentialHelper.writeKeyStore(path.join(dirName, 'msp', certPath.keystore), credential.adminKey);
         credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.cacerts), credential.rootCert);
@@ -147,7 +147,7 @@ var storeCredentials = async (credential, isPeer) => {
         credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.tlsintermediatecerts), credential.tlsintermediatecerts);
         credentialHelper.writeTlsCert(path.join(dirName, 'tls'), credential.tls);
         if (isPeer && isPeer === true) {
-            return credentialHelper.zipDirectoryFiles(isPeer, credential.peerName);
+            return credentialHelper.zipDirectoryFiles(isPeer, credential.name);
         }
         return credentialHelper.dirName;
     } catch (e) {

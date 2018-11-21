@@ -92,6 +92,10 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async provisionOrderers(){
+        if(this.parsedRequest.isKafkaConsensus){
+            let kafkaAction = ActionFactory.getKafkaProvisionAction(this.parsedRequest.kafkaCluster);
+            let result = await kafkaAction.execute();
+        }
         let node = this.parsedRequest.orderer.nodes[0];
         let provisionAction = ActionFactory.getOrdererProvisionAction(node);
         this.orderer = await provisionAction.execute();

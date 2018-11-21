@@ -64,4 +64,13 @@ module.exports = class ActionFactory {
         return joinAction;
     }
 
+    static getKafkaProvisionAction(params){
+        let provisionAction = ActionFactory.getAction(Registry.RESOURCE.KAFKA,Registry.TYPE.PROVISION);
+        let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS,params);
+        provisionAction.setActionContext(actionContext);
+        return provisionAction;
+    }
+
+
 };
