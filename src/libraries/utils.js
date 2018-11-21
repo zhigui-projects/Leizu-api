@@ -83,7 +83,7 @@ module.exports.generateContainerNetworkOptions = (options) => {
         'create',
         '--driver', options.driver || common.DEFAULT_NETWORK.DRIVER,
         options.name || common.DEFAULT_NETWORK.NAME
-    ]
+    ];
 };
 
 module.exports.generatePeerContainerOptions = (options, mode) => {
@@ -275,6 +275,8 @@ module.exports.isSingleMachineTest = () => {
     return true;
 };
 
-module.exports.makeHostRecord = (hostName,ipAddress) => {
+module.exports.makeHostRecord = (hostName, ipAddress) => {
     return hostName + common.SEPARATOR_COLON + ipAddress;
 };
+
+module.exports.getUrl = location => `${common.GRPC_TYPE}://${location}`;

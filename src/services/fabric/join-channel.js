@@ -5,12 +5,11 @@ var query = require('./query');
 var logger = require('../../libraries/log4js').getLogger('Join-Channel');
 var Client = require('fabric-client');
 const DbService = require('../db/dao');
-var common = require('../../libraries/common');
 
 /*
  * Have an organization join a channel
  */
-var joinChannel = async function (channelName, org) {
+var joinChannel = async function (channelName, org, peers) {
     var errorMessage = null;
     try {
         // first setup the client for this org
@@ -23,17 +22,29 @@ var joinChannel = async function (channelName, org) {
         channel.addOrderer(orderer);
 
         let targets = [];
-        let peers = await DbService.findPeersByOrgId(org._id);
-        peers.forEach(async item => {
-            let peer = await query.newPeer(client, org._id, {
-                url: `${common.GRPC_TYPE}://${item.location}`,
-                'server-hostname': item.name
-            });
-            targets.push(peer);
-            channel.addPeer(peer);
-            response.peers.push(item._id);
-        });
-
+        if (peers) {
+            for (let id of peers) {
+                let peerConfig = await DbService.findPeerById(id);
+                if (!peerConfig) continue;
+                let peer = await query.newPeer(client, peerConfig);
+                targets.push(peer);
+                channel.addPeer(peer);
+                response.peers.push(peerConfig._id);
+            }
+        } else {
+            peers = await DbService.findPeersByOrgId(org._id);
+            if (peers) {
+                for (let peerConfig of peers) {
+                    let peer = await query.newPeer(client, peerConfig);
+                    targets.push(peer);
+                    channel.addPeer(peer);
+                    response.peers.push(peerConfig._id);
+                }
+            }
+        }
+        if (targets.length === 0) {
+            throw new Error('Not found peers in the organization.');
+        }
         // next step is to get the genesis_block from the orderer,
         // the starting point for the channel that we want to join
         let request = {
