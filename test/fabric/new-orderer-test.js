@@ -5,15 +5,12 @@ const app = require('../../src/index');
 const constants = require('./constants');
 const token = 'Bearer ' + constants.token;
 const options = {
-    peerOrgs: [
-        {
-            name: 'org3',
-            anchorPeer: {
-                host: 'peer-39-106-149-201.org3.example.com',
-                port: 7051
-            },
-        }
-    ],
+    peerOrgs: [{
+        anchorPeer: {
+            host: 'peer-39-106-149-201.org3.example.com',
+            port: 7051
+        },
+    }],
     ordererType: 'solo',
     kafka: [
         {
