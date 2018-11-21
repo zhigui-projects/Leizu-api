@@ -5,6 +5,7 @@ var query = require('./query');
 var logger = require('../../libraries/log4js').getLogger('Join-Channel');
 var Client = require('fabric-client');
 const DbService = require('../db/dao');
+var common = require('../../libraries/common');
 
 /*
  * Have an organization join a channel
@@ -24,7 +25,10 @@ var joinChannel = async function (channelName, org) {
         let targets = [];
         let peers = await DbService.findPeersByOrgId(org._id);
         peers.forEach(async item => {
-            let peer = await query.newPeer(client, org._id, {url: item.url, 'server-hostname': item.name});
+            let peer = await query.newPeer(client, org._id, {
+                url: `${common.GRPC_TYPE}://${item.location}`,
+                'server-hostname': item.name
+            });
             targets.push(peer);
             channel.addPeer(peer);
             response.peers.push(item._id);
