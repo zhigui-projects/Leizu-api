@@ -11,15 +11,16 @@ module.exports = class KafkaProvisionAction extends Action {
 
     async execute() {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
-        let sshClient = new SshClient();
+        let sshClient = new SshClient({});
         let zookeepers = params.zookeepers;
         let zooServers = [];
         let kafkaZooKeeperConnect = [];
         for(let index = 1; index < zookeepers.length +1; index++){
+            let zk = zookeepers[index-1];
             let server = 'server.' + index + '=' + zk.host +':2888:3888';
             zooServers.push(server);
             kafkaZooKeeperConnect.push(zk.host + ':2181');
-            zookeepers[index].zooMyId = index;
+            zk.zooMyId = index;
         }
         let zooServersString = 'ZOO_SERVERS=' + zooServers.join(' ');
         for(let zk of zookeepers){
