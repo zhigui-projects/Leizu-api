@@ -275,3 +275,6 @@ module.exports.isSingleMachineTest = () => {
     return true;
 };
 
+module.exports.makeHostRecord = (hostName,ipAddress) => {
+    return hostName + common.SEPARATOR_COLON + ipAddress;
+};
