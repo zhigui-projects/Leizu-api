@@ -7,6 +7,7 @@ const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
 const Common = require('../../libraries/common');
+const utils = require('../../libraries/utils');
 
 module.exports = class DbService {
 
@@ -185,7 +186,7 @@ module.exports = class DbService {
             throw new Error('can not found organization: ' + peer.org_id);
         }
         return {
-            url: `${Common.GRPC_TYPE}://${peer.location}`,
+            url: utils.getUrl(peer.location),
             'server-hostname': peer.name,
             orderer: organization
         };
