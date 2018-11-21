@@ -280,4 +280,4 @@ module.exports.makeHostRecord = (hostName, ipAddress) => {
     return hostName + common.SEPARATOR_COLON + ipAddress;
 };
 
-module.exports.getUrl = location => `${common.GRPC_TYPE}://${location}`;
+module.exports.getUrl = location => `${common.PROTOCOL.GRPCS}://${location}`;
