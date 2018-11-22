@@ -35,6 +35,7 @@ module.exports.ADMINUSER = {
 };
 
 module.exports.PROTOCOL = {
+    GRPC: 'grpc',
     GRPCS: 'grpcs',
     HTTP: 'http',
     HTTPS: 'https',
