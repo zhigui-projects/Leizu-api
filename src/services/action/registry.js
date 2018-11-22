@@ -7,10 +7,12 @@ module.exports = {
         CONSORTIUM: 'consortium',
         REQUEST: 'request',
         CA: 'ca',
-        KAFKA: 'kafka'
+        KAFKA: 'kafka',
+        CHANNEL: 'channel'
     },
     TYPE: {
         PROVISION: 'provision',
+        CREATE: 'create',
         JOIN: 'join',
         ROLLBACK: 'rollback'
     },
