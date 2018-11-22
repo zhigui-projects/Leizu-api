@@ -97,6 +97,8 @@ module.exports = class RequestHandler extends Handler {
             let result = await kafkaAction.execute();
         }
         let node = this.parsedRequest.orderer.nodes[0];
+        let organization = this.organizations.ordererOrg[this.parsedRequest.orderer.orgName];
+        node.organizationId = organization._id;
         let provisionAction = ActionFactory.getOrdererProvisionAction(node);
         this.orderer = await provisionAction.execute();
     }
