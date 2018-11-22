@@ -11,7 +11,7 @@ const organization = {
     username: 'root',
     password: 'Inkchain-passw0rd',
     port: 22,
-    consortiumId: '5bf3b483e289cf1cb06b38a1'
+    consortiumId: '5bf61f8940a22146e5818497'
 };
 
 request(app.callback())
