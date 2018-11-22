@@ -86,8 +86,8 @@ module.exports = class DbService {
         peer.location = dto.location;
         peer.org_id = dto.organizationId;
         peer.consortium_id = dto.consortiumId;
-        peer.sign_key = dto.signkey;
-        peer.sign_cert = dto.signCert;
+        peer.sign_key = dto.adminKey;
+        peer.sign_cert = dto.signcerts;
         peer.tls_key = dto.tls.key;
         peer.tls_cert = dto.tls.cert;
         peer = await peer.save();
@@ -120,6 +120,10 @@ module.exports = class DbService {
         peer.org_id = dto.organizationId;
         peer.type = Common.PEER_TYPE_ORDER;
         peer.consortium_id = dto.consortiumId;
+        peer.sign_key = dto.adminKey;
+        peer.sign_cert = dto.signcerts;
+        peer.tls_key = dto.tls.key;
+        peer.tls_cert = dto.tls.cert;
         peer = await peer.save();
         return peer;
     }
