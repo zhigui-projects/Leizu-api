@@ -273,7 +273,7 @@ module.exports.generateRandomInteger = (low, high) => {
 };
 
 module.exports.isSingleMachineTest = () => {
-    return true;
+    return false;
 };
 
 module.exports.makeHostRecord = (hostName, ipAddress) => {
