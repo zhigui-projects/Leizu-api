@@ -69,9 +69,12 @@ module.exports = class DbService {
         return orderers;
     }
 
-    static async findPeersByOrgId(orgId) {
-        let peers = await Peer.find({org_id: orgId});
-        return peers;
+    static async findPeersByOrgId(orgId, type) {
+        let condition = {org_id: orgId};
+        if (type) {
+            condition.type = type;
+        }
+        return await Peer.find(condition);
     }
 
     static async addPeer(dto) {
