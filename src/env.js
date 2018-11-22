@@ -1,4 +1,8 @@
 module.exports = {
+    tls: {
+        orderer: false,
+        peer: false,
+    },
     koaLogger: true,
     jwt: {
         secret: '`yGE[RniLYCX6rCni>DKG_(3#si&zvA$WPmgrb2P',
