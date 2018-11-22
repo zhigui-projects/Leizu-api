@@ -277,7 +277,7 @@ module.exports.newPeer = async (client, config) => {
             cert: enrollment.certificate
         };
         credentialHelper.writeTlsCert(path.join(credentialHelper.dirName, 'tls'), tlsCerts);
-        return client.newPeer(utils.getUrl(config.location), options);
+        return client.newPeer(utils.getUrl(config.location, config.tls.peer), options);
     } else {
         let pem = fs.readFileSync(path.join(tlsPath, 'ca.pem')).toString();
         let clientCert = fs.readFileSync(path.join(tlsPath, 'server.crt')).toString();

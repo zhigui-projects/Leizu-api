@@ -7,6 +7,8 @@ const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
 const Common = require('../../libraries/common');
+const utils = require('../../libraries/utils');
+const config = require('../../env');
 
 module.exports = class DbService {
 
@@ -69,9 +71,12 @@ module.exports = class DbService {
         return orderers;
     }
 
-    static async findPeersByOrgId(orgId) {
-        let peers = await Peer.find({org_id: orgId});
-        return peers;
+    static async findPeersByOrgId(orgId, type) {
+        let condition = {org_id: orgId};
+        if (type) {
+            condition.type = type;
+        }
+        return await Peer.find(condition);
     }
 
     static async addPeer(dto) {
@@ -176,17 +181,17 @@ module.exports = class DbService {
     }
 
     static async getOrderer(consortiumId) {
-        let peer = await Peer.findOne({consortium_id: consortiumId, type: Common.PEER_TYPE_ORDER});
-        if (!peer) {
+        let orderer = await Peer.findOne({consortium_id: consortiumId, type: Common.PEER_TYPE_ORDER});
+        if (!orderer) {
             throw new Error('can not found any orderer for consortium: ' + consortiumId);
         }
-        let organization = await Organization.findOne({_id: peer.org_id});
+        let organization = await Organization.findOne({_id: orderer.org_id});
         if (!organization) {
-            throw new Error('can not found organization: ' + peer.org_id);
+            throw new Error('can not found organization: ' + orderer.org_id);
         }
         return {
-            url: `${Common.PROTOCOL.GRPCS}://${peer.location}`,
-            'server-hostname': peer.name,
+            url: utils.getUrl(orderer.location, config.tls.orderer),
+            'server-hostname': orderer.name,
             orderer: organization
         };
     }
