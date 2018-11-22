@@ -9,14 +9,29 @@ module.exports = class OrdererProvisionAction extends Action {
 
     async execute(){
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
-        let options = {
-            domainName: utils.generateDomainName(params.name)
-        };
-        utils.extend(options,params);
-        if(this.isDebugMode){
-            options.port = utils.generateRandomHttpPort();
+        let configuration = {
+            domainName: utils.generateDomainName(params.name),
+            options: {
+                peerOrgs: [{
+                    anchorPeer: {
+                        host: 'peer-39-106-149-201.org3.example.com',
+                        port: 7051
+                    },
+                }],
+                ordererType: 'solo',
+                kafka: [
+                    {
+                        host: '127.0.0.1',
+                        port: '9092'
+                    }
+                ]      
+            }
         }
-        return await OrderService.create(options);
+        utils.extend(configuration,params);
+        if(this.isDebugMode){
+            configuration.ordererPort = utils.generateRandomHttpPort();
+        }
+        return await OrderService.create(configuration);
     }
 
 };
