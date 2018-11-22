@@ -2,6 +2,7 @@
 
 var util = require('util');
 var query = require('./query');
+const common = require('../../libraries/common');
 var logger = require('../../libraries/log4js').getLogger('Join-Channel');
 var Client = require('fabric-client');
 const DbService = require('../db/dao');
@@ -32,7 +33,7 @@ var joinChannel = async function (channelName, org, peers) {
                 response.peers.push(peerConfig._id);
             }
         } else {
-            peers = await DbService.findPeersByOrgId(org._id);
+            peers = await DbService.findPeersByOrgId(org._id, common.PEER_TYPE_PEER);
             if (peers) {
                 for (let peerConfig of peers) {
                     let peer = await query.newPeer(client, peerConfig);
