@@ -16,6 +16,16 @@ module.exports = class ChannelService {
         this._anchor_peers = [];
     }
 
+    static async getInstance(organizationId, channelId) {
+        try {
+            let channelService = new ChannelService(organizationId, channelId);
+            await channelService.init();
+            return channelService;
+        } catch (e) {
+            throw e;
+        }
+    }
+
     async init() {
         try {
             let organization = await DbService.findOrganizationById(this._organization_id);
@@ -33,17 +43,6 @@ module.exports = class ChannelService {
             }
 
             this._anchor_peers = await this.getOrgAnchorPeers();
-
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    static async getInstance(organizationId, channelId) {
-        try {
-            let channelService = new ChannelService(organizationId, channelId);
-            await channelService.init();
-            return channelService;
         } catch (e) {
             throw e;
         }
@@ -51,7 +50,7 @@ module.exports = class ChannelService {
 
     async getOrgAnchorPeers() {
         try {
-            let peer = await DbService.findPeersByOrgId(this._organization_id);
+            let peer = await DbService.findPeersByOrgId(this._organization_id, common.PEER_TYPE_PEER);
             let anchorPeers = [];
             if (peer) {
                 peer.map(item => {
