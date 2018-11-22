@@ -62,6 +62,7 @@ module.exports = class RequestHandler extends Handler {
         await this.provisionPeers();
         await this.provisionOrdererOrganization();
         await this.provisionOrderers();
+        //await this.createNewChannel();
         //await this.makePeersJoinChannel();
     }
 
@@ -103,10 +104,23 @@ module.exports = class RequestHandler extends Handler {
         this.orderer = await provisionAction.execute();
     }
 
-    async makePeersJoinChannel(){
+    async createNewChannel(){
         if(!this.parsedRequest.channel){
             throw new Error('no channel definition');
         }
+        let organization = null;
+        for(let org of this.organizations.peerOrgs){
+            organization = org;
+        }
+        let parameters = {
+            name: this.parsedRequest.channel.name,
+            organizationId: organization._id
+        };
+        let createAction = ActionFactory.getChannelCreateAction(parameters);
+        this.channel = await createAction.execute();
+    }
+
+    async makePeersJoinChannel(){
         let channelData = this.parsedRequest.channel;
         let channelName = channelData.name;
         let orderObject = this.orderer.toObject();
