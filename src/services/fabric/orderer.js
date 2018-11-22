@@ -34,7 +34,8 @@ module.exports = class OrdererService {
             ordererName: ordererName,
             domainName: org.domain_name,
             mspId: org.msp_id,
-            port: ordererPort
+            port: ordererPort,
+            enableTls: config.tls.orderer,
         };
 
         let connectionOptions = null;
