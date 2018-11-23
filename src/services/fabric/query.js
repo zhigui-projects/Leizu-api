@@ -18,6 +18,7 @@ const Peer = require('fabric-client/lib/Peer');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 const FabricCAServices = require('fabric-ca-client');
 const DbService = require('../db/dao');
+const utils = require('../../libraries/utils');
 const CredentialHelper = require('./credential-helper').CredentialHelper;
 
 module.exports.getBlockChainInfo = async (channelName, peerConfig, caConfig) => {
@@ -256,7 +257,8 @@ module.exports.newOrderer = async (client, config) => {
     }
 };
 
-module.exports.newPeer = async (client, orgId, peerConfig) => {
+module.exports.newPeer = async (client, config) => {
+    let orgId = config.org_id;
     let org = await DbService.findOrganizationById(orgId);
     let tlsPath = path.join(org.msp_path, 'tls');
     if (!fs.existsSync(tlsPath)) {
@@ -266,7 +268,7 @@ module.exports.newPeer = async (client, orgId, peerConfig) => {
             pem: enrollment.rootCertificate,
             'clientCert': enrollment.certificate,
             'clientKey': enrollment.key,
-            'ssl-target-name-override': peerConfig['server-hostname']
+            'ssl-target-name-override': config.name
         };
         let credentialHelper = new CredentialHelper(org.consortium_id.toString(), org.name);
         let tlsCerts = {
@@ -275,8 +277,7 @@ module.exports.newPeer = async (client, orgId, peerConfig) => {
             cert: enrollment.certificate
         };
         credentialHelper.writeTlsCert(path.join(credentialHelper.dirName, 'tls'), tlsCerts);
-        client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
-        return client.newPeer(peerConfig.url, options);
+        return client.newPeer(utils.getUrl(config.location, config.tls.peer), options);
     } else {
         let pem = fs.readFileSync(path.join(tlsPath, 'ca.pem')).toString();
         let clientCert = fs.readFileSync(path.join(tlsPath, 'server.crt')).toString();
@@ -285,9 +286,8 @@ module.exports.newPeer = async (client, orgId, peerConfig) => {
             pem: pem,
             'clientCert': clientCert,
             'clientKey': clientKey,
-            'ssl-target-name-override': peerConfig['server-hostname']
+            'ssl-target-name-override': config.name
         };
-        client.setTlsClientCertAndKey(clientCert, clientKey);
-        return client.newPeer(peerConfig.url, options);
+        return client.newPeer(utils.getUrl(config.location), options);
     }
 };

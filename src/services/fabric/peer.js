@@ -79,7 +79,8 @@ module.exports = class PeerService {
             peerName: peerName,
             domainName: org.domain_name,
             mspId: org.msp_id,
-            port: peerPort
+            port: peerPort,
+            enableTls: config.tls.peer,
         };
 
         let connectionOptions = null;

@@ -141,5 +141,5 @@ var Configtxlator = class {
     }
 };
 
-const configtxlator = new Configtxlator(host.url);
+const configtxlator = new Configtxlator(process.env.CONFIGTXLATOR_URI || host.url);
 module.exports = configtxlator;

@@ -12,6 +12,10 @@ module.exports.wait = async (resources) => {
 
     let options = {
         resources: [].concat(resources),
+        delay: 5000,
+        interval: 1000,
+        log: true,
+        verbose: false,
         timeout: 30000,
     };
 
@@ -86,7 +90,7 @@ module.exports.generateContainerNetworkOptions = (options) => {
         'create',
         '--driver', options.driver || common.DEFAULT_NETWORK.DRIVER,
         options.name || common.DEFAULT_NETWORK.NAME
-    ]
+    ];
 };
 
 module.exports.generatePeerContainerOptions = (options, mode) => {
@@ -107,7 +111,7 @@ module.exports.generateOrdererContainerOptions = (options, mode) => {
     }
 };
 
-const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspId, port, workingDir}) => {
+const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspId, port, workingDir, enableTls}) => {
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
@@ -133,11 +137,11 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspId, por
             `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
             'CORE_PEER_GOSSIP_USELEADERELECTION=true',
             'CORE_PEER_GOSSIP_ORGLEADER=false',
-            'CORE_PEER_TLS_ENABLED=true',
+            `CORE_PEER_TLS_ENABLED=${enableTls}`,
             `CORE_PEER_TLS_CERT_FILE=/data/tls/server.crt`,
             `CORE_PEER_TLS_KEY_FILE=/data/tls/server.key`,
             'CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca.pem',
-            'CORE_PEER_TLS_CLIENTAUTHREQUIRED=true',
+            `CORE_PEER_TLS_CLIENTAUTHREQUIRED=${enableTls}`,
             'CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/ca.pem',
             'CORE_LOGGING_LEVEL=debug',
             'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
@@ -147,7 +151,7 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspId, por
     };
 };
 
-const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspId, port, workingDir}) => {
+const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspId, port, workingDir, enableTls}) => {
     return [
         'create',
         '--name', `${peerName}.${domainName}`,
@@ -164,11 +168,11 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspId, port, 
         '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
         '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
         '-e', 'CORE_PEER_GOSSIP_ORGLEADER=false',
-        '-e', 'CORE_PEER_TLS_ENABLED=true',
+        '-e', `CORE_PEER_TLS_ENABLED=${enableTls}`,
         '-e', `CORE_PEER_TLS_CERT_FILE=/data/tls/server.crt`,
         '-e', `CORE_PEER_TLS_KEY_FILE=/data/tls/server.key`,
         '-e', 'CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca.pem',
-        '-e', 'CORE_PEER_TLS_CLIENTAUTHREQUIRED=true',
+        '-e', `CORE_PEER_TLS_CLIENTAUTHREQUIRED=${enableTls}`,
         '-e', 'CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/tls/ca.pem',
         '-e', 'CORE_LOGGING_LEVEL=debug',
         '-e', 'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
@@ -180,7 +184,7 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspId, port, 
     ];
 };
 
-const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspId, port, workingDir}) => {
+const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspId, port, workingDir, enableTls}) => {
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
@@ -204,11 +208,11 @@ const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspI
             'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
             `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
             'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
-            'ORDERER_GENERAL_TLS_ENABLED=true',
+            `ORDERER_GENERAL_TLS_ENABLED=${enableTls}`,
             'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
             'ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server.key',
             'ORDERER_GENERAL_TLS_ROOTCAS=[/data/tls/ca.pem]',
-            'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
+            `ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=${enableTls}`,
             'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/ca.pem]',
             'ORDERER_GENERAL_LOGLEVEL=debug',
             'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
@@ -217,7 +221,7 @@ const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspI
     };
 };
 
-const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspId, port, workingDir}) => {
+const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspId, port, workingDir, enableTls}) => {
     return [
         'create',
         '--name', `${ordererName}.${domainName}`,
@@ -233,11 +237,11 @@ const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspId, 
         '-e', 'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
         '-e', `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
         '-e', 'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
-        '-e', 'ORDERER_GENERAL_TLS_ENABLED=true',
+        '-e', `ORDERER_GENERAL_TLS_ENABLED=${enableTls}`,
         '-e', 'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
         '-e', 'ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server.key',
         '-e', 'ORDERER_GENERAL_TLS_ROOTCAS=[/data/msp/tlscacerts/cert.pem]',
-        '-e', 'ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true',
+        '-e', `ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=${enableTls}`,
         '-e', 'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/msp/tlscacerts/cert.pem]',
         '-e', 'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
         '-e', 'GODEBUG=netdns=go',
@@ -273,9 +277,17 @@ module.exports.generateRandomInteger = (low, high) => {
 };
 
 module.exports.isSingleMachineTest = () => {
-    return true;
+    return false;
 };
 
-module.exports.makeHostRecord = (hostName,ipAddress) => {
+module.exports.makeHostRecord = (hostName, ipAddress) => {
     return hostName + common.SEPARATOR_COLON + ipAddress;
+};
+
+module.exports.getUrl = (location, enableTls)=> {
+    if (enableTls) {
+        return `${common.PROTOCOL.GRPCS}://${location}`;
+    } else {
+        return `${common.PROTOCOL.GRPC}://${location}`;
+    }
 };

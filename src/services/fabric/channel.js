@@ -7,13 +7,23 @@ const UpdateChannel = require('./update-channel');
 const common = require('../../libraries/common');
 
 module.exports = class ChannelService {
-    constructor(organizationId, channelId) {
+    constructor(organizationId, channelName) {
         this._organization_id = organizationId;
         this._organization = null;
-        this._channel_name = channelId;
+        this._channel_name = channelName;
         this._consortium_id = '';
         this._consortium_name = '';
         this._anchor_peers = [];
+    }
+
+    static async getInstance(organizationId, channelId) {
+        try {
+            let channelService = new ChannelService(organizationId, channelId);
+            await channelService.init();
+            return channelService;
+        } catch (e) {
+            throw e;
+        }
     }
 
     async init() {
@@ -33,17 +43,6 @@ module.exports = class ChannelService {
             }
 
             this._anchor_peers = await this.getOrgAnchorPeers();
-
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    static async getInstance(organizationId, channelId) {
-        try {
-            let channelService = new ChannelService(organizationId, channelId);
-            await channelService.init();
-            return channelService;
         } catch (e) {
             throw e;
         }
@@ -51,7 +50,7 @@ module.exports = class ChannelService {
 
     async getOrgAnchorPeers() {
         try {
-            let peer = await DbService.findPeersByOrgId(this._organization_id);
+            let peer = await DbService.findPeersByOrgId(this._organization_id, common.PEER_TYPE_PEER);
             let anchorPeers = [];
             if (peer) {
                 peer.map(item => {
@@ -81,12 +80,12 @@ module.exports = class ChannelService {
         return CreateChannel.createChannel(channelCreateTx, this._channel_name, this._organization);
     }
 
-    joinChannel() {
-        return JoinChannel.joinChannel(this._channel_name, this._organization);
+    joinChannel(peers) {
+        return JoinChannel.joinChannel(this._channel_name, this._organization, peers);
     }
 
-    updateAppChannel() {
-        return UpdateChannel.updateAppChannel(this._channel_name, {
+    updateAppChannel(channelId) {
+        return UpdateChannel.updateAppChannel(channelId, this._organization_id, {
             ConsortiumId: this._consortium_id,
             Organizations: [{
                 Name: this._organization.name,
@@ -94,7 +93,7 @@ module.exports = class ChannelService {
                 Type: 0,
                 AnchorPeers: this._anchor_peers,
             }]
-        }, this._organization_id);
+        });
     }
 
     updateSysChannel() {
