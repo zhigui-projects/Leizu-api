@@ -57,7 +57,7 @@ module.exports = class OrdererService {
             };
         }
 
-        const ordererDto = await this.preContainerStart({org, ordererName, ordererPort, connectionOptions, options});
+        const ordererDto = await this.preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options});
 
         const client = DockerClient.getInstance(connectionOptions);
         const parameters = utils.generateOrdererContainerOptions(containerOptions, connectionOptions.mode);
@@ -78,13 +78,7 @@ module.exports = class OrdererService {
     static async preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options}) {
         await this.createContainerNetwork(connectionOptions);
         let ordererDto = await this.prepareCerts(org, consortium, ordererName);
-        const genesisBlockFile = await this.prepareGenesisBlock({
-            org,
-            consortium,
-            ordererName,
-            ordererPort,
-            configtx: options
-        });
+        const genesisBlockFile = await this.prepareGenesisBlock({org, consortium, ordererName, ordererPort, configtx: options});
 
         const certFile = `${ordererDto.credentialsPath}.zip`;
         const remoteFile = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}.zip`;
