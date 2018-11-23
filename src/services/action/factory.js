@@ -75,7 +75,7 @@ module.exports = class ActionFactory {
     static getChannelCreateAction(params){
         let createAction = ActionFactory.getAction(Registry.RESOURCE.CHANNEL,Registry.TYPE.CREATE);
         let actionContext = ActionFactory.createActionContext();
-        createAction.set(Registry.CONTEXT.PARAMS,params);
+        actionContext.set(Registry.CONTEXT.PARAMS,params);
         createAction.setActionContext(actionContext);
         return createAction;
     }
