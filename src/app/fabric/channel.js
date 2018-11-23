@@ -32,8 +32,6 @@ router.get('/:id', async ctx => {
 
 /**
  * fn: add the new channel into fabric network
- * parameters: genesis block
- *
  */
 router.post('/', async ctx => {
     let parameters = ctx.request.body;
@@ -42,13 +40,11 @@ router.post('/', async ctx => {
         let channelName = parameters.name;
         let channelService = await ChannelService.getInstance(organizationId, channelName);
         let configEnvelope = await channelService.createChannel();
-        let result = await channelService.joinChannel();
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: parameters.name,
             configuration: configEnvelope
-        }, result);
-
+        });
         ctx.body = common.success({
             _id: channel._id,
             name: channel.name,
@@ -62,24 +58,44 @@ router.post('/', async ctx => {
     }
 });
 
-/**
- * fn: update existing channel's configuration
- * parameters: configuration
- *
- */
-router.put('/:id', async ctx => {
-    let id = ctx.params.id;
-    let params = ctx.request.body;
+// join peers to channel
+router.post('/join', async ctx => {
+    let {organizationId, channelId, peers} = ctx.request.body;
     try {
-        let channel = await DbService.getChannelById(id);
-        if (channel) {
-            let channelService = await ChannelService.getInstance(params.organizationId, channel.name);
-            await channelService.updateAppChannel();
-            ctx.body = common.success({id: id}, common.SUCCESS);
+        let channelInfo = await DbService.getChannelById(channelId);
+        if (!channelInfo) {
+            throw new Error('The channel does not exist.');
+        }
+        let channelService = await ChannelService.getInstance(organizationId, channelInfo.name);
+        let result = await channelService.joinChannel(peers);
+        let channel = await FabricService.findChannelAndUpdate(channelId, result);
+        ctx.body = common.success({
+            _id: channel._id,
+            orgs: result.organizations,
+            peers: result.peers
+        }, common.SUCCESS);
+    } catch (err) {
+        logger.error(err.stack ? err.stack : err);
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }
+});
+
+// update channel
+// channelType: 0-application channel, 1-system channel
+// channelType default value 0
+router.post('/update', async ctx => {
+    let {organizationId, channelId, channelType} = ctx.request.body;
+    try {
+        if (channelType && channelType === 1) {
+            let channelService = await ChannelService.getInstance(organizationId);
+            // add new org to consortium by update system channel config
+            await channelService.updateSysChannel();
+            ctx.body = common.success({}, common.SUCCESS);
         } else {
-            logger.error('The channelId does not exist.');
-            ctx.status = 400;
-            ctx.body = common.error({}, 'The channelId does not exist.');
+            let channelService = await ChannelService.getInstance(organizationId);
+            await channelService.updateAppChannel(channelId);
+            ctx.body = common.success({}, common.SUCCESS);
         }
     } catch (err) {
         logger.error(err);
@@ -87,6 +103,5 @@ router.put('/:id', async ctx => {
         ctx.body = common.error({}, err.message);
     }
 });
-
 
 module.exports = router;

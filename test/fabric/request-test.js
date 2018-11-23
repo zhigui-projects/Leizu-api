@@ -2,7 +2,7 @@
 
 const supertest = require('supertest');
 const app = require('../../src/index');
-const request = require('./request-sample');
+const request = require('./request-sample-dev');
 
 supertest(app.callback())
     .post('/api/v1/request')

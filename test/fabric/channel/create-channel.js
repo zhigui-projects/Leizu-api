@@ -1,12 +1,12 @@
 'use strict';
 
 const request = require('supertest');
-const app = require('../../src/index');
-const constants = require('./constants');
+const app = require('../../../src/index');
+const constants = require('../constants');
 const token = 'Bearer ' + constants.token;
 
 const channel = {
-    organizationId: '5bf26e15d836873ad93ec69d',
+    organizationId: '5bf61facfd3da04705a04a1c',
     name: 'mychannel'
 };
 

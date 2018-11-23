@@ -2,6 +2,7 @@
 
 const logger = require('../../libraries/log4js');
 logger.category = 'RequestHandler';
+const common = require('../../libraries/common');
 const Handler = require('./handler');
 const RequestDaoService = require('../db/request');
 const ActionFactory = require('../action/factory');
@@ -62,7 +63,8 @@ module.exports = class RequestHandler extends Handler {
         await this.provisionPeers();
         await this.provisionOrdererOrganization();
         await this.provisionOrderers();
-        await this.makePeersJoinChannel();
+        await this.createNewChannel();
+        //await this.makePeersJoinChannel();
     }
 
     async provisionPeerOrganizations(){
@@ -97,14 +99,34 @@ module.exports = class RequestHandler extends Handler {
             let result = await kafkaAction.execute();
         }
         let node = this.parsedRequest.orderer.nodes[0];
+        
+        let organization = null;
+        for(let property in this.organizations.peerOrgs){
+            organization = this.organizations.peerOrgs[property];
+        } 
+        
+        node.organizationId = organization._id;
         let provisionAction = ActionFactory.getOrdererProvisionAction(node);
         this.orderer = await provisionAction.execute();
     }
 
-    async makePeersJoinChannel(){
+    async createNewChannel(){
         if(!this.parsedRequest.channel){
             throw new Error('no channel definition');
         }
+        let organization = null;
+        for(let property in this.organizations.peerOrgs){
+            organization = this.organizations.peerOrgs[property];
+        }
+        let parameters = {
+            name: this.parsedRequest.channel.name,
+            organizationId: organization._id
+        };
+        let createAction = ActionFactory.getChannelCreateAction(parameters);
+        this.channel = await createAction.execute();
+    }
+
+    async makePeersJoinChannel(){
         let channelData = this.parsedRequest.channel;
         let channelName = channelData.name;
         let orderObject = this.orderer.toObject();

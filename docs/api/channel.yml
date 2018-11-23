@@ -106,6 +106,33 @@ Create:
     name:
       type: string
       example: mychannel
+ChannelCreateResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 5bc9389760dc6449e9a832e7
+        name:
+          type: string
+          example: mychannel
+        uuid:
+          type: string
+          example: 7909f1f0-d341-11e8-84f0-69f0cc532f0e
+        date:
+          type: string
+          example: 2018-10-19T01:51:17.844Z
+    msg:
+      type: string
+      example: success
 Update:
   type: object
   properties:
@@ -127,6 +154,48 @@ ChannelUpdateResponse:
        id:
          type: string
          example: 5bc9389760dc6449e9a832e7
+    msg:
+      type: string
+      example: success
+Join:
+  type: object
+  properties:
+    organizationId:
+      type: string
+      example: 5bebdfb07ac700dbd052d63c
+    channelId:
+      type: string
+      example: 5bebdfb07ac700dbd052d243
+    peers:
+      type: array
+      items:
+        type: string
+        example: 5bc9389760dc6449e9a832e4
+ChannelJoinResponse:
+  type: object
+  properties:
+    code:
+      type: int
+      example: 200
+    status:
+      type: string
+      example: success
+    data:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 5bc9389760dc6449e9a832e7
+        orgs:
+          type: array
+          items:
+            type: string
+            example: 5bc9389760dc6449e9a832e4
+        peers:
+          type: array
+          items:
+            type: string
+            example: 5bc9389760dc6449e9a832e6
     msg:
       type: string
       example: success

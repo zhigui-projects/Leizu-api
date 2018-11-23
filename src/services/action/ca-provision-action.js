@@ -22,7 +22,6 @@ module.exports = class CAProvisionAction extends Action {
         utils.extend(options,params.caNode);
         if(this.isDebugMode){
             options.caPort = utils.generateRandomHttpPort();
-            console.info(">>>debug info", options);
         }
         return await OrganizationService.create(options);
     }
