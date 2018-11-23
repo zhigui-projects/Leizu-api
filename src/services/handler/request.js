@@ -132,6 +132,7 @@ module.exports = class RequestHandler extends Handler {
             let parameters = {};
             parameters.organization = this.organizations.peerOrgs[property];
             parameters.channelName = channelName;
+            parameters.channelId = this.channel._id;
             let joinAction = ActionFactory.getPeerJoinAction(parameters);
             await joinAction.execute();
         }
