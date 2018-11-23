@@ -64,7 +64,7 @@ module.exports = class RequestHandler extends Handler {
         await this.provisionOrdererOrganization();
         await this.provisionOrderers();
         await this.createNewChannel();
-        //await this.makePeersJoinChannel();
+        await this.makePeersJoinChannel();
     }
 
     async provisionPeerOrganizations(){
