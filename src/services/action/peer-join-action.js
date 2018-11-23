@@ -19,7 +19,7 @@ module.exports = class PeerJoinAction extends Action {
         let organizationId = params.organization._id;
         let channelService = await ChannelService.getInstance(organizationId, channelName);
         let result = await channelService.joinChannel();
-        let channel = await FabricService.findChannelAndUpdate(channelId, result);
+        let channel = await FabricService.findChannelAndUpdate(params.channelId, result);
         return channel;
     }
 

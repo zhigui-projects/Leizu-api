@@ -22,6 +22,11 @@ module.exports = class DbService {
         return channels;
     }
 
+    static async getChannelByName(channelName){
+        let channel = await Channel.findOne({name: channelName});
+        return channel;
+    }
+
     static async getChannelById(id) {
         let channel = await Channel.findById(id);
         return channel;
