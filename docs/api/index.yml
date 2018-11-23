@@ -214,6 +214,24 @@ paths:
       responses:
         200:
           description: OK
+  /peer/check:
+    post:
+      tags:
+      - peer
+      summary: Check node connectivity
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "peer.yml#/CheckResponse"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "peer.yml#/401Error"
   /peer/{peerId}:
     get:
       tags:
