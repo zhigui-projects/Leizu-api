@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    "name": "chain-dev",
+    "name": "SampleConsortium",
     "type": "fabric",
     "version": "1.3",
     "db": "leveldb",
