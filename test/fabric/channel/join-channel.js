@@ -6,8 +6,8 @@ const constants = require('../constants');
 const token = 'Bearer ' + constants.token;
 
 const channel = {
-    channelId: '5bf5942ac4dcb4a8754df6be',
-    organizationId: '5bf593d2f468d8a85a20beee'
+    channelId: '5bf626ba22161448d3f78ac2',
+    organizationId: '5bf61facfd3da04705a04a1c',
 };
 
 request(app.callback())

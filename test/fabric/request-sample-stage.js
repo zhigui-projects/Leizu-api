@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    "name": "Test-Chain",
+    "name": "chain-stage",
     "type": "fabric",
     "version": "1.3",
     "db": "leveldb",
@@ -22,13 +22,13 @@ module.exports = {
         "name": "orderer-org",
         "ca": {
             "name": "ca-1",
-            "ip": "39.104.189.169",
+            "ip": "39.104.51.94",
             "ssh_username": "root",
             "ssh_password": "***REMOVED***"
         },
         "orderer": [{
             "name": "orderer1",
-            "ip": "39.104.189.169",
+            "ip": "39.104.51.94",
             "ssh_username": "root",
             "ssh_password": "***REMOVED***"
         }]
@@ -48,7 +48,7 @@ module.exports = {
             "ssh_password": "***REMOVED***"
         }, {
             "name": "peer1",
-            "ip": "39.104.145.229",
+            "ip": "39.104.152.81",
             "ssh_username": "root",
             "ssh_password": "***REMOVED***"
         }]
