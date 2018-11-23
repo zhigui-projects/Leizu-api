@@ -78,7 +78,7 @@ module.exports = class DbService {
 
     static async findPeersByOrgId(orgId, type) {
         let condition = {org_id: orgId};
-        if (type) {
+        if (type === 0 || type === 1) {
             condition.type = type;
         }
         return await Peer.find(condition);
