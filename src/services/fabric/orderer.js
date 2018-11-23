@@ -26,11 +26,12 @@ module.exports = class OrdererService {
         const {organizationId, username, password, host, port, options} = params;
 
         const org = await DbService.findOrganizationById(organizationId);
+        const consortium = await DbService.getConsortiumById(org.consortium_id);
         const ordererName = `orderer-${host.replace(/\./g, '-')}`;
         const ordererPort = common.PORT.ORDERER;
 
         let containerOptions = {
-            workingDir: `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}/peers/${ordererName}`,
+            workingDir: `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`,
             ordererName: ordererName,
             domainName: org.domain_name,
             mspId: org.msp_id,
@@ -56,7 +57,7 @@ module.exports = class OrdererService {
             };
         }
 
-        const ordererDto = await this.preContainerStart({org, ordererName, ordererPort, connectionOptions, options});
+        const ordererDto = await this.preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options});
 
         const client = DockerClient.getInstance(connectionOptions);
         const parameters = utils.generateOrdererContainerOptions(containerOptions, connectionOptions.mode);
@@ -67,21 +68,21 @@ module.exports = class OrdererService {
                 name: ordererName,
                 organizationId: organizationId,
                 location: `${host}:${ordererPort}`,
-                consortiumId: org.consortium_id,
+                consortiumId: consortium._id,
             }));
         } else {
             throw new Error('create orderer failed');
         }
     }
 
-    static async preContainerStart({org, ordererName, ordererPort, connectionOptions, options}) {
+    static async preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options}) {
         await this.createContainerNetwork(connectionOptions);
-        let ordererDto = await this.prepareCerts(org, ordererName);
-        const genesisBlockFile = await this.prepareGenesisBlock({org, ordererName, ordererPort, configtx: options});
+        let ordererDto = await this.prepareCerts(org, consortium, ordererName);
+        const genesisBlockFile = await this.prepareGenesisBlock({org, consortium, ordererName, ordererPort, configtx: options});
 
         const certFile = `${ordererDto.credentialsPath}.zip`;
-        const remoteFile = `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}/peers/${ordererName}.zip`;
-        const remotePath = `${common.ORDERER_HOME}/${org.consortium_id}/${org.name}/peers/${ordererName}`;
+        const remoteFile = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}.zip`;
+        const remotePath = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`;
         const client = DockerClient.getInstance(connectionOptions);
         await client.transferFile({local: certFile, remote: remoteFile});
         await client.transferFile({local: genesisBlockFile, remote: `${remotePath}/genesis.block`});
@@ -97,7 +98,7 @@ module.exports = class OrdererService {
         await DockerClient.getInstance(connectionOptions).createContainerNetwork(parameters);
     }
 
-    static async prepareCerts(org, ordererName) {
+    static async prepareCerts(org, consortium, ordererName) {
         const ca = await DbService.findCertAuthorityByOrg(org._id);
         const ordererAdminUser = {
             enrollmentID: `${ordererName}.${org.domain_name}`,
@@ -117,7 +118,7 @@ module.exports = class OrdererService {
         const ordererDto = {
             orgName: org.name,
             name: ordererName,
-            consortiumId: String(org.consortium_id),
+            consortiumId: String(consortium._id),
             tls: {}
         };
         ordererDto.adminKey = mspInfo.key.toBytes();
@@ -132,10 +133,10 @@ module.exports = class OrdererService {
         return ordererDto;
     }
 
-    static async prepareGenesisBlock({org, ordererName, ordererPort, configtx}) {
+    static async prepareGenesisBlock({org, consortium, ordererName, ordererPort, configtx}) {
         let options = {
-            ConsortiumId: String(org.consortium_id),
-            Consortium: 'SampleConsortium',
+            ConsortiumId: String(consortium._id),
+            Consortium: consortium.name,
             Orderer: {
                 OrdererType: configtx.ordererType,
                 OrderOrg: org.name,
@@ -170,7 +171,7 @@ module.exports = class OrdererService {
 
         let configTxYaml = new CreateConfigTx(options).buildConfigtxYaml();
         let genesis = await ConfigTxlator.outputGenesisBlock(common.CONFIFTX_OUTPUT_GENESIS_BLOCK, common.SYSTEM_CHANNEL, configTxYaml, '', '');
-        const genesisBlockPath = path.join(config.cryptoConfig.path, String(org.consortium_id), org.name, 'genesis.block');
+        const genesisBlockPath = path.join(config.cryptoConfig.path, String(consortium._id), org.name, 'genesis.block');
         fs.writeFileSync(genesisBlockPath, genesis);
 
         return genesisBlockPath;

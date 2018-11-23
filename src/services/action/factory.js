@@ -72,5 +72,12 @@ module.exports = class ActionFactory {
         return provisionAction;
     }
 
+    static getChannelCreateAction(params){
+        let createAction = ActionFactory.getAction(Registry.RESOURCE.CHANNEL,Registry.TYPE.CREATE);
+        let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS,params);
+        createAction.setActionContext(actionContext);
+        return createAction;
+    }
 
 };
