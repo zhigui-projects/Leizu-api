@@ -5,14 +5,16 @@
  */
 'use strict';
 
-var query = require('./query');
-var logger = require('../../libraries/log4js').getLogger('Update-Channel');
-var configtxlator = require('./configtxlator');
-var Client = require('fabric-client');
-var stringUtil = require('../../libraries/string-util');
-var ConfigTxBuilder = require('./configtxgen');
+const query = require('./query');
+const logger = require('../../libraries/log4js').getLogger('Update-Channel');
+const configtxlator = require('./configtxlator');
+const Client = require('fabric-client');
+const stringUtil = require('../../libraries/string-util');
+const ConfigTxBuilder = require('./configtxgen');
+const utils = require('../../libraries/utils');
+const config = require('../../env');
 const DbService = require('../db/dao');
-var common = require('../../libraries/common');
+const common = require('../../libraries/common');
 
 async function updateAppChannel(channelId, orgId, org) {
     try {
@@ -37,7 +39,7 @@ async function updateAppChannel(channelId, orgId, org) {
             for (let peerConfig of peers) {
                 if (peerConfig.type === common.PEER_TYPE_ORDER) {
                     let orderer = await query.newOrderer(client, {
-                        url: `${common.PROTOCOL.GRPCS}://${peerConfig.location}`,
+                        url: utils.getUrl(peerConfig.location, config.tls.orderer),
                         'server-hostname': peerConfig.name,
                         orderer: organization
                     });
