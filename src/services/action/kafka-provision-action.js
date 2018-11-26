@@ -40,7 +40,8 @@ module.exports = class KafkaProvisionAction extends Action {
             await sshClient.createContainer(parameters);
         }
 
-        let counter = 0;
+        let brokerId = 0;
+        let brokerList = [];
         for(let kafka of params.kafkas){
             sshClient.setOptions(kafka);
             let parameters = [
@@ -50,7 +51,7 @@ module.exports = class KafkaProvisionAction extends Action {
                 '-e', 'KAFKA_MESSAGE_MAX_BYTES=103809024',
                 '-e', 'KAFKA_REPLICA_FETCH_MAX_BYTES=103809024',
                 '-e', 'KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false',
-                '-e', 'KAFKA_BROKER_ID=' + this.getKafkaBrokerId(counter),
+                '-e', 'KAFKA_BROKER_ID=' + brokerId,
                 '-e', 'KAFKA_MIN_INSYNC_REPLICAS=2',
                 '-e', 'KAFKA_DEFAULT_REPLICATION_FACTOR=3',
                 '-e', 'KAFKA_ZOOKEEPER_CONNECT=' + kafkaZooKeeperConnect.join(','),
@@ -58,17 +59,10 @@ module.exports = class KafkaProvisionAction extends Action {
                 'hyperledger/fabric-kafka'
             ];
             await sshClient.createContainer(parameters);
-            counter = counter + 1;
+            brokerId = brokerId + 1;
+            brokerList.push(kafka.host + ':9092');
         }
-
-    }
-
-    getKafkaBrokerId(n) {
-        if(n %2 === 0){
-            return 1;
-        }else{
-            return 2;
-        }
+        return brokerList;
     }
 
 };
