@@ -189,20 +189,12 @@ module.exports = class DbService {
         return await CertAuthority.findOne({org_id: orgId});
     }
 
-    static async getOrderer(consortiumId) {
+    static async findOrdererByConsortium(consortiumId) {
         let orderer = await Peer.findOne({consortium_id: consortiumId, type: Common.PEER_TYPE_ORDER});
         if (!orderer) {
             throw new Error('can not found any orderer for consortium: ' + consortiumId);
         }
-        let organization = await Organization.findOne({_id: orderer.org_id});
-        if (!organization) {
-            throw new Error('can not found organization: ' + orderer.org_id);
-        }
-        return {
-            url: utils.getUrl(orderer.location, config.tls.orderer),
-            'server-hostname': orderer.name,
-            orderer: organization
-        };
+        return orderer;
     }
 
     static async getCaByOrgId(orgId) {
