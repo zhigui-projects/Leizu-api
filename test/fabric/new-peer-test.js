@@ -9,7 +9,7 @@ const peer = {
     username: 'root',
     password: 'Inkchain-passw0rd',
     port: 22,
-    organizationId: '5bf61facfd3da04705a04a1c'
+    organizationId: constants.organizationId
 };
 
 request(app.callback())
