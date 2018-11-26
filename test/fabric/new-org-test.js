@@ -11,7 +11,7 @@ const organization = {
     username: 'root',
     password: '***REMOVED***',
     port: 22,
-    consortiumId: '5bf61f8940a22146e5818497'
+    consortiumId: constants.consortiumId,
 };
 
 request(app.callback())

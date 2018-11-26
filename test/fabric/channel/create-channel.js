@@ -6,7 +6,7 @@ const constants = require('../constants');
 const token = 'Bearer ' + constants.token;
 
 const channel = {
-    organizationId: '5bf61facfd3da04705a04a1c',
+    organizationId: constants.organizationId,
     name: 'mychannel'
 };
 

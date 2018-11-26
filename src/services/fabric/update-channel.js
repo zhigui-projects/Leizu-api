@@ -139,17 +139,18 @@ async function updateAppChannel(channelId, orgId, org) {
     }
 }
 
-async function updateSysChannel(org) {
+async function updateSysChannel(options) {
     try {
         let client = new Client();
-        var config = await DbService.getOrderer(org.ConsortiumId);
-        client.setAdminSigningIdentity(config.orderer.admin_key, config.orderer.admin_cert, config.orderer.msp_id);
-        let orderer = await query.newOrderer(client, config);
-        let consortium = await DbService.getConsortiumById(org.ConsortiumId);
+        const orderer = await DbService.findOrdererByConsortium(options.ConsortiumId);
+        const org = await DbService.findOrganizationById(orderer.org_id);
+        client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
+        let newOrderer = await query.newOrderer(client, orderer, org);
+        let consortium = await DbService.getConsortiumById(options.ConsortiumId);
         let networkConfig = JSON.parse(consortium.network_config);
         let channelName = networkConfig.sysChannel;
         let channel = client.newChannel(channelName);
-        channel.addOrderer(orderer);
+        channel.addOrderer(newOrderer);
         const envelopeConfig = await channel.getChannelConfigFromOrderer();
 
         // we just need the config from the envelope and configtxlator works with bytes
@@ -168,9 +169,9 @@ async function updateSysChannel(org) {
         // now edit the config -- add one of the organizations
         //Add a new org, you should prepare a related msp for the target org first
         //Build a new organisation group for application group section
-        var configtxgen = new ConfigTxBuilder(org);
+        var configtxgen = new ConfigTxBuilder(options);
         var configtx = Buffer.from(configtxgen.buildPrintOrg());
-        let orgName = org.Organizations[0].Name;
+        let orgName = options.Organizations[0].Name;
         let orgBytes = await configtxlator.printOrg(orgName, configtx, '');
         let orgMsp = stringUtil.getMspId(orgName);
         updatedConfig.channel_group.groups.Consortiums.groups.SampleConsortium.groups[orgMsp] = JSON.parse(orgBytes);
