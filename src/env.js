@@ -1,7 +1,7 @@
 module.exports = {
     tls: {
-        orderer: false,
-        peer: false,
+        orderer: true,
+        peer: true,
     },
     koaLogger: true,
     jwt: {
