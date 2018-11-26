@@ -25,12 +25,15 @@ module.exports = class KafkaProvisionAction extends Action {
         let zooServersString = 'ZOO_SERVERS=' + zooServers.join(' ');
         for(let zk of zookeepers){
             sshClient.setOptions(zk);
+            let containerName = zk.name + zk.zooMyId;
+            let clusterString = zooServersString.replace(zk.host,containerName);
             let parameters = [
                 'create',
-                '--name', zk.name + zk.zooMyId,
+                '--name', containerName,
+                '--hostname', containerName,
                 '--restart','always',
                 '-e', 'ZOO_MY_ID=' + zk.zooMyId,
-                '-e', zooServersString,
+                '-e', clusterString,
                 '-p', '2181:2181','-p', '2888:2888','-p', '3888:3888',
                 'hyperledger/fabric-zookeeper'
             ];
