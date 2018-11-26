@@ -19,6 +19,7 @@ const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 const FabricCAServices = require('fabric-ca-client');
 const DbService = require('../db/dao');
 const utils = require('../../libraries/utils');
+const env = require('../../env');
 const CredentialHelper = require('./credential-helper').CredentialHelper;
 
 module.exports.getBlockChainInfo = async (channelName, peerConfig, caConfig) => {
@@ -222,72 +223,29 @@ module.exports.getTlsCACerts = async (client) => {
     client.setTlsClientCertAndKey(cert, key);
 };
 
-module.exports.newOrderer = async (client, config) => {
-    let tlsPath = path.join(config.orderer.msp_path, 'tls');
-    if (!fs.existsSync(tlsPath)) {
-        let ordererCa = await DbService.getCaByOrgId(config.orderer._id);
-        let enrollment = await module.exports.getClientKeyAndCert(ordererCa);
-        let options = {
-            pem: enrollment.rootCertificate,
-            'clientCert': enrollment.certificate,
-            'clientKey': enrollment.key,
-            'ssl-target-name-override': config['server-hostname']
-        };
-        let credentialHelper = new CredentialHelper(String(config.orderer.consortium_id), config.orderer.name);
-        let tlsCerts = {
-            cacert: enrollment.rootCertificate,
-            key: enrollment.key,
-            cert: enrollment.certificate
-        };
-        credentialHelper.writeTlsCert(path.join(credentialHelper.dirName, 'tls'), tlsCerts);
-        client.setTlsClientCertAndKey(enrollment.certificate, enrollment.key);
-        return client.newOrderer(config.url, options);
-    } else {
-        let pem = fs.readFileSync(path.join(tlsPath, 'ca.pem')).toString();
-        let clientCert = fs.readFileSync(path.join(tlsPath, 'server.crt')).toString();
-        let clientKey = fs.readFileSync(path.join(tlsPath, 'server.key')).toString();
-        let options = {
-            pem: pem,
-            'clientCert': clientCert,
-            'clientKey': clientKey,
-            'ssl-target-name-override': config['server-hostname']
-        };
-        client.setTlsClientCertAndKey(clientCert, clientKey);
-        return client.newOrderer(config.url, options);
-    }
+module.exports.newOrderer = async (client, orderer, org) => {
+    const pem = org.root_cert;
+    const clientCert = orderer.tls_cert;
+    const clientKey = orderer.tls_key;
+    const options = {
+        pem: pem,
+        clientCert: clientCert,
+        clientKey: clientKey,
+        'ssl-target-name-override': `${orderer.name}.${org.domain_name}`,
+    };
+    client.setTlsClientCertAndKey(clientCert, clientKey);
+    return client.newOrderer(utils.getUrl(orderer.location, env.tls.orderer), options);
 };
 
-module.exports.newPeer = async (client, config) => {
-    let orgId = config.org_id;
-    let org = await DbService.findOrganizationById(orgId);
-    let tlsPath = path.join(org.msp_path, 'tls');
-    if (!fs.existsSync(tlsPath)) {
-        let orgCa = await DbService.getCaByOrgId(orgId);
-        let enrollment = await module.exports.getClientKeyAndCert(orgCa);
-        let options = {
-            pem: enrollment.rootCertificate,
-            'clientCert': enrollment.certificate,
-            'clientKey': enrollment.key,
-            'ssl-target-name-override': config.name
-        };
-        let credentialHelper = new CredentialHelper(org.consortium_id.toString(), org.name);
-        let tlsCerts = {
-            cacert: enrollment.rootCertificate,
-            key: enrollment.key,
-            cert: enrollment.certificate
-        };
-        credentialHelper.writeTlsCert(path.join(credentialHelper.dirName, 'tls'), tlsCerts);
-        return client.newPeer(utils.getUrl(config.location, config.tls.peer), options);
-    } else {
-        let pem = fs.readFileSync(path.join(tlsPath, 'ca.pem')).toString();
-        let clientCert = fs.readFileSync(path.join(tlsPath, 'server.crt')).toString();
-        let clientKey = fs.readFileSync(path.join(tlsPath, 'server.key')).toString();
-        let options = {
-            pem: pem,
-            'clientCert': clientCert,
-            'clientKey': clientKey,
-            'ssl-target-name-override': config.name
-        };
-        return client.newPeer(utils.getUrl(config.location), options);
-    }
+module.exports.newPeer = async (client, peer, org) => {
+    const pem = org.root_cert;
+    const clientCert = peer.tls_cert;
+    const clientKey = peer.tls_key;
+    const options = {
+        pem: pem,
+        clientCert: clientCert,
+        clientKey: clientKey,
+        'ssl-target-name-override': `${peer.name}.${org.domain_name}`,
+    };
+    return client.newPeer(utils.getUrl(peer.location, env.tls.peer), options);
 };

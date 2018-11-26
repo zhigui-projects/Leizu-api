@@ -1,10 +1,10 @@
 'use strict';
 
-var query = require('./query');
-var configtxlator = require('./configtxlator');
-var logger = require('../../libraries/log4js').getLogger('Create-Channel');
-var Client = require('fabric-client');
-var ConfigTxBuilder = require('./configtxgen');
+const query = require('./query');
+const configtxlator = require('./configtxlator');
+const logger = require('../../libraries/log4js').getLogger('Create-Channel');
+const Client = require('fabric-client');
+const ConfigTxBuilder = require('./configtxgen');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
@@ -12,19 +12,19 @@ const DbService = require('../db/dao');
 
 module.exports.createChannel = async function (channelCreateTx, channelName, org) {
     try {
-        let client = new Client();
+        const client = new Client();
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
-        var ordererConfig = await DbService.getOrderer(org.consortium_id);
-        let orderer = await query.newOrderer(client, ordererConfig);
-        let channel = client.newChannel(channelName);
-        channel.addOrderer(orderer);
+        const orderer = await DbService.findOrdererByConsortium(org.consortium_id);
+        const newOrderer = await query.newOrderer(client, orderer, org);
+        const channel = client.newChannel(channelName);
+        channel.addOrderer(newOrderer);
 
-        var configtxgen = new ConfigTxBuilder(channelCreateTx);
-        var configtx = Buffer.from(configtxgen.buildChannelCreateTx());
-        var envelope = await configtxlator.outputChannelCreateTx(common.CONFIFTX_OUTPUT_CHANNEL, channelName, configtx, '.', '');
+        const configtxgen = new ConfigTxBuilder(channelCreateTx);
+        const configtx = Buffer.from(configtxgen.buildChannelCreateTx());
+        const envelope = await configtxlator.outputChannelCreateTx(common.CONFIFTX_OUTPUT_CHANNEL, channelName, configtx, '.', '');
 
         // extract the channel config bytes from the envelope to be signed
-        var channelConfig = client.extractChannelConfig(envelope);
+        const channelConfig = client.extractChannelConfig(envelope);
 
         //Acting as a client in the given organization provided with "orgName" param
         // sign the channel config bytes as "endorsement", this is required by
@@ -34,13 +34,13 @@ module.exports.createChannel = async function (channelCreateTx, channelName, org
         let request = {
             config: channelConfig,
             signatures: [signature],
-            orderer: orderer,
+            orderer: newOrderer,
             name: channelName,
             txId: client.newTransactionID(true) // get an admin based transactionID
         };
 
         // send to orderer
-        var response = await client.createChannel(request);
+        const response = await client.createChannel(request);
         logger.debug('Response ::%j', response);
         if (response && response.status === 'SUCCESS') {
             logger.debug('Successfully created the channel \'' + channelName + '\'');

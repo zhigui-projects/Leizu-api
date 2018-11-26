@@ -24,7 +24,7 @@ const orderer = {
     port: 22,
     username: 'root',
     password: 'Inkchain-passw0rd',
-    organizationId: '5bf61facfd3da04705a04a1c',
+    organizationId: constants.organizationId,
     options: options
 };
 
