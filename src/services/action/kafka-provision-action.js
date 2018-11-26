@@ -60,7 +60,10 @@ module.exports = class KafkaProvisionAction extends Action {
             ];
             await sshClient.createContainer(parameters);
             brokerId = brokerId + 1;
-            brokerList.push(kafka.host + ':9092');
+            brokerList.push({
+                host: kafka.host,
+                port: 9092
+            });
         }
         return brokerList;
     }
