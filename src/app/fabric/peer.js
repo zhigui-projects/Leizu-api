@@ -4,6 +4,8 @@ const PeerService = require('../../services/fabric/peer');
 const common = require('../../libraries/common');
 const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
+const SSHClient = require('../../services/ssh/client');
+const config = require('../../env');
 
 router.get('/', async ctx => {
     try {
@@ -47,6 +49,32 @@ router.put('/:id', async ctx => {
         logger.error(err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
+    }
+});
+
+router.post('/check', async ctx => {
+    const {host, username, password, port} = ctx.request.body;
+    if (host && username && password) {
+        try {
+            let connectionOptions = {
+                cmd: 'date',
+                host: host,
+                username: username,
+                password: password,
+                port: port || config.ssh.port
+            };
+            const sshClient = new SSHClient(connectionOptions);
+            await sshClient.exec();
+            ctx.body = common.success('Successful connection detection.', common.SUCCESS);
+        } catch (err) {
+            logger.error(err);
+            ctx.status = 400;
+            ctx.body = common.error({}, err.message);
+        }
+    } else {
+        logger.error(err);
+        ctx.status = 400;
+        ctx.body = common.error({}, 'Missing peer ip, ssh user name or password.');
     }
 });
 
