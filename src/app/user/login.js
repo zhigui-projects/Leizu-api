@@ -10,10 +10,10 @@ const stringUtil = require('../../libraries/string-util');
 const router = require('koa-router')({prefix: '/user'});
 const ErrorCode = require('../../libraries/error-code');
 const Validator = require('../../libraries/validator/validator');
-const userSchema = require('../../libraries/validator/request-schema/user-schema');
+const Schema = require('../../libraries/validator/request-schema/user-schema');
 
 router.post('/login', async (ctx) => {
-    let res = Validator.JoiValidate('login', ctx.request.body, userSchema.loginSchema);
+    let res = Validator.JoiValidate('login', ctx.request.body, Schema.loginSchema);
     if (!res.result) throw new BadRequest(res.errMsg);
 
     const {username, password} = ctx.request.body;

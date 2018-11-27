@@ -90,7 +90,7 @@ const getConsensusType = (channel) => {
     let consensusType = channelConfigObject.groups.Orderer.values.ConsensusType.value.type;
     if (consensusType === common.CONSENSUS_SOLO) {
         return common.CONSENSUS_SOLO_VALUE;
-    } else if (consensusType === common.CONSENSUS_KAFKE) {
+    } else if (consensusType === common.CONSENSUS_KAFKA) {
         return common.CONSENSUS_KAFKA_VALUE;
     }
 };

@@ -23,7 +23,7 @@ module.exports.JoiValidate = (position, data, schema) => {
             result.message = `${position}: arguments validation failed`;
             error.details.map(item => {
                 const err = {};
-                err[item.content.label] = `${position}: ${item.message}`;
+                err[item.context.label] = `${position}: ${item.message}`;
                 result.errMsg.push(err);
             });
         } else {
