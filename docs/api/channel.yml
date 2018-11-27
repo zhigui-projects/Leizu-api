@@ -101,8 +101,10 @@ Create:
   type: object
   properties:
     organizationId:
-      type: string
-      example: 5bebdfb07ac700dbd052d63c
+      type: array
+      items:
+        type: string
+        example: 5bebdfb07ac700dbd052d63c
     name:
       type: string
       example: mychannel
