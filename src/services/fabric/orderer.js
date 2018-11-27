@@ -161,8 +161,8 @@ module.exports = class OrdererService {
         } else {
             configtx.peerOrgs.forEach((peerOrg) => {
                 options.Organizations.push({
-                    Name: org.name,
-                    MspId: org.msp_id,
+                    Name: peerOrg.name,
+                    MspId: peerOrg.msp_id,
                     Type: common.PEER_TYPE_PEER,
                     AnchorPeers: [{Host: peerOrg.anchorPeer.host, Port: peerOrg.anchorPeer.port}]
                 });

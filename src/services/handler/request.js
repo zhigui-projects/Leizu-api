@@ -101,12 +101,15 @@ module.exports = class RequestHandler extends Handler {
         }
         let node = this.parsedRequest.orderer.nodes[0];
         
-        let organization = null;
+        let peerOrganizationIds = [];
         for(let property in this.organizations.peerOrgs){
-            organization = this.organizations.peerOrgs[property];
-        } 
-        
-        node.organizationId = organization._id;
+            let organization = this.organizations.peerOrgs[property];
+            if(organization){
+                peerOrganizationIds.push(organization._id);
+            }
+        }
+        node.organizationId = this.organizations.ordererOrg[this.parsedRequest.orderer.orgName]._id;
+        node.peerOrganizationIds = peerOrganizationIds;
         node.kafkaBrokers = kafkaBrokers;
         node.ordererType = this.parsedRequest.consensus;
         let provisionAction = ActionFactory.getOrdererProvisionAction(node);
@@ -117,10 +120,9 @@ module.exports = class RequestHandler extends Handler {
         if(!this.parsedRequest.channel){
             throw new Error('no channel definition');
         }
-        let organization = null;
         let organizationIds = [];
         for(let property in this.organizations.peerOrgs){
-            organization = this.organizations.peerOrgs[property];
+            let organization = this.organizations.peerOrgs[property];
             if(organization){
                 organizationIds.push(organization._id);
             }
