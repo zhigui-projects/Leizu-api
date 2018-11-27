@@ -13,7 +13,7 @@ module.exports.SEPARATOR_COLON = ':';
 
 module.exports.CONSENSUS_SOLO = 'solo';
 module.exports.CONSENSUS_SOLO_VALUE = 0;
-module.exports.CONSENSUS_KAFKE = 'kafka';
+module.exports.CONSENSUS_KAFKA = 'kafka';
 module.exports.CONSENSUS_KAFKA_VALUE = 1;
 module.exports.CONFIFTX_OUTPUT_GENESIS_BLOCK = 'OrdererGenesis';
 module.exports.CONFIFTX_OUTPUT_CHANNEL = 'OrgsChannel';
@@ -71,6 +71,14 @@ module.exports.BASE_DOMAIN_NAME = 'example.com';
 
 module.exports.NODE_TYPE_PEER = 'peer';
 module.exports.NODE_TYPE_ORDERER = 'orderer';
+
+//validator allow values
+module.exports.DB_TYPE_LEVELDB = 'leveldb';
+module.exports.DB_TYPE_COUCHDB = 'couchdb';
+module.exports.DB_TYPE_LIST = [this.DB_TYPE_LEVELDB, this.DB_TYPE_COUCHDB];
+module.exports.BLOCKCHAIN_TYPE_LIST = ['fabric'];
+module.exports.CONSENSUS_LIST = [this.CONSENSUS_KAFKA, this.CONSENSUS_SOLO];
+module.exports.VERSION_LIST = ['1.3'];
 
 module.exports.success = (data, msg) => {
     return {
