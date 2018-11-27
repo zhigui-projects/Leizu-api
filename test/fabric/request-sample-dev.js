@@ -5,7 +5,7 @@ module.exports = {
     "type": "fabric",
     "version": "1.3",
     "db": "leveldb",
-    "consensus": "kafka",
+    "consensus": "solo",
     "kafka": [
         {
             "name": "kafka1",
