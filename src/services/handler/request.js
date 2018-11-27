@@ -94,9 +94,10 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async provisionOrderers(){
+        let kafkaBrokers = [];
         if(this.parsedRequest.isKafkaConsensus){
             let kafkaAction = ActionFactory.getKafkaProvisionAction(this.parsedRequest.kafkaCluster);
-            let result = await kafkaAction.execute();
+            kafkaBrokers = await kafkaAction.execute();
         }
         let node = this.parsedRequest.orderer.nodes[0];
         
@@ -106,6 +107,8 @@ module.exports = class RequestHandler extends Handler {
         } 
         
         node.organizationId = organization._id;
+        node.kafkaBrokers = kafkaBrokers;
+        node.ordererType = this.parsedRequest.consensus;
         let provisionAction = ActionFactory.getOrdererProvisionAction(node);
         this.orderer = await provisionAction.execute();
     }
@@ -115,12 +118,16 @@ module.exports = class RequestHandler extends Handler {
             throw new Error('no channel definition');
         }
         let organization = null;
+        let organizationIds = [];
         for(let property in this.organizations.peerOrgs){
             organization = this.organizations.peerOrgs[property];
+            if(organization){
+                organizationIds.push(organization._id);
+            }
         }
         let parameters = {
             name: this.parsedRequest.channel.name,
-            organizationId: organization._id
+            organizationIds: organizationIds
         };
         let createAction = ActionFactory.getChannelCreateAction(parameters);
         this.channel = await createAction.execute();

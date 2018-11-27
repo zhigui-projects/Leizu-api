@@ -18,15 +18,10 @@ module.exports = class OrdererProvisionAction extends Action {
                         port: 7051
                     },
                 }],
-                ordererType: 'solo',
-                kafka: [
-                    {
-                        host: '127.0.0.1',
-                        port: '9092'
-                    }
-                ]      
+                ordererType: params.ordererType,
+                kafka: params.kafkaBrokers
             }
-        }
+        };
         utils.extend(configuration,params);
         if(this.isDebugMode){
             configuration.ordererPort = utils.generateRandomHttpPort();

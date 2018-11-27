@@ -25,47 +25,54 @@ module.exports = class KafkaProvisionAction extends Action {
         let zooServersString = 'ZOO_SERVERS=' + zooServers.join(' ');
         for(let zk of zookeepers){
             sshClient.setOptions(zk);
+            let hostName = zk.name;
+            let clusterString = zooServersString.replace(zk.host,hostName);
             let parameters = [
                 'create',
-                '--name', zk.name + zk.zooMyId,
+                '--name', zk.name,
+                '--hostname', hostName,
                 '--restart','always',
                 '-e', 'ZOO_MY_ID=' + zk.zooMyId,
-                '-e', zooServersString,
+                '-e', clusterString,
                 '-p', '2181:2181','-p', '2888:2888','-p', '3888:3888',
                 'hyperledger/fabric-zookeeper'
             ];
             await sshClient.createContainer(parameters);
         }
 
-        let counter = 0;
+        let brokerId = 0;
+        let brokerList = [];
         for(let kafka of params.kafkas){
             sshClient.setOptions(kafka);
+            let hostname = kafka.name;
             let parameters = [
                 'create',
                 '--name', kafka.name,
+                '--hostname',hostname,
                 '--restart','always',
                 '-e', 'KAFKA_MESSAGE_MAX_BYTES=103809024',
                 '-e', 'KAFKA_REPLICA_FETCH_MAX_BYTES=103809024',
                 '-e', 'KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false',
-                '-e', 'KAFKA_BROKER_ID=' + this.getKafkaBrokerId(counter),
+                '-e', 'KAFKA_BROKER_ID=' + brokerId,
                 '-e', 'KAFKA_MIN_INSYNC_REPLICAS=2',
                 '-e', 'KAFKA_DEFAULT_REPLICATION_FACTOR=3',
                 '-e', 'KAFKA_ZOOKEEPER_CONNECT=' + kafkaZooKeeperConnect.join(','),
+                '-e', 'KAFKA_HOST_NAME='+hostname,
+                '-e', 'KAFKA_LISTENERS=EXTERNAL://0.0.0.0:9092,REPLICATION://0.0.0.0:9093',
+                '-e', 'KAFKA_ADVERTISED_LISTENERS=EXTERNAL://' + kafka.host + ':9092,REPLICATION://' + hostname + ':9093',
+                '-e', 'KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=EXTERNAL:PLAINTEXT,REPLICATION:PLAINTEXT',
+                '-e', 'KAFKA_INTER_BROKER_LISTENER_NAME=REPLICATION',
                 '-p', '9092:9092',
                 'hyperledger/fabric-kafka'
             ];
             await sshClient.createContainer(parameters);
-            counter = counter + 1;
+            brokerId = brokerId + 1;
+            brokerList.push({
+                host: kafka.host,
+                port: 9092
+            });
         }
-
-    }
-
-    getKafkaBrokerId(n) {
-        if(n %2 === 0){
-            return 1;
-        }else{
-            return 2;
-        }
+        return brokerList;
     }
 
 };
