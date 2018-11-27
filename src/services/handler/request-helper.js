@@ -91,14 +91,14 @@ module.exports = class RequestHelper {
                 password: kf.ssh_password
             });
         }
-        cluster.zookeeper = zks;
-        cluster.kafka = kfs;
+        cluster.zookeepers = zks;
+        cluster.kafkas = kfs;
         return cluster;
     }
 
     static isKafkaConsensus(configuration){
         if(configuration.consensus == common.CONSENSUS_KAFKE){
-            return false;
+            return true;
         }else{
             return false;
         }

@@ -142,7 +142,7 @@ module.exports = class OrdererService {
                 OrderOrg: org.name,
                 Addresses: [`${ordererName}.${org.domain_name}:${ordererPort}`],
                 Kafka: {
-                    Brokers: ['127.0.0.1:9092']
+                    Brokers: configtx.kafka
                 }
             },
             Organizations: [{
