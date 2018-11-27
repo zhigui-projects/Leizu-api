@@ -35,9 +35,9 @@ router.get('/:id', async ctx => {
  */
 router.post('/', async ctx => {
     try {
-        let {organizationId, name} = ctx.request.body;
-        let channelService = await ChannelService.getInstance(organizationId[0], name);
-        let configEnvelope = await channelService.createChannel(organizationId);
+        let {organizationIds, name} = ctx.request.body;
+        let channelService = await ChannelService.getInstance(organizationIds[0], name);
+        let configEnvelope = await channelService.createChannel(organizationIds);
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: name,

@@ -76,9 +76,9 @@ module.exports = class ChannelService {
         };
     }
 
-    async createChannel(orgsId) {
+    async createChannel(orgIds) {
         let organizations = [];
-        for (let organizationId of orgsId) {
+        for (let organizationId of orgIds) {
             let org = await this.buildOrganization(organizationId);
             organizations.push(org);
         }
