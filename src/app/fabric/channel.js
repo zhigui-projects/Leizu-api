@@ -34,15 +34,13 @@ router.get('/:id', async ctx => {
  * fn: add the new channel into fabric network
  */
 router.post('/', async ctx => {
-    let parameters = ctx.request.body;
     try {
-        let organizationId = parameters.organizationId;
-        let channelName = parameters.name;
-        let channelService = await ChannelService.getInstance(organizationId, channelName);
-        let configEnvelope = await channelService.createChannel();
+        let {organizationIds, name} = ctx.request.body;
+        let channelService = await ChannelService.getInstance(organizationIds[0], name);
+        let configEnvelope = await channelService.createChannel(organizationIds);
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
-            name: parameters.name,
+            name: name,
             configuration: configEnvelope
         });
         ctx.body = common.success({

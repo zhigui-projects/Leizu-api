@@ -13,7 +13,6 @@ module.exports = class ChannelService {
         this._channel_name = channelName;
         this._consortium_id = '';
         this._consortium_name = '';
-        this._anchor_peers = [];
     }
 
     static async getInstance(organizationId, channelId) {
@@ -41,16 +40,14 @@ module.exports = class ChannelService {
             } else {
                 throw new Error('The consortium does not exist.');
             }
-
-            this._anchor_peers = await this.getOrgAnchorPeers();
         } catch (e) {
             throw e;
         }
     }
 
-    async getOrgAnchorPeers() {
+    async getOrgAnchorPeers(organizationId) {
         try {
-            let peer = await DbService.findPeersByOrgId(this._organization_id, common.PEER_TYPE_PEER);
+            let peer = await DbService.findPeersByOrgId(organizationId, common.PEER_TYPE_PEER);
             let anchorPeers = [];
             if (peer) {
                 peer.map(item => {
@@ -66,16 +63,29 @@ module.exports = class ChannelService {
         }
     }
 
-    createChannel() {
+    async buildOrganization(organizationId) {
+        let organization = await DbService.findOrganizationById(organizationId);
+        if (!organization) {
+            throw new Error('The organization does not exist: ' + organizationId);
+        }
+        return {
+            Name: organization.name,
+            MspId: organization.msp_id,
+            Type: common.PEER_TYPE_PEER,
+            AnchorPeers: await this.getOrgAnchorPeers(organizationId)
+        };
+    }
+
+    async createChannel(orgIds) {
+        let organizations = [];
+        for (let organizationId of orgIds) {
+            let org = await this.buildOrganization(organizationId);
+            organizations.push(org);
+        }
         let channelCreateTx = {
             Consortium: this._consortium_name,
             ConsortiumId: this._consortium_id,
-            Organizations: [{
-                Name: this._organization.name,
-                MspId: this._organization.msp_id,
-                Type: 0,
-                AnchorPeers: this._anchor_peers,
-            }]
+            Organizations: organizations
         };
         return CreateChannel.createChannel(channelCreateTx, this._channel_name, this._organization);
     }
@@ -84,15 +94,11 @@ module.exports = class ChannelService {
         return JoinChannel.joinChannel(this._channel_name, this._organization, peers);
     }
 
-    updateAppChannel(channelId) {
+    async updateAppChannel(channelId) {
+        let organizations = await this.buildOrganization(this._organization_id);
         return UpdateChannel.updateAppChannel(channelId, this._organization_id, {
             ConsortiumId: this._consortium_id,
-            Organizations: [{
-                Name: this._organization.name,
-                MspId: this._organization.msp_id,
-                Type: 0,
-                AnchorPeers: this._anchor_peers,
-            }]
+            Organizations: [organizations]
         });
     }
 
@@ -102,7 +108,7 @@ module.exports = class ChannelService {
             Organizations: [{
                 Name: this._organization.name,
                 MspId: this._organization.msp_id,
-                Type: 0
+                Type: common.PEER_TYPE_PEER
             }]
         });
     }
