@@ -118,12 +118,16 @@ module.exports = class RequestHandler extends Handler {
             throw new Error('no channel definition');
         }
         let organization = null;
+        let organizationIds = [];
         for(let property in this.organizations.peerOrgs){
             organization = this.organizations.peerOrgs[property];
+            if(organization){
+                organizationIds.push(organization._id);
+            }
         }
         let parameters = {
             name: this.parsedRequest.channel.name,
-            organizationId: organization._id
+            organizationIds: organizationIds
         };
         let createAction = ActionFactory.getChannelCreateAction(parameters);
         this.channel = await createAction.execute();
