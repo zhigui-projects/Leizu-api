@@ -91,8 +91,8 @@ module.exports = class RequestHelper {
                 password: kf.ssh_password
             });
         }
-        cluster.zookeeper = zks;
-        cluster.kafka = kfs;
+        cluster.zookeepers = zks;
+        cluster.kafkas = kfs;
         return cluster;
     }
 
