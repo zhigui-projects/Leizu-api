@@ -74,8 +74,18 @@ module.exports = class OrganizationService {
                     orgDto.tlsRootCert = result.enrollment.rootCertificate;
                     orgDto.mspPath = await CredentialHelper.storeOrgCredentials(orgDto);
                     // transfer certs file to configtxlator for update channel
+                    let connectionOptions = config.configtxlator.connectionOptions;
+                    if (process.env.CONFIGTXLATOR_HOST && process.env.CONFIGTXLATOR_USERNAME && process.env.CONFIGTXLATOR_PASSWORD) {
+                        connectionOptions = {
+                            mode: common.MODES.SSH,
+                            host: process.env.CONFIGTXLATOR_HOST,
+                            username: process.env.CONFIGTXLATOR_USERNAME,
+                            password: process.env.CONFIGTXLATOR_PASSWORD,
+                            port: process.env.CONFIGTXLATOR_PORT || 22
+                        };
+                    }
                     const configTxPath = `${config.configtxlator.dataPath}/${consortiumId}/${name}`;
-                    await DockerClient.getInstance(config.configtxlator.connectionOptions).transferDirectory({
+                    await DockerClient.getInstance(connectionOptions).transferDirectory({
                         localDir: orgDto.mspPath,
                         remoteDir: configTxPath
                     });

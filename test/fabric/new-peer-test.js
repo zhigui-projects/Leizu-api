@@ -4,12 +4,16 @@ const request = require('supertest');
 const app = require('../../src/index');
 const constants = require('./constants');
 const token = 'Bearer ' + constants.token;
+
 const peer = {
-    host: '39.106.149.201',
-    username: 'root',
-    password: '***REMOVED***',
-    port: 22,
-    organizationId: constants.organizationId
+    organizationId: constants.organizationId,
+    peers: [{
+        // name: 'peer',
+        host: '39.106.149.201',
+        port: 22,
+        username: 'root',
+        password: '***REMOVED***',
+    }]
 };
 
 request(app.callback())
