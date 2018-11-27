@@ -13,10 +13,10 @@ module.exports = class ChannelCreateAction extends Action {
 
     async execute(){
         let parameters = this.context.get(this.registry.CONTEXT.PARAMS);
-        let organizationId = parameters.organizationId;
+        let organizationId = parameters.organizationIds[0];
         let channelName = parameters.name;
         let channelService = await ChannelService.getInstance(organizationId, channelName);
-        let configEnvelope = await channelService.createChannel();
+        let configEnvelope = await channelService.createChannel(parameters.organizationIds);
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: parameters.name,
