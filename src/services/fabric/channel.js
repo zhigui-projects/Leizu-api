@@ -64,9 +64,9 @@ module.exports = class ChannelService {
     }
 
     async buildOrganization(organizationId) {
-        let organization = await DbService.findOrganizationById(this._organization_id);
+        let organization = await DbService.findOrganizationById(organizationId);
         if (!organization) {
-            throw new Error('The organization does not exist: ' + this._organization_id);
+            throw new Error('The organization does not exist: ' + organizationId);
         }
         return {
             Name: organization.name,
