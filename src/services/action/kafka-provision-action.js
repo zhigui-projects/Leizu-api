@@ -25,12 +25,12 @@ module.exports = class KafkaProvisionAction extends Action {
         let zooServersString = 'ZOO_SERVERS=' + zooServers.join(' ');
         for(let zk of zookeepers){
             sshClient.setOptions(zk);
-            let containerName = zk.name + zk.zooMyId;
-            let clusterString = zooServersString.replace(zk.host,containerName);
+            let hostName = zk.name;
+            let clusterString = zooServersString.replace(zk.host,hostName);
             let parameters = [
                 'create',
-                '--name', containerName,
-                '--hostname', containerName,
+                '--name', zk.name,
+                '--hostname', hostName,
                 '--restart','always',
                 '-e', 'ZOO_MY_ID=' + zk.zooMyId,
                 '-e', clusterString,
