@@ -98,7 +98,7 @@ module.exports = class RequestHelper {
 
     static isKafkaConsensus(configuration){
         if(configuration.consensus == common.CONSENSUS_KAFKE){
-            return false;
+            return true;
         }else{
             return false;
         }
