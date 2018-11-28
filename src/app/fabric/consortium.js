@@ -5,6 +5,9 @@ const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
 const DbService = require('../../services/db/dao');
 const query = require('../../services/fabric/query');
+const Validator = require('../../libraries/validator/validator');
+const {BadRequest} = require('../../libraries/error');
+const Schema = require('../../libraries/validator/request-schema/consortium-schema');
 const router = require('koa-router')({prefix: '/consortium'});
 
 router.get('/', async ctx => {
@@ -24,6 +27,9 @@ router.get('/', async ctx => {
 });
 
 router.get('/:id', async ctx => {
+    let res = Validator.JoiValidate('consortium', ctx.params.id, Schema.consortiumId);
+    if (!res.result) throw new BadRequest(res.errMsg);
+
     let id = ctx.params.id;
     let result = initConsortiumDetail(id);
     try {
@@ -59,6 +65,9 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
+    let res = Validator.JoiValidate('consortium', ctx.request.body, Schema.createConsortium);
+    if (!res.result) throw new BadRequest(res.errMsg);
+
     try {
         let consortium = await DbService.addConsortium(ctx.request.body);
         ctx.body = common.success(consortium, common.SUCCESS);

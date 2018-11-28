@@ -14,6 +14,8 @@ module.exports = class RequestHelper {
         if (configuration.isKafkaConsensus) {
             configuration.kafkaCluster = RequestHelper.getKafkaCluster(configuration);
         }
+        configuration.ordererImage = 'hyperledger/fabric-ca-orderer';
+        configuration.peerImage = 'hyperledger/fabric-ca-peer';
         return configuration;
     }
 
