@@ -17,6 +17,8 @@ apt-get install -y docker-ce
 
 apt-get install unzip
 
+# port list: 7050 7051 7052 7053 7054 2181 2888 3888 9092 9093
+
 # download images
 
 TAG=latest

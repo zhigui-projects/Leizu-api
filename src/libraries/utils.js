@@ -111,13 +111,14 @@ module.exports.generateOrdererContainerOptions = (options, mode) => {
     }
 };
 
-const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspId, port, workingDir, enableTls}) => {
+const generatePeerContainerOptionsForDocker = (options) => {
+    const {image, peerName, domainName, mspId, port, workingDir, enableTls} = options;
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
     return {
         _query: {name: `${peerName}.${domainName}`},
-        Image: 'hyperledger/fabric-ca-peer',
+        Image: image,
         Hostname: `${peerName}.${domainName}`,
         WorkingDir: workingDir,
         Cmd: ['/bin/bash', '-c', 'peer node start'],
@@ -151,7 +152,8 @@ const generatePeerContainerOptionsForDocker = ({peerName, domainName, mspId, por
     };
 };
 
-const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspId, port, workingDir, enableTls}) => {
+const generatePeerContainerOptionsForSSH = (options) => {
+    const {image, peerName, domainName, mspId, port, workingDir, enableTls} = options;
     return [
         'create',
         '--name', `${peerName}.${domainName}`,
@@ -179,18 +181,19 @@ const generatePeerContainerOptionsForSSH = ({peerName, domainName, mspId, port, 
         '-e', 'CORE_VM_DOCKER_ATTACHSTDOUT=true',
         '-e', 'GODEBUG=netdns=go',
 
-        'hyperledger/fabric-ca-peer',
+        image,
         '/bin/bash', '-c', 'peer node start',
     ];
 };
 
-const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspId, port, workingDir, enableTls}) => {
+const generateOrdererContainerOptionsForDocker = (options) => {
+    const {image, ordererName, domainName, mspId, port, workingDir, enableTls} = options;
     const portBindings = {};
     portBindings[`${port}/tcp`] = [{HostPort: port}];
 
     return {
         _query: {name: `${ordererName}.${domainName}`},
-        Image: 'hyperledger/fabric-ca-orderer',
+        Image: image,
         Hostname: `${ordererName}.${domainName}`,
         WorkingDir: workingDir,
         Cmd: ['/bin/bash', '-c', 'orderer'],
@@ -221,7 +224,8 @@ const generateOrdererContainerOptionsForDocker = ({ordererName, domainName, mspI
     };
 };
 
-const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspId, port, workingDir, enableTls}) => {
+const generateOrdererContainerOptionsForSSH = (options) => {
+    const {image, ordererName, domainName, mspId, port, workingDir, enableTls} = options;
     return [
         'create',
         '--name', `${ordererName}.${domainName}`,
@@ -246,7 +250,7 @@ const generateOrdererContainerOptionsForSSH = ({ordererName, domainName, mspId, 
         '-e', 'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
         '-e', 'GODEBUG=netdns=go',
 
-        'hyperledger/fabric-ca-orderer',
+        image,
         '/bin/bash', '-c', 'orderer',
     ];
 };
@@ -284,7 +288,7 @@ module.exports.makeHostRecord = (hostName, ipAddress) => {
     return hostName + common.SEPARATOR_COLON + ipAddress;
 };
 
-module.exports.getUrl = (location, enableTls)=> {
+module.exports.getUrl = (location, enableTls) => {
     if (enableTls) {
         return `${common.PROTOCOL.GRPCS}://${location}`;
     } else {
