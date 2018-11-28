@@ -14,7 +14,7 @@ const joinChannel = async function (channelName, org, peers) {
         let client = new Client();
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
         let orderer = await DbService.findOrdererByConsortium(org.consortium_id);
-        let newOrderer = await query.newOrderer(client, orderer, org);
+        let newOrderer = await query.newOrderer(client, orderer);
         let channel = client.newChannel(channelName);
         channel.addOrderer(newOrderer);
 
