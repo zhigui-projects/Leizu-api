@@ -31,8 +31,24 @@ router.get('/:id', async ctx => {
 
 router.post('/', async ctx => {
     try {
-        const peer = await PeerService.create(ctx.request.body);
-        ctx.body = common.success(peer, common.SUCCESS);
+        let {organizationId, peers} = ctx.request.body;
+        var eventPromises = [];
+        for (let item of peers) {
+            let txPromise = new Promise((resolve, reject) => {
+                try {
+                    item.organizationId = organizationId;
+                    resolve(PeerService.create(item));
+                } catch (e) {
+                    reject(e.message);
+                }
+            });
+            eventPromises.push(txPromise);
+        }
+        await Promise.all(eventPromises).then(result => {
+            ctx.body = common.success(result, common.SUCCESS);
+        }, err => {
+            throw err;
+        });
     } catch (err) {
         logger.error(err);
         ctx.status = 400;

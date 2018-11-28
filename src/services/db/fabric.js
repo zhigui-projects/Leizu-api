@@ -227,7 +227,17 @@ module.exports = class FabricService {
                 result.organizations.push(organization);
             }
             // transfer certs file to configtxlator for update channel
-            await DockerClient.getInstance(config.configtxlator.connectionOptions).transferDirectory({
+            let connectionOptions = config.configtxlator.connectionOptions;
+            if (process.env.CONFIGTXLATOR_HOST && process.env.CONFIGTXLATOR_USERNAME && process.env.CONFIGTXLATOR_PASSWORD) {
+                connectionOptions = {
+                    mode: common.MODES.SSH,
+                    host: process.env.CONFIGTXLATOR_HOST,
+                    username: process.env.CONFIGTXLATOR_USERNAME,
+                    password: process.env.CONFIGTXLATOR_PASSWORD,
+                    port: process.env.CONFIGTXLATOR_PORT || 22
+                };
+            }
+            await DockerClient.getInstance(connectionOptions).transferDirectory({
                 localDir: `${config.cryptoConfig.path}/${this.consortiumId}`,
                 remoteDir: `${config.configtxlator.dataPath}/${this.consortiumId}`
             });
