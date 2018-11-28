@@ -1,9 +1,13 @@
 'use strict';
 
+const {BadRequest} = require('../../libraries/error');
+
 const common = require('../../libraries/common');
 const OrdererService = require('../../services/fabric/orderer');
 const router = require('koa-router')({prefix: '/orderer'});
 const logger = require('log4js').getLogger();
+const Validator = require('../../libraries/validator/validator');
+const Schema = require('../../libraries/validator/request-schema/orderer-schema');
 
 router.get('/', async ctx => {
     try {
@@ -26,9 +30,10 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
+    let res = Validator.JoiValidate('create orderer', ctx.request.body, Schema.createSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
     try {
         //TODO: check whether image is provided or supported
-
         const order = await OrdererService.create(ctx.request.body);
         ctx.body = common.success(order, common.SUCCESS);
     } catch (err) {
