@@ -108,7 +108,8 @@ module.exports = class RequestHandler extends Handler {
                 peerOrganizationIds.push(organization._id);
             }
         }
-        node.organizationId = this.organizations.ordererOrg[this.parsedRequest.orderer.orgName]._id;
+        //node.organizationId = this.organizations.ordererOrg[this.parsedRequest.orderer.orgName]._id;
+        node.organizationId = peerOrganizationIds[0];
         node.peerOrganizationIds = peerOrganizationIds;
         node.kafkaBrokers = kafkaBrokers;
         node.ordererType = this.parsedRequest.consensus;
