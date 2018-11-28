@@ -19,7 +19,6 @@ exports.BadRequest = class BadRequest extends ExtendableError {
 
             includedKeys.push(error.field);
         });
-
         this.body = {
             errors: formattedErrors,
         };

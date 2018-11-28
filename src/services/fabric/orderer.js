@@ -151,7 +151,7 @@ module.exports = class OrdererService {
                 Type: common.PEER_TYPE_ORDER
             }]
         };
-        if (configtx.ordererType === common.CONSENSUS_KAFKE && (!configtx.kafka || configtx.kafka.length === 0)) {
+        if (configtx.ordererType === common.CONSENSUS_KAFKA && (!configtx.kafka || configtx.kafka.length === 0)) {
             throw new Error('kafka config not exists in options');
         } else {
             options.Orderer.Kafka.Brokers = configtx.kafka.map((item) => `${item.host}:${item.port}`);

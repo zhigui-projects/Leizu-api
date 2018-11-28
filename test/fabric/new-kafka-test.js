@@ -54,4 +54,5 @@ const ActionFactory = require("../../src/services/action/factory");
     };
     let action = ActionFactory.getKafkaProvisionAction(params);
     await action.execute();
+    console.log('finish the action');
 })();
