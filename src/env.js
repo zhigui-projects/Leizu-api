@@ -1,4 +1,16 @@
 module.exports = {
+    network: {
+      peer: {
+          availableImages:[
+              'hyperledger/fabric-ca-peer',
+          ]
+      },
+      orderer: {
+          availableImages:[
+              'hyperledger/fabric-ca-orderer',
+          ]
+      }
+    },
     tls: {
         orderer: true,
         peer: true,

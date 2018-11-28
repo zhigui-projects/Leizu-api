@@ -23,7 +23,7 @@ module.exports = class OrdererService {
     }
 
     static async create(params) {
-        const {organizationId, username, password, host, port, options} = params;
+        const {organizationId, image, username, password, host, port, options} = params;
 
         const org = await DbService.findOrganizationById(organizationId);
         const consortium = await DbService.getConsortiumById(org.consortium_id);
@@ -31,8 +31,9 @@ module.exports = class OrdererService {
         const ordererPort = common.PORT.ORDERER;
 
         let containerOptions = {
+            image,
             workingDir: `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`,
-            ordererName: ordererName,
+            ordererName,
             domainName: org.domain_name,
             mspId: org.msp_id,
             port: ordererPort,
@@ -162,7 +163,7 @@ module.exports = class OrdererService {
             configtx.peerOrgs.forEach((peerOrg) => {
                 options.Organizations.push({
                     Name: peerOrg.name,
-                    MspId: peerOrg.msp_id,
+                    MspId: peerOrg.mspId,
                     Type: common.PEER_TYPE_PEER,
                     AnchorPeers: [{Host: peerOrg.anchorPeer.host, Port: peerOrg.anchorPeer.port}]
                 });
