@@ -45,7 +45,7 @@ module.exports = class ConfigTxBuilder {
             OrdererType: this._options.Orderer.OrdererType,
             Addresses: this._options.Orderer.Addresses
         };
-        if (obj.OrdererType === common.CONSENSUS_KAFKE) {
+        if (obj.OrdererType === common.CONSENSUS_KAFKA) {
             if (this._options.Orderer.Kafka) {
                 obj.Kafka = this._options.Orderer.Kafka;
             } else {
