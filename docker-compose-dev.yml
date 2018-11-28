@@ -2,6 +2,7 @@ version: "3"
 services:
   dashboard:
     build: .
+    image: dashboard
     container_name: dashboard-api
     env_file: .env
     links:
@@ -23,6 +24,8 @@ services:
     container_name: dashboard-configtxlator
     ports:
     - "7059:7059"
+    volumes:
+    - /tmp/configtxlator/data:/work/data
 
 volumes:
   dbdata: {}
