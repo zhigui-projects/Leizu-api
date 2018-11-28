@@ -58,7 +58,7 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
-    let res = Validator.JoiValidate('create orderer', ctx.request.body, Schema.newOrganizationSchema);
+    let res = Validator.JoiValidate('create organization', ctx.request.body, Schema.newOrganizationSchema);
     if (!res.result) throw new BadRequest(res.errMsg);
     try {
         let organization = await OrganizationService.create(ctx.request.body);
@@ -71,7 +71,6 @@ router.post('/', async ctx => {
             date: organization.date
         }, common.SUCCESS);
     } catch (err) {
-        console.log('error: ', err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }

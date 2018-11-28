@@ -7,6 +7,10 @@ const router = require('koa-router')({prefix: '/peer'});
 const SSHClient = require('../../services/ssh/client');
 const config = require('../../env');
 
+const {BadRequest} = require('../../libraries/error');
+const Validator = require('../../libraries/validator/validator');
+const Schema = require('../../libraries/validator/request-schema/peer-schema');
+
 router.get('/', async ctx => {
     try {
         const peerDetails = await PeerService.list(ctx.query['organizationId']);
@@ -30,6 +34,8 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
+    let res = Validator.JoiValidate('create peer', ctx.request.body, Schema.newPeerSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
     try {
         let {organizationId, peers} = ctx.request.body;
         //TODO: check whether image is provided or supported
