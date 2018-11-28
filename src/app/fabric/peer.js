@@ -32,6 +32,8 @@ router.get('/:id', async ctx => {
 router.post('/', async ctx => {
     try {
         let {organizationId, peers} = ctx.request.body;
+        //TODO: check whether image is provided or supported
+
         var eventPromises = [];
         for (let item of peers) {
             let txPromise = new Promise((resolve, reject) => {
