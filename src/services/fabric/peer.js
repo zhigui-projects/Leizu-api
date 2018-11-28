@@ -66,7 +66,7 @@ module.exports = class PeerService {
     }
 
     static async create(params) {
-        const {organizationId, username, password, host, port} = params;
+        const {organizationId, image, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `peer-${host.replace(/\./g, '-')}`;
         let peerPort = common.PORT.PEER;
@@ -75,12 +75,13 @@ module.exports = class PeerService {
         }
 
         let containerOptions = {
+            image,
             workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`,
-            peerName: peerName,
+            peerName,
             domainName: org.domain_name,
             mspId: org.msp_id,
             port: peerPort,
-            enableTls: config.tls.peer,
+            enableTls: config.network.peer.tls,
         };
 
         let connectionOptions = null;

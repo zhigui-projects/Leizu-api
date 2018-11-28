@@ -39,7 +39,7 @@ async function updateAppChannel(channelId, orgId, org) {
             for (let peerConfig of peers) {
                 if (peerConfig.type === common.PEER_TYPE_ORDER) {
                     let orderer = await query.newOrderer(client, {
-                        url: utils.getUrl(peerConfig.location, config.tls.orderer),
+                        url: utils.getUrl(peerConfig.location, config.network.orderer.tls),
                         'server-hostname': peerConfig.name,
                         orderer: organization
                     });
