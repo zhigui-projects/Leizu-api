@@ -5,6 +5,10 @@ const DbService = require('../../services/db/dao');
 const OrganizationService = require('../../services/fabric/organization');
 const router = require('koa-router')({prefix: '/organization'});
 
+const {BadRequest} = require('../../libraries/error');
+const Validator = require('../../libraries/validator/validator');
+const Schema = require('../../libraries/validator/request-schema/organization-shcema');
+
 router.get('/', async ctx => {
     let channelId = ctx.query['channelId'];
     let orgIds = [];
@@ -54,6 +58,8 @@ router.get('/:id', async ctx => {
 });
 
 router.post('/', async ctx => {
+    let res = Validator.JoiValidate('create organization', ctx.request.body, Schema.newOrganizationSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
     try {
         let organization = await OrganizationService.create(ctx.request.body);
         ctx.body = common.success({
@@ -65,7 +71,6 @@ router.post('/', async ctx => {
             date: organization.date
         }, common.SUCCESS);
     } catch (err) {
-        console.log('error: ', err);
         ctx.status = 400;
         ctx.body = common.error({}, err.message);
     }
