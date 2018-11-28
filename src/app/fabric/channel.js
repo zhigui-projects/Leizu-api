@@ -5,6 +5,9 @@ const logger = require('../../libraries/log4js');
 const ChannelService = require('../../services/fabric/channel');
 const DbService = require('../../services/db/dao');
 const FabricService = require('../../services/db/fabric');
+const Validator = require('../../libraries/validator/validator');
+const {BadRequest} = require('../../libraries/error');
+const Schema = require('../../libraries/validator/request-schema/channel-schema');
 const router = require('koa-router')({prefix: '/channel'});
 
 router.get('/', async ctx => {
@@ -34,6 +37,9 @@ router.get('/:id', async ctx => {
  * fn: add the new channel into fabric network
  */
 router.post('/', async ctx => {
+    let res = Validator.JoiValidate('channel', ctx.request.body, Schema.createChannel);
+    if (!res.result) throw new BadRequest(res.errMsg);
+
     try {
         let {organizationIds, name} = ctx.request.body;
         let channelService = await ChannelService.getInstance(organizationIds[0], name);
@@ -58,6 +64,9 @@ router.post('/', async ctx => {
 
 // join peers to channel
 router.post('/join', async ctx => {
+    let res = Validator.JoiValidate('channel', ctx.request.body, Schema.joinChannel);
+    if (!res.result) throw new BadRequest(res.errMsg);
+
     let {organizationId, channelId, peers} = ctx.request.body;
     try {
         let channelInfo = await DbService.getChannelById(channelId);
@@ -83,6 +92,9 @@ router.post('/join', async ctx => {
 // channelType: 0-application channel, 1-system channel
 // channelType default value 0
 router.post('/update', async ctx => {
+    let res = Validator.JoiValidate('channel', ctx.request.body, Schema.updateChannel);
+    if (!res.result) throw new BadRequest(res.errMsg);
+
     let {organizationId, channelId, channelType} = ctx.request.body;
     try {
         if (channelType && channelType === 1) {
