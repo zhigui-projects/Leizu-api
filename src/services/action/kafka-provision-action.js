@@ -51,7 +51,6 @@ module.exports = class KafkaProvisionAction extends Action {
             sshClient.setOptions(kafka);
             let hostname = kafka.name;
             let parameters = [
-                'create',
                 '--name', kafka.name,
                 '--hostname',hostname,
                 '--restart','always',
@@ -71,6 +70,8 @@ module.exports = class KafkaProvisionAction extends Action {
                 '-p', '9092:9092',
                 'hyperledger/fabric-kafka'
             ];
+            hostnames.unshift('create');
+            parameters = hostnames.concat(parameters);
             await sshClient.createContainer(parameters);
             brokerId = brokerId + 1;
             brokerList.push({
