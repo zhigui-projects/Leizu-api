@@ -68,28 +68,50 @@ module.exports = {
             'ssh_password': '***REMOVED***'
         }]
     },
-    'peerOrgs': [{
-        'name': 'peer-org1',
-        'ca': {
-            'name': 'ca-2',
-            'ip': '39.104.170.33',
-            'ssh_username': 'root',
-            'ssh_password': '***REMOVED***'
+    'peerOrgs': [
+        {
+            'name': 'peer-org1',
+            'ca': {
+                'name': 'ca-2',
+                'ip': '39.104.170.33',
+                'ssh_username': 'root',
+                'ssh_password': '***REMOVED***'
+            },
+            'peers': [{
+                'name': 'peer0',
+                'ip': '39.104.132.206',
+                'ssh_username': 'root',
+                'ssh_password': '***REMOVED***'
+            }, {
+                'name': 'peer1',
+                'ip': '39.104.170.33',
+                'ssh_username': 'root',
+                'ssh_password': '***REMOVED***'
+            }]
         },
-        'peers': [{
-            'name': 'peer0',
-            'ip': '39.104.132.206',
-            'ssh_username': 'root',
-            'ssh_password': '***REMOVED***'
-        }, {
-            'name': 'peer1',
-            'ip': '39.104.170.33',
-            'ssh_username': 'root',
-            'ssh_password': '***REMOVED***'
-        }]
-    }],
+        {
+            'name': 'peer-org2',
+            'ca': {
+                'name': 'ca-3',
+                'ip': '39.104.134.22',
+                'ssh_username': 'root',
+                'ssh_password': '***REMOVED***'
+            },
+            'peers': [{
+                'name': 'peer0',
+                'ip': '39.104.134.22',
+                'ssh_username': 'root',
+                'ssh_password': '***REMOVED***'
+            }, {
+                'name': 'peer1',
+                'ip': '39.104.122.83',
+                'ssh_username': 'root',
+                'ssh_password': '***REMOVED***'
+            }]
+        }
+    ],
     'channel': {
         'name': 'mychannel',
-        'orgs': ['peer-org1']
+        'orgs': ['peer-org1','peer-org2']
     }
 };

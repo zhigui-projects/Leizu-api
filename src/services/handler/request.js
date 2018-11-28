@@ -2,7 +2,6 @@
 
 const logger = require('../../libraries/log4js');
 logger.category = 'RequestHandler';
-const common = require('../../libraries/common');
 const Handler = require('./handler');
 const RequestDaoService = require('../db/request');
 const ActionFactory = require('../action/factory');
