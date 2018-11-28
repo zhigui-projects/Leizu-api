@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZDE2Njc1ZDk3MjU5OTdjMTBlMGQwNyIsImlhdCI6MTU0MzE5Njc3NiwiZXhwIjoxNTQzMjMyNzc2fQ.ASQjt-vafCxV7Yey7m84CXQMvfmH2bXejLZWWnobKa8',
-    consortiumId: '5bfb7410eac1947a95b7e5d1',
-    organizationId: '5bfb7436f4793e7ab3118d0d',
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZDE2Njc1ZDk3MjU5OTdjMTBlMGQwNyIsImlhdCI6MTU0MzM3NzIyMCwiZXhwIjoxNTQzNDEzMjIwfQ.tbozTQ_-982erqW0O1AHdWdd9tPTteRio7YALBYNCNY',
+    consortiumId: '5bfce3758133d98ba3fabb2d',
+    organizationId: '5bfce396a025038bc1bf4346',
     channelId: '5bfb746dfa19647b08af94c7',
     help: 'These constants are used in the test cases'
 };

@@ -6,6 +6,8 @@ const constants = require('./constants');
 const token = 'Bearer ' + constants.token;
 const options = {
     peerOrgs: [{
+        name: 'org3',
+        mspId: 'Org3MSP',
         anchorPeer: {
             host: 'peer-39-106-149-201.org3.example.com',
             port: 7051
@@ -20,6 +22,7 @@ const options = {
     ]
 };
 const orderer = {
+    image: 'hyperledger/fabric-ca-orderer',
     host: '39.106.149.201',
     port: 22,
     username: 'root',

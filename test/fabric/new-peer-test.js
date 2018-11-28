@@ -8,7 +8,7 @@ const token = 'Bearer ' + constants.token;
 const peer = {
     organizationId: constants.organizationId,
     peers: [{
-        // name: 'peer',
+        image: 'hyperledger/fabric-ca-peer',
         host: '39.106.149.201',
         port: 22,
         username: 'root',

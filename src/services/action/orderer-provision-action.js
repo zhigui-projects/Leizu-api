@@ -16,7 +16,7 @@ module.exports = class OrdererProvisionAction extends Action {
             let organization = await DbService.findOrganizationById(orgId);
             if(organization){
                 orgDto.name = organization.name;
-                orgDto.msp_id = organization.msp_id;
+                orgDto.mspId = organization.msp_id;
                 let peers = await DbService.findPeersByOrgId(orgId, common.PEER_TYPE_PEER);
                 if (peers) {
                     let item = peers[0];

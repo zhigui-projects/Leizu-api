@@ -234,7 +234,7 @@ module.exports.newOrderer = async (client, orderer, org) => {
         'ssl-target-name-override': `${orderer.name}.${org.domain_name}`,
     };
     client.setTlsClientCertAndKey(clientCert, clientKey);
-    return client.newOrderer(utils.getUrl(orderer.location, env.tls.orderer), options);
+    return client.newOrderer(utils.getUrl(orderer.location, env.network.orderer.tls), options);
 };
 
 module.exports.newPeer = async (client, peer, org) => {
@@ -247,5 +247,5 @@ module.exports.newPeer = async (client, peer, org) => {
         clientKey: clientKey,
         'ssl-target-name-override': `${peer.name}.${org.domain_name}`,
     };
-    return client.newPeer(utils.getUrl(peer.location, env.tls.peer), options);
+    return client.newPeer(utils.getUrl(peer.location, env.network.peer.tls), options);
 };
