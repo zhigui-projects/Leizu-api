@@ -6,6 +6,7 @@ module.exports = {
     'version': '1.3',
     'db': 'leveldb',
     'consensus': 'kafka',
+//    'consensus': 'solo',
     'kafka': [
         {
             'name': 'kafka1',
@@ -15,7 +16,7 @@ module.exports = {
         },
         {
             'name': 'kafka2',
-            'ip': '9.104.122.83',
+            'ip': '39.104.122.83',
             'ssh_username': 'root',
             'ssh_password': 'FaVm&zu2mxFtkGwK'
         },
@@ -41,7 +42,7 @@ module.exports = {
         },
         {
             'name': 'zookeeper2',
-            'ip': '9.104.122.83',
+            'ip': '39.104.122.83',
             'ssh_username': 'root',
             'ssh_password': 'FaVm&zu2mxFtkGwK'
         },
