@@ -1,5 +1,6 @@
 'use strict';
 let Joi = require('joi');
+
 const userNameSchema = Joi.string().min(4).max(50).required();
 const passwordSchema = Joi.string().min(4).max(20).required();
 

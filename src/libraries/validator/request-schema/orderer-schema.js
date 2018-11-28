@@ -8,7 +8,7 @@ const hostSchema = {
     port: Joi.number().port().required()
 };
 
-module.exports.createSchema = Joi.object().keys({
+module.exports.newOrdererSchema = Joi.object().keys({
     image: Joi.string().required(),
     host: Joi.string().ip().required(),
     port: Joi.number().port().required(),
