@@ -26,13 +26,13 @@ module.exports.requestSchema = Joi.object().options({}).keys({
     version: Joi.string().valid(Common.VERSION_LIST).required(),
     db: Joi.string().valid(Common.DB_TYPE_LIST).required(),
     consensus: Joi.string().valid(Common.CONSENSUS_LIST).required(),
-    kafka: Joi.array().items(Joi.object(serverchema)).when('consensus', consensusCondition),
-    zookeeper: Joi.array().items(Joi.object(serverchema)).when('consensus', consensusCondition),
+    kafka: Joi.array().items(Joi.object().keys(serverchema)).when('consensus', consensusCondition),
+    zookeeper: Joi.array().items(Joi.object().keys(serverchema)).when('consensus', consensusCondition),
     ordererOrg: Joi.object().keys(Object.assign({
-        orderer: Joi.array().min(1).items(Joi.object(serverchema)).required()
+        orderer: Joi.array().min(1).items(Joi.object().keys(serverchema)).required()
     }, orgSchema)).required(),
     peerOrgs: Joi.array().min(1).items(Object.assign({
-        peers: Joi.array().min(1).items(Joi.object(serverchema)).required()
+        peers: Joi.array().min(1).items(Joi.object().keys(serverchema)).required()
     }, orgSchema)).required(),
     channel: Joi.object().keys({
         name: Joi.string().required(),

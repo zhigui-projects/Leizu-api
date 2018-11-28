@@ -49,6 +49,9 @@ router.post('/logout', async (ctx) => {
 });
 
 router.post('/password/reset', async (ctx) => {
+    let res = Validator.JoiValidate('password reset', ctx.request.body, Schema.resetSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
+
     const {username, password, newPassword} = ctx.request.body;
     const {user, code} = await getUser(username, password);
     if (code === ErrorCode.USER_CHECK_USERNAME) {
