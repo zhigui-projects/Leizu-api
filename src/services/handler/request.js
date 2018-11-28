@@ -87,6 +87,7 @@ module.exports = class RequestHandler extends Handler {
             for(let node of item.nodes){
                 let organization = this.organizations.peerOrgs[node.orgName];
                 node.organizationId = organization._id;
+                node.image = this.parsedRequest.peerImage;
                 let provisionAction = ActionFactory.getPeerProvisionAction(node);
                 this.peers[node.name] = await provisionAction.execute();
             }
@@ -113,6 +114,7 @@ module.exports = class RequestHandler extends Handler {
         node.peerOrganizationIds = peerOrganizationIds;
         node.kafkaBrokers = kafkaBrokers;
         node.ordererType = this.parsedRequest.consensus;
+        node.image = this.parsedRequest.ordererImage;
         let provisionAction = ActionFactory.getOrdererProvisionAction(node);
         this.orderer = await provisionAction.execute();
     }
