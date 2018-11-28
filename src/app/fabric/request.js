@@ -4,8 +4,13 @@ const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
 const RequestHandler = require('../../services/handler/request');
 const router = require('koa-router')({prefix: '/request'});
+const {BadRequest} = require('../../libraries/error');
+const Validator = require('../../libraries/validator/validator');
+const Schema = require('../../libraries/validator/request-schema/request-schema');
 
 router.post('/', async ctx => {
+    let res = Validator.JoiValidate('request', ctx.request.body, Schema.requestSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
     try {
         let requestHandler = new RequestHandler(ctx);
         let request = await requestHandler.handle();
