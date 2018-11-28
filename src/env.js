@@ -1,19 +1,17 @@
 module.exports = {
     network: {
       peer: {
+          tls: true,
           availableImages:[
               'hyperledger/fabric-ca-peer',
           ]
       },
       orderer: {
+          tls: true,
           availableImages:[
               'hyperledger/fabric-ca-orderer',
           ]
       }
-    },
-    tls: {
-        orderer: true,
-        peer: true,
     },
     koaLogger: true,
     jwt: {
