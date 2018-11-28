@@ -6,18 +6,20 @@ const common = require('../../libraries/common');
 
 module.exports = class RequestHelper {
 
-    static decomposeRequest(ctx){
-        let configuration = utils.extend({},ctx.request.body);
+    static decomposeRequest(ctx) {
+        let configuration = utils.extend({}, ctx.request.body);
         configuration.orderer = RequestHelper.getOrderer(configuration);
         configuration.peers = RequestHelper.getPeers(configuration);
-        configuration.kafkaCluster = RequestHelper.getKafkaCluster(configuration);
         configuration.isKafkaConsensus = RequestHelper.isKafkaConsensus(configuration);
+        if (configuration.isKafkaConsensus) {
+            configuration.kafkaCluster = RequestHelper.getKafkaCluster(configuration);
+        }
         return configuration;
     }
 
-    static getOrderer(configuration){
+    static getOrderer(configuration) {
         let orderer = {};
-        if(configuration.ordererOrg){
+        if (configuration.ordererOrg) {
             let ordererOrg = configuration.ordererOrg;
             orderer.orgName = ordererOrg.name;
             orderer.caName = ordererOrg.ca.name;
@@ -28,8 +30,8 @@ module.exports = class RequestHelper {
                 password: ordererOrg.ca.ssh_password
             };
             orderer.nodes = [];
-            if(ordererOrg.orderer){
-                for(let item of ordererOrg.orderer){
+            if (ordererOrg.orderer) {
+                for (let item of ordererOrg.orderer) {
                     orderer.nodes.push({
                         name: item.name,
                         host: item.ip,
@@ -42,10 +44,10 @@ module.exports = class RequestHelper {
         return orderer;
     }
 
-    static getPeers(configuration){
+    static getPeers(configuration) {
         let peers = [];
-        if(configuration.peerOrgs){
-            for(let item of configuration.peerOrgs){
+        if (configuration.peerOrgs) {
+            for (let item of configuration.peerOrgs) {
                 let peer = {};
                 peer.orgName = item.name;
                 peer.caName = item.ca.name;
@@ -56,7 +58,7 @@ module.exports = class RequestHelper {
                     password: item.ca.ssh_password
                 };
                 peer.nodes = [];
-                for(let element of item.peers){
+                for (let element of item.peers) {
                     peer.nodes.push({
                         orgName: item.name,
                         name: element.name,
@@ -71,10 +73,10 @@ module.exports = class RequestHelper {
         return peers;
     }
 
-    static getKafkaCluster(configuration){
+    static getKafkaCluster(configuration) {
         let cluster = {};
         let zks = [];
-        for(let zk of configuration.zookeeper){
+        for (let zk of configuration.zookeeper) {
             zks.push({
                 name: zk.name,
                 host: zk.ip,
@@ -83,7 +85,7 @@ module.exports = class RequestHelper {
             });
         }
         let kfs = [];
-        for(let kf of configuration.kafka){
+        for (let kf of configuration.kafka) {
             kfs.push({
                 name: kf.name,
                 host: kf.ip,
@@ -96,10 +98,10 @@ module.exports = class RequestHelper {
         return cluster;
     }
 
-    static isKafkaConsensus(configuration){
-        if(configuration.consensus == common.CONSENSUS_KAFKA){
+    static isKafkaConsensus(configuration) {
+        if (configuration.consensus == common.CONSENSUS_KAFKA) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
