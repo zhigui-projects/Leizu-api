@@ -38,11 +38,7 @@ async function updateAppChannel(channelId, orgId, org) {
             client.setAdminSigningIdentity(organization.admin_key, organization.admin_cert, organization.msp_id);
             for (let peerConfig of peers) {
                 if (peerConfig.type === common.PEER_TYPE_ORDER) {
-                    let orderer = await query.newOrderer(client, {
-                        url: utils.getUrl(peerConfig.location, config.network.orderer.tls),
-                        'server-hostname': peerConfig.name,
-                        orderer: organization
-                    });
+                    let orderer = await query.newOrderer(client, peerConfig);
                     channel = client.newChannel(channelName);
                     channel.addOrderer(orderer);
                     envelopeConfig = await channel.getChannelConfigFromOrderer();
@@ -145,7 +141,7 @@ async function updateSysChannel(options) {
         const orderer = await DbService.findOrdererByConsortium(options.ConsortiumId);
         const org = await DbService.findOrganizationById(orderer.org_id);
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
-        let newOrderer = await query.newOrderer(client, orderer, org);
+        let newOrderer = await query.newOrderer(client, orderer);
         let consortium = await DbService.getConsortiumById(options.ConsortiumId);
         let networkConfig = JSON.parse(consortium.network_config);
         let channelName = networkConfig.sysChannel;
