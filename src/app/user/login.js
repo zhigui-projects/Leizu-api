@@ -9,12 +9,12 @@ const {BadRequest} = require('../../libraries/error');
 const stringUtil = require('../../libraries/string-util');
 const router = require('koa-router')({prefix: '/user'});
 const ErrorCode = require('../../libraries/error-code');
+const Validator = require('../../libraries/validator/validator');
+const Schema = require('../../libraries/validator/request-schema/user-schema');
 
 router.post('/login', async (ctx) => {
-    ctx.checkBody('username').notEmpty('Name field is required').len(4, 50, 'Name length must be between 4 and 50 characters');
-    ctx.checkBody('password').notEmpty('Password field is required').len(4, 20, 'Password length must be between 4 and 20 characters');
-
-    if (ctx.errors) throw new BadRequest(ctx.errors);
+    let res = Validator.JoiValidate('login', ctx.request.body, Schema.loginSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
 
     const {username, password} = ctx.request.body;
     const {user, code} = await getUser(username, password);
