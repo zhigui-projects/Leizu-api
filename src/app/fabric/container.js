@@ -2,10 +2,16 @@
 
 const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
+const Validator = require('../../libraries/validator/validator');
+const {BadRequest} = require('../../libraries/error');
+const Schema = require('../../libraries/validator/request-schema/consortium-schema');
 const DbService = require('../../services/db/dao');
 const router = require('koa-router')({prefix: '/container'});
 
 router.get("/", async ctx => {
+    let res = Validator.JoiValidate('container', ctx.query['consortiumId'], Schema.consortiumId);
+    if (!res.result) throw new BadRequest(res.errMsg);
+
     let consortiumId = ctx.query['consortiumId'];
     try {
         let peers = await DbService.findPeers();
@@ -21,7 +27,7 @@ router.get("/", async ctx => {
         logger.error(err);
         ctx.status = 400;
         ctx.body = common.error([], err.message);
-    }    
+    }
 });
 
 module.exports = router;
