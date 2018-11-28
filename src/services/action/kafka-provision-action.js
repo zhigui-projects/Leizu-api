@@ -42,6 +42,11 @@ module.exports = class KafkaProvisionAction extends Action {
 
         let brokerId = 0;
         let brokerList = [];
+        let hostnames = [];
+        for(let kafka of params.kafkas){
+            hostnames.push('--add-host');
+            hostnames.push(kafka.name + ':' + kafka.host );
+        }
         for(let kafka of params.kafkas){
             sshClient.setOptions(kafka);
             let hostname = kafka.name;
@@ -50,6 +55,7 @@ module.exports = class KafkaProvisionAction extends Action {
                 '--name', kafka.name,
                 '--hostname',hostname,
                 '--restart','always',
+                hostnames.join(' '),
                 '-e', 'KAFKA_MESSAGE_MAX_BYTES=103809024',
                 '-e', 'KAFKA_REPLICA_FETCH_MAX_BYTES=103809024',
                 '-e', 'KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false',
