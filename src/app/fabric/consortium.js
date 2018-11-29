@@ -27,7 +27,7 @@ router.get('/', async ctx => {
 });
 
 router.get('/:id', async ctx => {
-    let res = Validator.JoiValidate('consortium', ctx.params.id, Schema.consortiumId);
+    let res = Validator.JoiValidate('consortium', ctx.params, Schema.getConsortium);
     if (!res.result) throw new BadRequest(res.errMsg);
 
     let id = ctx.params.id;
