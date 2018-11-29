@@ -1,12 +1,11 @@
 'use strict';
 
 const Joi = require('joi');
-
-const objectId = Joi.string().length(24).required();
+const {objectId, string} = require('./schema-utils');
 
 module.exports.createChannel = Joi.object().keys({
     organizationIds: Joi.array().min(1).items(objectId).required(),
-    name: Joi.string().required(),
+    name: string,
 });
 
 module.exports.joinChannel = Joi.object().keys({

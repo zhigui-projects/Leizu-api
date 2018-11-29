@@ -1,18 +1,19 @@
 'use strict';
 
 const Joi = require('joi');
+const {string, ip} = require('./schema-utils');
 const Common = require('../../common');
 
-const serverchema = {
-    name: Joi.string().required(),
-    ip: Joi.string().ip().required(),
-    ssh_username: Joi.string().required(),
-    ssh_password: Joi.string().required()
+const serverSchema = {
+    name: string,
+    ip: ip,
+    ssh_username: string,
+    ssh_password: string
 };
 
 const orgSchema = {
-    name: Joi.string().required(),
-    ca: Joi.object().keys(serverchema).required()
+    name: string,
+    ca: Joi.object().keys(serverSchema).required()
 };
 
 const consensusCondition = {
@@ -26,16 +27,16 @@ module.exports.requestSchema = Joi.object().options({}).keys({
     version: Joi.string().valid(Common.VERSION_LIST).required(),
     db: Joi.string().valid(Common.DB_TYPE_LIST).required(),
     consensus: Joi.string().valid(Common.CONSENSUS_LIST).required(),
-    kafka: Joi.array().items(Joi.object().keys(serverchema)).when('consensus', consensusCondition),
-    zookeeper: Joi.array().items(Joi.object().keys(serverchema)).when('consensus', consensusCondition),
+    kafka: Joi.array().items(Joi.object().keys(serverSchema)).when('consensus', consensusCondition),
+    zookeeper: Joi.array().items(Joi.object().keys(serverSchema)).when('consensus', consensusCondition),
     ordererOrg: Joi.object().keys(Object.assign({
-        orderer: Joi.array().min(1).items(Joi.object().keys(serverchema)).required()
+        orderer: Joi.array().min(1).items(Joi.object().keys(serverSchema)).required()
     }, orgSchema)).required(),
     peerOrgs: Joi.array().min(1).items(Object.assign({
-        peers: Joi.array().min(1).items(Joi.object().keys(serverchema)).required()
+        peers: Joi.array().min(1).items(Joi.object().keys(serverSchema)).required()
     }, orgSchema)).required(),
     channel: Joi.object().keys({
-        name: Joi.string().required(),
-        orgs: Joi.array().min(1).unique().items(Joi.string()).required()
+        name: string,
+        orgs: Joi.array().min(1).unique().items(string).required()
     }).required()
 });
