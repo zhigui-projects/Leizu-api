@@ -15,7 +15,7 @@ module.exports.createChannel = async function (channelCreateTx, channelName, org
         const client = new Client();
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
         const orderer = await DbService.findOrdererByConsortium(org.consortium_id);
-        const newOrderer = await query.newOrderer(client, orderer, org);
+        const newOrderer = await query.newOrderer(client, orderer);
         const channel = client.newChannel(channelName);
         channel.addOrderer(newOrderer);
 
