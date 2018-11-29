@@ -9,7 +9,7 @@ const config = require('../../env');
 
 const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
-const Schema = require('../../libraries/validator/request-schema/peer-schema');
+const Schema = require('../../libraries/validator/schema/peer-schema');
 
 router.get('/', async ctx => {
     try {

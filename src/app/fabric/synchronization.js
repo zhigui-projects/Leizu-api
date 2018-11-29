@@ -7,7 +7,7 @@ const syncService = require('../../services/fabric/synchronize');
 const common = require('../../libraries/common');
 const Validator = require('../../libraries/validator/validator');
 const {BadRequest} = require('../../libraries/error');
-const Schema = require('../../libraries/validator/request-schema/consortium-schema');
+const Schema = require('../../libraries/validator/schema/consortium-schema');
 
 router.post('/fabric/sync/:id', async ctx => {
     let res = Validator.JoiValidate('synchronization', ctx.params.id, Schema.consortiumId);
