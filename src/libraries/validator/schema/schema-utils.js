@@ -6,7 +6,7 @@ const objectId = Joi.string().length(24).required();
 const string = Joi.string().required();
 const hostname = Joi.string().hostname().required();
 const port = Joi.number().port().required();
-const ip = Joi.number().ip().required();
+const ip = Joi.string().ip().required();
 
 module.exports = {
     objectId,

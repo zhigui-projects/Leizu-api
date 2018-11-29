@@ -7,7 +7,7 @@ const config = require('../../../env');
 module.exports.newPeerSchema = Joi.object().keys({
     organizationId: objectId,
     peers: Joi.array().min(1).items(Joi.object().keys({
-        image: Joi.string.valid(config.network.peer.availableImages),
+        image: Joi.string().valid(config.network.peer.availableImages),
         host: ip,
         port: port,
         username: string,
