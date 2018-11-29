@@ -223,7 +223,8 @@ module.exports.getTlsCACerts = async (client) => {
     client.setTlsClientCertAndKey(cert, key);
 };
 
-module.exports.newOrderer = async (client, orderer, org) => {
+module.exports.newOrderer = async (client, orderer) => {
+    let org = await DbService.findOrganizationById(orderer.org_id);
     const pem = org.root_cert;
     const clientCert = orderer.tls_cert;
     const clientKey = orderer.tls_key;
