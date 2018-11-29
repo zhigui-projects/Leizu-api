@@ -7,7 +7,7 @@ const logger = require('log4js').getLogger();
 
 const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
-const Schema = require('../../libraries/validator/request-schema/orderer-schema');
+const Schema = require('../../libraries/validator/schema/orderer-schema');
 
 router.get('/', async ctx => {
     try {
