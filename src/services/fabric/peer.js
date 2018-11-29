@@ -75,7 +75,7 @@ module.exports = class PeerService {
         }
 
         let containerOptions = {
-            image,
+            image: image || config.network.peer.availableImages[0],
             workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`,
             peerName,
             domainName: org.domain_name,
