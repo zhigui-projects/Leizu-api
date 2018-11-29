@@ -1,13 +1,14 @@
 'use strict';
 
 const Joi = require('joi');
+const {objectId, string, hostname, ip, port} = require('./schema-utils');
 
 module.exports.newOrganizationSchema = Joi.object().keys({
-    name: Joi.string().required(),
-    domainName: Joi.string().hostname().required(),
-    host: Joi.string().ip().required(),
-    port: Joi.number().port().required(),
-    username: Joi.string().required(),
-    password: Joi.string().required(),
-    consortiumId: Joi.string().required()
+    name: string,
+    domainName: hostname,
+    host: ip,
+    port: port,
+    username: string,
+    password: string,
+    consortiumId: objectId
 });

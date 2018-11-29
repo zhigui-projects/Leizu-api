@@ -1,14 +1,15 @@
 'use strict';
 
 const Joi = require('joi');
+const {objectId, string, ip, port} = require('./schema-utils');
 
 module.exports.newPeerSchema = Joi.object().keys({
-    organizationId: Joi.string().required(),
+    organizationId: objectId,
     peers: Joi.array().min(1).items(Joi.object().keys({
-        image: Joi.string().required(),
-        host: Joi.string().ip().required(),
-        port: Joi.number().port().required(),
-        username: Joi.string().required(),
-        password: Joi.string().required()
+        image: string,
+        host: ip,
+        port: port,
+        username: string,
+        password: string
     })).required()
 });

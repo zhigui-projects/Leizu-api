@@ -1,24 +1,25 @@
 'use strict';
 
 const Joi = require('joi');
+const {objectId, string, hostname, port, ip} = require('./schema-utils');
 const Common = require('../../common');
 
 const hostSchema = {
-    host: Joi.string().hostname().required(),
-    port: Joi.number().port().required()
+    host: hostname,
+    port: port
 };
 
 module.exports.newOrdererSchema = Joi.object().keys({
-    image: Joi.string().required(),
-    host: Joi.string().ip().required(),
-    port: Joi.number().port().required(),
-    username: Joi.string().required(),
-    password: Joi.string().required(),
-    organizationId: Joi.string().required(),
+    image: string,
+    host: ip,
+    port: port,
+    username: string,
+    password: string,
+    organizationId: objectId,
     options: Joi.object().keys({
         peerOrgs: Joi.array().min(1).items(Joi.object().keys({
-            name: Joi.string().required(),
-            mspId: Joi.string().required(),
+            name: string,
+            mspId: string,
             anchorPeer: Joi.object().keys(hostSchema).required()
         })).required(),
         ordererType: Joi.string().valid(Common.CONSENSUS_LIST).required(),
