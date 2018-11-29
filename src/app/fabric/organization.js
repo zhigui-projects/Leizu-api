@@ -7,7 +7,7 @@ const router = require('koa-router')({prefix: '/organization'});
 
 const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
-const Schema = require('../../libraries/validator/request-schema/organization-shcema');
+const Schema = require('../../libraries/validator/schema/organization-shcema');
 
 router.get('/', async ctx => {
     let channelId = ctx.query['channelId'];
