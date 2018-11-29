@@ -16,6 +16,6 @@ module.exports.joinChannel = Joi.object().keys({
 
 module.exports.updateChannel = Joi.object().keys({
     organizationId: objectId,
-    channelId: objectId,
-    channelType: Joi.number().valid([0, 1]).required(),
+    channelId: Joi.string().length(24),
+    channelType: Joi.number().valid([0, 1]),
 }).nand(['channelId', 'channelType']);
