@@ -7,7 +7,7 @@ const DbService = require('../../services/db/dao');
 const query = require('../../services/fabric/query');
 const Validator = require('../../libraries/validator/validator');
 const {BadRequest} = require('../../libraries/error');
-const Schema = require('../../libraries/validator/request-schema/consortium-schema');
+const Schema = require('../../libraries/validator/schema/consortium-schema');
 const router = require('koa-router')({prefix: '/consortium'});
 
 router.get('/', async ctx => {
@@ -27,7 +27,7 @@ router.get('/', async ctx => {
 });
 
 router.get('/:id', async ctx => {
-    let res = Validator.JoiValidate('consortium', ctx.params.id, Schema.consortiumId);
+    let res = Validator.JoiValidate('consortium', ctx.params, Schema.getConsortium);
     if (!res.result) throw new BadRequest(res.errMsg);
 
     let id = ctx.params.id;

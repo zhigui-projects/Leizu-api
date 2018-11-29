@@ -9,7 +9,7 @@ const config = require('../../env');
 
 const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
-const Schema = require('../../libraries/validator/request-schema/peer-schema');
+const Schema = require('../../libraries/validator/schema/peer-schema');
 
 router.get('/', async ctx => {
     try {
@@ -38,8 +38,6 @@ router.post('/', async ctx => {
     if (!res.result) throw new BadRequest(res.errMsg);
     try {
         let {organizationId, peers} = ctx.request.body;
-        //TODO: check whether image is provided or supported
-
         var eventPromises = [];
         for (let item of peers) {
             let txPromise = new Promise((resolve, reject) => {

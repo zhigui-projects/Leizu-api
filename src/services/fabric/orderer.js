@@ -31,7 +31,7 @@ module.exports = class OrdererService {
         const ordererPort = common.PORT.ORDERER;
 
         let containerOptions = {
-            image,
+            image: image || config.network.orderer.availableImages[0],
             workingDir: `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`,
             ordererName,
             domainName: org.domain_name,
@@ -79,6 +79,7 @@ module.exports = class OrdererService {
     static async preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options}) {
         await this.createContainerNetwork(connectionOptions);
         let ordererDto = await this.prepareCerts(org, consortium, ordererName);
+        options.host = connectionOptions.host;
         const genesisBlockFile = await this.prepareGenesisBlock({org, consortium, ordererName, ordererPort, configtx: options});
 
         const certFile = `${ordererDto.credentialsPath}.zip`;
@@ -135,13 +136,19 @@ module.exports = class OrdererService {
     }
 
     static async prepareGenesisBlock({org, consortium, ordererName, ordererPort, configtx}) {
+        let addresses = [];
+        if(config.network.orderer.tls){
+            addresses.push(`${ordererName}.${org.domain_name}:${ordererPort}`);
+        }else{
+            addresses.push(`${configtx.host}:${ordererPort}`);
+        }
         let options = {
             ConsortiumId: String(consortium._id),
             Consortium: consortium.name,
             Orderer: {
                 OrdererType: configtx.ordererType,
                 OrderOrg: org.name,
-                Addresses: [`${ordererName}.${org.domain_name}:${ordererPort}`],
+                Addresses: addresses,
                 Kafka: {
                     Brokers: configtx.kafka
                 }

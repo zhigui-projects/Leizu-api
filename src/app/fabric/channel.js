@@ -7,7 +7,7 @@ const DbService = require('../../services/db/dao');
 const FabricService = require('../../services/db/fabric');
 const Validator = require('../../libraries/validator/validator');
 const {BadRequest} = require('../../libraries/error');
-const Schema = require('../../libraries/validator/request-schema/channel-schema');
+const Schema = require('../../libraries/validator/schema/channel-schema');
 const router = require('koa-router')({prefix: '/channel'});
 
 router.get('/', async ctx => {

@@ -4,7 +4,7 @@ const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
 const Validator = require('../../libraries/validator/validator');
 const {BadRequest} = require('../../libraries/error');
-const Schema = require('../../libraries/validator/request-schema/consortium-schema');
+const Schema = require('../../libraries/validator/schema/consortium-schema');
 const DbService = require('../../services/db/dao');
 const router = require('koa-router')({prefix: '/container'});
 
