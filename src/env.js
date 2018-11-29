@@ -1,13 +1,13 @@
 module.exports = {
     network: {
       peer: {
-          tls: true,
+          tls: false,
           availableImages:[
               'hyperledger/fabric-ca-peer',
           ]
       },
       orderer: {
-          tls: true,
+          tls: false,
           availableImages:[
               'hyperledger/fabric-ca-orderer',
           ]
