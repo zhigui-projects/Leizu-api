@@ -31,7 +31,7 @@ module.exports = class OrdererService {
         const ordererPort = common.PORT.ORDERER;
 
         let containerOptions = {
-            image,
+            image: image || config.network.orderer.availableImages[0],
             workingDir: `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`,
             ordererName,
             domainName: org.domain_name,

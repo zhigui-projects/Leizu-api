@@ -33,7 +33,6 @@ router.post('/', async ctx => {
     let res = Validator.JoiValidate('create orderer', ctx.request.body, Schema.newOrdererSchema);
     if (!res.result) throw new BadRequest(res.errMsg);
     try {
-        //TODO: check whether image is provided or supported
         const order = await OrdererService.create(ctx.request.body);
         ctx.body = common.success(order, common.SUCCESS);
     } catch (err) {
