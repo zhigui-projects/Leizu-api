@@ -33,28 +33,19 @@ module.exports = class OrganizationService {
             caPort = utils.generateRandomHttpPort();
         }
         try {
-            let containerOptions = {
+            const containerOptions = {
                 name: name,
                 domainName: domainName,
                 port: caPort
             };
-            let parameters, connectOptions = null;
-            if (config.docker.enabled) {
-                connectOptions = {
-                    protocol: common.PROTOCOL.HTTP,
-                    host: host,
-                    port: port || config.docker.port
-                };
-                parameters = utils.generateCertAuthContainerOptions(containerOptions);
-            } else {
-                connectOptions = {
-                    username: username,
-                    password: password,
-                    host: host,
-                    port: port
-                };
-                parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
-            }
+
+            const connectOptions = {
+                username: username,
+                password: password,
+                host: host,
+                port: port
+            };
+            const parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
 
             let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
             if (container) {
