@@ -6,7 +6,7 @@ const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
 const PromClient = require('../prometheus/client');
-const DockerClient = require('../docker/client');
+const SSHClient = require('../ssh/client');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const config = require('../../env');
@@ -93,7 +93,7 @@ module.exports = class PeerService {
 
         const peerDto = await this.preContainerStart({org, peerName, connectionOptions});
 
-        const client = DockerClient.getInstance(connectionOptions);
+        const client = SSHClient.getInstance(connectionOptions);
         const parameters = utils.generatePeerContainerOptions(containerOptions);
         const container = await client.createContainer(parameters);
         await utils.wait(`${common.PROTOCOL.TCP}:${host}:${peerPort}`);
@@ -116,18 +116,18 @@ module.exports = class PeerService {
         const certFile = `${peerDto.credentialsPath}.zip`;
         const remoteFile = `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}.zip`;
         const remotePath = `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`;
-        await DockerClient.getInstance(connectionOptions).transferFile({
+        await SSHClient.getInstance(connectionOptions).transferFile({
             local: certFile,
             remote: remoteFile
         });
-        const bash = DockerClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
+        const bash = SSHClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
         await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}`]);
         return peerDto;
     }
 
     static async createContainerNetwork(connectionOptions) {
         const parameters = utils.generateContainerNetworkOptions({name: common.DEFAULT_NETWORK.NAME});
-        await DockerClient.getInstance(connectionOptions).createContainerNetwork(parameters);
+        await SSHClient.getInstance(connectionOptions).createContainerNetwork(parameters);
     }
 
     static async prepareCerts(org, peerName) {

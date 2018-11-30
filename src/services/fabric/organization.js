@@ -7,7 +7,7 @@ const config = require('../../env');
 const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
-const DockerClient = require('../docker/client');
+const SSHClient = require('../ssh/client');
 
 module.exports = class OrganizationService {
 
@@ -47,7 +47,7 @@ module.exports = class OrganizationService {
             };
             const parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
 
-            let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
+            let container = await SSHClient.getInstance(connectOptions).createContainer(parameters);
             if (container) {
                 let options = {
                     caName: stringUtil.getCaName(name),
@@ -75,7 +75,7 @@ module.exports = class OrganizationService {
                         };
                     }
                     const configTxPath = `${config.configtxlator.dataPath}/${consortiumId}/${name}`;
-                    await DockerClient.getInstance(connectionOptions).transferDirectory({
+                    await SSHClient.getInstance(connectionOptions).transferDirectory({
                         localDir: orgDto.mspPath,
                         remoteDir: configTxPath
                     });

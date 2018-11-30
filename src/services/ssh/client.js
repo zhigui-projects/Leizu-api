@@ -11,13 +11,16 @@ module.exports = class SSHClient extends AbstractSSH {
         this.cmd = options.cmd || 'docker';
     }
 
+    static getInstance(options) {
+        return new SSHClient(options);
+    }
+
     async createContainer(parameters) {
         let sshClient = new NodeSSH();
         try {
             await sshClient.connect(this.options);
             let containerId = await sshClient.exec(this.cmd, parameters);
-            let container = await sshClient.exec(this.cmd, ['start', containerId]);
-            return container;
+            return await sshClient.exec(this.cmd, ['start', containerId]);
         } catch (ex) {
             logger.error(ex);
             throw ex;
