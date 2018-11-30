@@ -22,10 +22,6 @@ module.exports = {
         url: 'mongodb://127.0.0.1:27017/zigdb',
         debug: false
     },
-    docker: {
-        enabled: false,
-        port: 2375
-    },
     ssh: {
         port: 22
     },

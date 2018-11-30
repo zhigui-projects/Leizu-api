@@ -7,8 +7,6 @@ const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
 const Common = require('../../libraries/common');
-const utils = require('../../libraries/utils');
-const config = require('../../env');
 
 module.exports = class DbService {
 
