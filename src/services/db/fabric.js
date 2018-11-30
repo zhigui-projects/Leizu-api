@@ -230,7 +230,6 @@ module.exports = class FabricService {
             let connectionOptions = config.configtxlator.connectionOptions;
             if (process.env.CONFIGTXLATOR_HOST && process.env.CONFIGTXLATOR_USERNAME && process.env.CONFIGTXLATOR_PASSWORD) {
                 connectionOptions = {
-                    mode: common.MODES.SSH,
                     host: process.env.CONFIGTXLATOR_HOST,
                     username: process.env.CONFIGTXLATOR_USERNAME,
                     password: process.env.CONFIGTXLATOR_PASSWORD,

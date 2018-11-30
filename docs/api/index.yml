@@ -7,13 +7,6 @@ info:
     email: pengisgood@gmail.com
 basePath: /api/v1
 tags:
-- name: demo
-  description: Sanity check
-- name: docker
-  description: Operations about docker
-  externalDocs:
-    description: Find out more about docker operations
-    url: https://docs.docker.com/engine/api/v1.37
 - name: user
   description: Operations about user
 - name: peer
@@ -32,39 +25,6 @@ schemes:
 - http
 - https
 paths:
-  /:
-    get:
-      tags:
-      - demo
-      summary: Welcome
-      produces:
-      - text/plain
-      responses:
-        200:
-          description: OK
-          schema:
-            type: string
-            example: welcome to ledger dashboard!
-  /demo:
-    get:
-      tags:
-      - demo
-      summary: Hello world
-      security:
-      - ApiKeyAuth: []
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "demo.yml#/HelloWorld"
-        401:
-          description: Unauthorized
-          schema:
-            $ref: "demo.yml#/Error"
   /user/login:
     post:
       tags:
@@ -610,7 +570,6 @@ paths:
       responses:
         200:
           description: OK
-
   /request:
     post:
       tags:
@@ -666,7 +625,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: common.yml#/401Error
-          
+
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey

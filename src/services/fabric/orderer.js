@@ -40,28 +40,17 @@ module.exports = class OrdererService {
             enableTls: config.network.orderer.tls,
         };
 
-        let connectionOptions = null;
-        if (config.docker.enabled) {
-            connectionOptions = {
-                mode: common.MODES.DOCKER,
-                protocol: common.PROTOCOL.HTTP,
-                host: host,
-                port: port || config.docker.port
-            };
-        } else {
-            connectionOptions = {
-                mode: common.MODES.SSH,
-                host: host,
-                username: username,
-                password: password,
-                port: port || config.ssh.port
-            };
-        }
+        const connectionOptions = {
+            host: host,
+            username: username,
+            password: password,
+            port: port || config.ssh.port
+        };
 
         const ordererDto = await this.preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options});
 
         const client = DockerClient.getInstance(connectionOptions);
-        const parameters = utils.generateOrdererContainerOptions(containerOptions, connectionOptions.mode);
+        const parameters = utils.generateOrdererContainerOptions(containerOptions);
         const container = await client.createContainer(parameters);
         await utils.wait(`${common.PROTOCOL.TCP}:${host}:${ordererPort}`);
         if (container) {

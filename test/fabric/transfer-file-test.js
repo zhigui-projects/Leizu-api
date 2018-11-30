@@ -1,8 +1,6 @@
-const common = require('../../src/libraries/common');
 const SshProvider = require('../../src/services/docker/ssh-provider');
 
 var connectionOptions = {
-    mode: common.MODES.SSH,
     host: '39.106.149.201',
     username: 'root',
     password: 'password',
