@@ -10,19 +10,17 @@ const Peer = require('../../models/peer');
 const stringUtil = require('../../libraries/string-util');
 const CredentialHelper = require('../fabric/credential-helper');
 const config = require('../../env');
-const DockerClient = require('../docker/client');
+const SSHClient = require('../ssh/client');
 const DbService = require('./dao');
 
 module.exports = class FabricService {
 
     constructor(consortiumId) {
-        this.isFabric = true;
         this.consortiumId = consortiumId;
     }
 
     static getInstance(consortiumId) {
-        let fabricService = new FabricService(consortiumId);
-        return fabricService;
+        return new FabricService(consortiumId);
     }
 
     async findChannel(filter) {
@@ -236,7 +234,7 @@ module.exports = class FabricService {
                     port: process.env.CONFIGTXLATOR_PORT || 22
                 };
             }
-            await DockerClient.getInstance(connectionOptions).transferDirectory({
+            await SSHClient.getInstance(connectionOptions).transferDirectory({
                 localDir: `${config.cryptoConfig.path}/${this.consortiumId}`,
                 remoteDir: `${config.configtxlator.dataPath}/${this.consortiumId}`
             });
