@@ -17,18 +17,24 @@ module.exports = class ConsortiumUpdateAction extends Action {
     }
 
     async execute(){
-        let consortiumId = await this.getConsortiumId();
-        let condition = {consortium_id: consortiumId};
+        let consortium = await this.getConsortium();
+        if(consortium) {
+            let configuration = {};
+            let consortiumId = consortium._id;
+            let condition = {consortium_id: consortiumId};
+            //build network configuration
+            await this.updateConsortiumConfiguration(consortiumId,configuration);
+        }
     }
 
-    async getConsortiumId(){
+    async updateConsortiumConfiguration(consortiumId,configuration){
+        await Consortium.findByIdAndUpdate(consortiumId, {network_config: JSON.stringify(configuration)});
+    }
+
+    async getConsortium(){
         let condition = {request_id: this.getRequestId()};
         let consortium = await Consortium.findOne(condition);
-        if(consortium){
-            return consortium._id;
-        }else{
-            return null;
-        }
+        return consortium;
     }
 
     getRequestId(){
