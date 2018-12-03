@@ -38,6 +38,12 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async postRequest(){
+        try{
+            let consortiumUpdateAction = ActionFactory.getConsortiumUpdateAction({id:this.request._id});
+            await consortiumUpdateAction.execute();
+        }catch(error){
+            logger.error(err);
+        }
         this.response =  this.request;
     }
 
