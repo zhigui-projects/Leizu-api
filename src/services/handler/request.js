@@ -2,6 +2,7 @@
 
 const logger = require('../../libraries/log4js');
 logger.category = 'RequestHandler';
+const common = require('../../libraries/common');
 const Handler = require('./handler');
 const RequestDaoService = require('../db/request');
 const ActionFactory = require('../action/factory');
@@ -26,6 +27,7 @@ module.exports = class RequestHandler extends Handler {
             await this.persistRequest();
             this.decomposeRequest();
             await this.provisionNetwork();
+            await this.updateRequestStatus(common.REQUEST_STATUS_SUCCESS);
         }catch(error){
             try{
                 let rollBackAction = ActionFactory.getRequestRollbackAction({id:this.request._id});
