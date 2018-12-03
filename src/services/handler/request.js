@@ -10,7 +10,7 @@ const RequestHelper = require('./request-helper');
 
 module.exports = class RequestHandler extends Handler {
 
-    constructor(ctx){
+    constructor(ctx) {
         super(ctx);
         this.request = null;
         this.requestDaoService = null;
@@ -22,50 +22,51 @@ module.exports = class RequestHandler extends Handler {
         this.orderer = {};
     }
 
-    async handlerRequest(){
-        try{
+    async handlerRequest() {
+        try {
             await this.persistRequest();
             this.decomposeRequest();
             await this.provisionNetwork();
             await this.updateRequestStatus(common.REQUEST_STATUS_SUCCESS);
-        }catch(error){
-            try{
-                let rollBackAction = ActionFactory.getRequestRollbackAction({id:this.request._id});
+        } catch (error) {
+            try {
+                let rollBackAction = ActionFactory.getRequestRollbackAction({id: this.request._id});
                 await rollBackAction.execute();
-            }catch(err){
+            } catch (err) {
                 logger.error(err);
             }
             throw error;
         }
     }
 
-    async postRequest(){
-        try{
-            let consortiumUpdateAction = ActionFactory.getConsortiumUpdateAction({requestId:this.request._id});
+    async postRequest() {
+        try {
+            let consortiumUpdateAction = ActionFactory.getConsortiumUpdateAction({requestId: this.request._id});
             await consortiumUpdateAction.execute();
-        }catch(error){
-            logger.error(err);
+        } catch (error) {
+            logger.error(error);
         }
-        this.response =  this.request;
+        this.response = this.request;
     }
 
-    async persistRequest(){
+    async persistRequest() {
         this.requestDaoService = new RequestDaoService();
         this.request = await this.requestDaoService.addRequest(this.ctx.request.body);
     }
 
-    decomposeRequest(){
+    decomposeRequest() {
         this.parsedRequest = RequestHelper.decomposeRequest(this.ctx);
         this.parsedRequest.requestId = this.request._id;
         this.parsedRequest.consortiumId = this.request.consortiumId;
     }
 
-    async updateRequestStatus(status){
+    async updateRequestStatus(status) {
         this.request.status = status;
-        this.request = await this.requestDaoService.updateStatusById(this.request._id,status);
+        let consortium = await this.requestDaoService.updateStatusById(this.request._id, status);
+        this.request = Object.assign(this.request, consortium.toObject());
     }
 
-    async provisionNetwork(){
+    async provisionNetwork() {
         await this.provisionPeerOrganizations();
         await this.provisionPeers();
         await this.provisionOrdererOrganization();
@@ -74,24 +75,24 @@ module.exports = class RequestHandler extends Handler {
         await this.makePeersJoinChannel();
     }
 
-    async provisionPeerOrganizations(){
-        for(let peer of this.parsedRequest.peers){
+    async provisionPeerOrganizations() {
+        for (let peer of this.parsedRequest.peers) {
             peer.consortiumId = this.parsedRequest.consortiumId;
             let provisionAction = ActionFactory.getCAProvisionAction(peer);
             this.organizations.peerOrgs[peer.orgName] = await provisionAction.execute();
         }
     }
 
-    async provisionOrdererOrganization(){
+    async provisionOrdererOrganization() {
         let orderer = this.parsedRequest.orderer;
         orderer.consortiumId = this.parsedRequest.consortiumId;
         let provisionAction = ActionFactory.getCAProvisionAction(orderer);
         this.organizations.ordererOrg[orderer.orgName] = await provisionAction.execute();
     }
 
-    async provisionPeers(){
-        for(let item of this.parsedRequest.peers){
-            for(let node of item.nodes){
+    async provisionPeers() {
+        for (let item of this.parsedRequest.peers) {
+            for (let node of item.nodes) {
                 let organization = this.organizations.peerOrgs[node.orgName];
                 node.organizationId = organization._id;
                 node.image = this.parsedRequest.peerImage;
@@ -101,18 +102,18 @@ module.exports = class RequestHandler extends Handler {
         }
     }
 
-    async provisionOrderers(){
+    async provisionOrderers() {
         let kafkaBrokers = [];
-        if(this.parsedRequest.isKafkaConsensus){
+        if (this.parsedRequest.isKafkaConsensus) {
             let kafkaAction = ActionFactory.getKafkaProvisionAction(this.parsedRequest.kafkaCluster);
             kafkaBrokers = await kafkaAction.execute();
         }
         let node = this.parsedRequest.orderer.nodes[0];
-        
+
         let peerOrganizationIds = [];
-        for(let property in this.organizations.peerOrgs){
+        for (let property in this.organizations.peerOrgs) {
             let organization = this.organizations.peerOrgs[property];
-            if(organization){
+            if (organization) {
                 peerOrganizationIds.push(organization._id);
             }
         }
@@ -126,14 +127,14 @@ module.exports = class RequestHandler extends Handler {
         this.orderer = await provisionAction.execute();
     }
 
-    async createNewChannel(){
-        if(!this.parsedRequest.channel){
+    async createNewChannel() {
+        if (!this.parsedRequest.channel) {
             throw new Error('no channel definition');
         }
         let organizationIds = [];
-        for(let property in this.organizations.peerOrgs){
+        for (let property in this.organizations.peerOrgs) {
             let organization = this.organizations.peerOrgs[property];
-            if(organization){
+            if (organization) {
                 organizationIds.push(organization._id);
             }
         }
@@ -145,9 +146,9 @@ module.exports = class RequestHandler extends Handler {
         this.channel = await createAction.execute();
     }
 
-    async makePeersJoinChannel(){
+    async makePeersJoinChannel() {
         let channelName = this.parsedRequest.channel.name;
-        for(let property in this.organizations.peerOrgs){
+        for (let property in this.organizations.peerOrgs) {
             let parameters = {};
             parameters.organization = this.organizations.peerOrgs[property];
             parameters.channelName = channelName;
@@ -156,6 +157,6 @@ module.exports = class RequestHandler extends Handler {
             await joinAction.execute();
         }
     }
-    
+
 };
 

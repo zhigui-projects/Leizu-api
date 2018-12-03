@@ -14,10 +14,10 @@ router.post('/', async ctx => {
     try {
         let requestHandler = new RequestHandler(ctx);
         let request = await requestHandler.handle();
-        let simpleRequest = request.toObject();
         let simpleResponse = {
-            id: simpleRequest._id,
-            name: simpleRequest.name
+            id: request._id,
+            name: request.name,
+            consortiumId: request.consortiumId
         };
         ctx.body = common.success(simpleResponse, common.SUCCESS);
     } catch (err) {

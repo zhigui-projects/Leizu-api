@@ -19,12 +19,13 @@ module.exports = class RequestDaoService {
         request.configuration = JSON.stringify(dto);
         request = await request.save();
         dto.requestId = request._id;
-        let consortium =  await this.addConsortiumByRequest(dto);
+        let consortium = await this.addConsortiumByRequest(dto);
+        request = request.toObject();
         request.consortiumId = consortium._id;
         return request;
     }
 
-    async addConsortiumByRequest(dto){
+    async addConsortiumByRequest(dto) {
         let consortium = new Consortium();
         consortium.name = dto.name;
         consortium.uuid = uuid();
@@ -34,8 +35,8 @@ module.exports = class RequestDaoService {
         return consortium;
     }
 
-    async updateStatusById(id, status){
-        await RequestModel.findOneAndUpdate({_id: this.request._id},{status: status});
+    async updateStatusById(id, status) {
+        return await RequestModel.findOneAndUpdate({_id: id}, {status: status});
     }
 
 };
