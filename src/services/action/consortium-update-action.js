@@ -23,6 +23,9 @@ module.exports = class ConsortiumUpdateAction extends Action {
             let consortiumId = consortium._id;
             let condition = {consortium_id: consortiumId};
             //build network configuration
+            configuration.name = consortium.name;
+            configuration.sysChannel = common.SYSTEM_CHANNEL;
+            configuration.orgs = [];
             await this.updateConsortiumConfiguration(consortiumId,configuration);
         }
     }
