@@ -14,6 +14,7 @@ module.exports = {
         PROVISION: 'provision',
         CREATE: 'create',
         JOIN: 'join',
+        UPDATE: 'update',
         ROLLBACK: 'rollback'
     },
     CONTEXT: {
