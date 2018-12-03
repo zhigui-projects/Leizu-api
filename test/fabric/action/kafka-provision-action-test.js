@@ -1,6 +1,6 @@
 'use strict';
 
-const ActionFactory = require("../../src/services/action/factory");
+const ActionFactory = require("../../../src/services/action/factory");
 
 (async function(){
     let params = {
