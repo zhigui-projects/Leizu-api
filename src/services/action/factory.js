@@ -80,4 +80,12 @@ module.exports = class ActionFactory {
         return createAction;
     }
 
+    static getConsortiumUpdateAction(params) {
+        let updateAction = ActionFactory.getAction(Registry.RESOURCE.CONSORTIUM, Registry.TYPE.UPDATE);
+        let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS, params);
+        updateAction.setActionContext(actionContext);
+        return updateAction;
+    }
+
 };
