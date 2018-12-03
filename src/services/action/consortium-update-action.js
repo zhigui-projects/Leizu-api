@@ -6,7 +6,7 @@ const Organization = require('../../models/organization');
 const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
-const common = require('../../libraries/common');
+const Common = require('../../libraries/common');
 
 module.exports = class ConsortiumUpdateAction extends Action {
 
@@ -21,7 +21,7 @@ module.exports = class ConsortiumUpdateAction extends Action {
             let consortiumId = consortium._id;
             //build network configuration
             configuration.name = consortium.name;
-            configuration.sysChannel = common.SYSTEM_CHANNEL;
+            configuration.sysChannel = Common.SYSTEM_CHANNEL;
             configuration.orgs = [];
             let orderConfiguration =  await this.findOrderConfiguration(consortiumId);
             configuration.orgs.push(orderConfiguration);
