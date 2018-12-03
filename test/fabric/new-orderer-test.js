@@ -17,7 +17,7 @@ const options = {
     kafka: [
         {
             host: '127.0.2.1',
-            port: '9999'
+            port: 9999
         }
     ]
 };

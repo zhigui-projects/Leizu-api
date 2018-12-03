@@ -93,66 +93,7 @@ module.exports.generateContainerNetworkOptions = (options) => {
     ];
 };
 
-module.exports.generatePeerContainerOptions = (options, mode) => {
-    switch (mode) {
-        case common.MODES.DOCKER:
-            return generatePeerContainerOptionsForDocker(options);
-        case common.MODES.SSH:
-            return generatePeerContainerOptionsForSSH(options);
-    }
-};
-
-module.exports.generateOrdererContainerOptions = (options, mode) => {
-    switch (mode) {
-        case common.MODES.DOCKER:
-            return generateOrdererContainerOptionsForDocker(options);
-        case common.MODES.SSH:
-            return generateOrdererContainerOptionsForSSH(options);
-    }
-};
-
-const generatePeerContainerOptionsForDocker = (options) => {
-    const {image, peerName, domainName, mspId, port, workingDir, enableTls} = options;
-    const portBindings = {};
-    portBindings[`${port}/tcp`] = [{HostPort: port}];
-
-    return {
-        _query: {name: `${peerName}.${domainName}`},
-        Image: image,
-        Hostname: `${peerName}.${domainName}`,
-        WorkingDir: workingDir,
-        Cmd: ['/bin/bash', '-c', 'peer node start'],
-        HostConfig: {
-            NetworkMode: common.DEFAULT_NETWORK.NAME,
-            PortBindings: portBindings,
-            Binds: [
-                `${workingDir}:/data`,
-                '/var/run:/var/run'
-            ],
-        },
-        Env: [
-            `CORE_PEER_ID=${peerName}.${domainName}`,
-            `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
-            `CORE_PEER_LOCALMSPID=${mspId}`,
-            `CORE_PEER_MSPCONFIGPATH=/data/msp`,
-            `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
-            'CORE_PEER_GOSSIP_USELEADERELECTION=true',
-            'CORE_PEER_GOSSIP_ORGLEADER=false',
-            `CORE_PEER_TLS_ENABLED=${enableTls}`,
-            `CORE_PEER_TLS_CERT_FILE=/data/tls/server.crt`,
-            `CORE_PEER_TLS_KEY_FILE=/data/tls/server.key`,
-            'CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca.pem',
-            `CORE_PEER_TLS_CLIENTAUTHREQUIRED=${enableTls}`,
-            'CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/ca.pem',
-            'CORE_LOGGING_LEVEL=debug',
-            'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
-            'CORE_VM_DOCKER_ATTACHSTDOUT=true',
-            'GODEBUG=netdns=go',
-        ],
-    };
-};
-
-const generatePeerContainerOptionsForSSH = (options) => {
+module.exports.generatePeerContainerOptions = (options) => {
     const {image, peerName, domainName, mspId, port, workingDir, enableTls} = options;
     return [
         'create',
@@ -186,45 +127,7 @@ const generatePeerContainerOptionsForSSH = (options) => {
     ];
 };
 
-const generateOrdererContainerOptionsForDocker = (options) => {
-    const {image, ordererName, domainName, mspId, port, workingDir, enableTls} = options;
-    const portBindings = {};
-    portBindings[`${port}/tcp`] = [{HostPort: port}];
-
-    return {
-        _query: {name: `${ordererName}.${domainName}`},
-        Image: image,
-        Hostname: `${ordererName}.${domainName}`,
-        WorkingDir: workingDir,
-        Cmd: ['/bin/bash', '-c', 'orderer'],
-        HostConfig: {
-            NetworkMode: common.DEFAULT_NETWORK.NAME,
-            PortBindings: portBindings,
-            Binds: [
-                `${workingDir}:/data`,
-                '/var/run:/var/run'
-            ],
-        },
-        Env: [
-            `ORDERER_GENERAL_LISTENADDRESS=0.0.0.0`,
-            'ORDERER_GENERAL_GENESISMETHOD=file',
-            'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
-            `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
-            'ORDERER_GENERAL_LOCALMSPDIR=/data/msp',
-            `ORDERER_GENERAL_TLS_ENABLED=${enableTls}`,
-            'ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server.crt',
-            'ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server.key',
-            'ORDERER_GENERAL_TLS_ROOTCAS=[/data/tls/ca.pem]',
-            `ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=${enableTls}`,
-            'ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/ca.pem]',
-            'ORDERER_GENERAL_LOGLEVEL=debug',
-            'ORDERER_DEBUG_BROADCASTTRACEDIR=/data/logs',
-            'GODEBUG=netdns=go',
-        ],
-    };
-};
-
-const generateOrdererContainerOptionsForSSH = (options) => {
+module.exports.generateOrdererContainerOptions = (options) => {
     const {image, ordererName, domainName, mspId, port, workingDir, enableTls} = options;
     return [
         'create',

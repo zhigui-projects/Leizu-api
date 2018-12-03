@@ -7,7 +7,7 @@ const config = require('../../env');
 const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
-const DockerClient = require('../docker/client');
+const SSHClient = require('../ssh/client');
 
 module.exports = class OrganizationService {
 
@@ -33,30 +33,21 @@ module.exports = class OrganizationService {
             caPort = utils.generateRandomHttpPort();
         }
         try {
-            let containerOptions = {
+            const containerOptions = {
                 name: name,
                 domainName: domainName,
                 port: caPort
             };
-            let parameters, connectOptions = null;
-            if (config.docker.enabled) {
-                connectOptions = {
-                    protocol: common.PROTOCOL.HTTP,
-                    host: host,
-                    port: port || config.docker.port
-                };
-                parameters = utils.generateCertAuthContainerOptions(containerOptions);
-            } else {
-                connectOptions = {
-                    username: username,
-                    password: password,
-                    host: host,
-                    port: port
-                };
-                parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
-            }
 
-            let container = await DockerClient.getInstance(connectOptions).createContainer(parameters);
+            const connectOptions = {
+                username: username,
+                password: password,
+                host: host,
+                port: port
+            };
+            const parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
+
+            let container = await SSHClient.getInstance(connectOptions).createContainer(parameters);
             if (container) {
                 let options = {
                     caName: stringUtil.getCaName(name),
@@ -77,7 +68,6 @@ module.exports = class OrganizationService {
                     let connectionOptions = config.configtxlator.connectionOptions;
                     if (process.env.CONFIGTXLATOR_HOST && process.env.CONFIGTXLATOR_USERNAME && process.env.CONFIGTXLATOR_PASSWORD) {
                         connectionOptions = {
-                            mode: common.MODES.SSH,
                             host: process.env.CONFIGTXLATOR_HOST,
                             username: process.env.CONFIGTXLATOR_USERNAME,
                             password: process.env.CONFIGTXLATOR_PASSWORD,
@@ -85,7 +75,7 @@ module.exports = class OrganizationService {
                         };
                     }
                     const configTxPath = `${config.configtxlator.dataPath}/${consortiumId}/${name}`;
-                    await DockerClient.getInstance(connectionOptions).transferDirectory({
+                    await SSHClient.getInstance(connectionOptions).transferDirectory({
                         localDir: orgDto.mspPath,
                         remoteDir: configTxPath
                     });

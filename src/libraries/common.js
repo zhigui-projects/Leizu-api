@@ -42,11 +42,6 @@ module.exports.PROTOCOL = {
     TCP: 'tcp',
 };
 
-module.exports.MODES = {
-    DOCKER: 'docker',
-    SSH: 'ssh'
-};
-
 module.exports.DEFAULT_NETWORK = {
     NAME: 'fabric_network',
     DRIVER: 'bridge'
