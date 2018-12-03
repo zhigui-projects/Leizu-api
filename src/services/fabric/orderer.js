@@ -8,7 +8,7 @@ const common = require('../../libraries/common');
 const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
-const DockerClient = require('../docker/client');
+const SSHClient = require('../ssh/client');
 const ConfigTxlator = require('./configtxlator');
 const CreateConfigTx = require('./configtxgen');
 
@@ -40,28 +40,17 @@ module.exports = class OrdererService {
             enableTls: config.network.orderer.tls,
         };
 
-        let connectionOptions = null;
-        if (config.docker.enabled) {
-            connectionOptions = {
-                mode: common.MODES.DOCKER,
-                protocol: common.PROTOCOL.HTTP,
-                host: host,
-                port: port || config.docker.port
-            };
-        } else {
-            connectionOptions = {
-                mode: common.MODES.SSH,
-                host: host,
-                username: username,
-                password: password,
-                port: port || config.ssh.port
-            };
-        }
+        const connectionOptions = {
+            host: host,
+            username: username,
+            password: password,
+            port: port || config.ssh.port
+        };
 
         const ordererDto = await this.preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options});
 
-        const client = DockerClient.getInstance(connectionOptions);
-        const parameters = utils.generateOrdererContainerOptions(containerOptions, connectionOptions.mode);
+        const client = SSHClient.getInstance(connectionOptions);
+        const parameters = utils.generateOrdererContainerOptions(containerOptions);
         const container = await client.createContainer(parameters);
         await utils.wait(`${common.PROTOCOL.TCP}:${host}:${ordererPort}`);
         if (container) {
@@ -85,19 +74,19 @@ module.exports = class OrdererService {
         const certFile = `${ordererDto.credentialsPath}.zip`;
         const remoteFile = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}.zip`;
         const remotePath = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`;
-        const client = DockerClient.getInstance(connectionOptions);
+        const client = SSHClient.getInstance(connectionOptions);
         await client.transferFile({local: certFile, remote: remoteFile});
         await client.transferFile({local: genesisBlockFile, remote: `${remotePath}/genesis.block`});
 
 
-        const bash = DockerClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
+        const bash = SSHClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
         await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}`]);
         return ordererDto;
     }
 
     static async createContainerNetwork(connectionOptions) {
         const parameters = utils.generateContainerNetworkOptions({name: common.DEFAULT_NETWORK.NAME});
-        await DockerClient.getInstance(connectionOptions).createContainerNetwork(parameters);
+        await SSHClient.getInstance(connectionOptions).createContainerNetwork(parameters);
     }
 
     static async prepareCerts(org, consortium, ordererName) {

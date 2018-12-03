@@ -28,7 +28,7 @@ module.exports = class RequestDaoService {
         let consortium = new Consortium();
         consortium.name = dto.name;
         consortium.uuid = uuid();
-        consortium.network_config = JSON.stringify(dto);
+        //consortium.network_config = JSON.stringify(dto); //update the network config after network is ready.
         consortium.request_id = dto.requestId;
         consortium = await consortium.save();
         return consortium;
