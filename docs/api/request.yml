@@ -50,6 +50,9 @@ PostResponse:
         name:
           type: string
           example: my-consortium
+        consortiumId:
+          type: string
+          example: 5bc6980172b780d909aeab0c
     msg:
       type: string
       example: success
