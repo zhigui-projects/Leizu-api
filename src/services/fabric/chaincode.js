@@ -64,13 +64,14 @@ module.exports = class ChaincodeService {
                 await installChaincode.installChaincode(this._peers[orgId], this._chaincode_name, path.join(common.CHAINCODE_PATH, common.CHAINCODE_TYPE_GOLANG, this._chaincode_name),
                     this._chaincode_version, common.CHAINCODE_TYPE_GOLANG, organization);
             }
-            return DbService.addChaincode({
+            let cc = await DbService.addChaincode({
                 name: this._chaincode_name,
                 version: this._chaincode_version,
                 path: path.join(common.CHAINCODE_PATH, common.CHAINCODE_TYPE_GOLANG),
                 type: common.CHAINCODE_TYPE_GOLANG,
                 peers: JSON.stringify(this._peers)
             });
+            return cc;
         } catch (err) {
             throw err;
         }
