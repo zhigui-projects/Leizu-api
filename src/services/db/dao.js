@@ -226,10 +226,12 @@ module.exports = class DbService {
         cc.version = dto.version;
         cc.language = dto.type;
         cc.peers = dto.peers;
-        return cc.save();
+        cc = await cc.save();
+        return cc;
     }
 
     static async findChaincodeById(id) {
-        return Chaincode.findById(id);
+        let cc = Chaincode.findById(id);
+        return cc;
     }
 };
