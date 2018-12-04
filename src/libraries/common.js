@@ -75,6 +75,11 @@ module.exports.BLOCKCHAIN_TYPE_LIST = ['fabric'];
 module.exports.CONSENSUS_LIST = [this.CONSENSUS_KAFKA, this.CONSENSUS_SOLO];
 module.exports.VERSION_LIST = ['1.3'];
 
+module.exports.CHAINCODE_PATH = 'chaincode';
+module.exports.CHAINCODE_TYPE_GOLANG = 'golang';
+module.exports.CHAINCODE_TYPE_JAVA = 'java';
+module.exports.CHAINCODE_TYPE_NODE = 'node';
+
 module.exports.success = (data, msg) => {
     return {
         code: 200,

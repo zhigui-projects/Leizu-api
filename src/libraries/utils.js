@@ -198,3 +198,7 @@ module.exports.getUrl = (location, enableTls) => {
         return `${common.PROTOCOL.GRPC}://${location}`;
     }
 };
+
+module.exports.setupChaincodeDeploy = () => {
+    process.env.GOPATH = path.join(__dirname, '../..');
+};
