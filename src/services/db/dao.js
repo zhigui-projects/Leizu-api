@@ -81,6 +81,14 @@ module.exports = class DbService {
         return peer;
     }
 
+    static async findPeerByFilter(filter) {
+        if (!filter) {
+            filter = {};
+        }
+        let peer = await Peer.findOne(filter);
+        return peer;
+    }
+
     static async findOrdererById(id) {
         let orderer = await Peer.findOne({_id: id, type: Common.PEER_TYPE_ORDER});
         return orderer;
@@ -93,6 +101,14 @@ module.exports = class DbService {
 
     static async findPeersByOrgId(orgId, type) {
         let condition = {org_id: orgId};
+        if (type === 0 || type === 1) {
+            condition.type = type;
+        }
+        return await Peer.find(condition);
+    }
+
+    static async findPeersByConsortiumId(consortiumId, type) {
+        let condition = {consortium_id: consortiumId};
         if (type === 0 || type === 1) {
             condition.type = type;
         }
@@ -180,11 +196,11 @@ module.exports = class DbService {
         return organization;
     }
 
-    static async findOrganizationByFilter(filter){
-        if (!filter){
-            filter={};
+    static async findOrganizationByFilter(filter) {
+        if (!filter) {
+            filter = {};
         }
-        let organization=await Organization.find(filter);
+        let organization = await Organization.find(filter);
         return organization;
     }
 
