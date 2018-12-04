@@ -86,13 +86,6 @@ module.exports = class ChaincodeService {
                 await instantiateChaincode.instantiateChaincode(this._peers[orgId], channelName, this._chaincode_name,
                     this._chaincode_version, functionName, common.CHAINCODE_TYPE_GOLANG, args, organization);
             }
-            return DbService.addChaincode({
-                name: this._chaincode_name,
-                version: this._chaincode_version,
-                path: path.join(common.CHAINCODE_PATH, common.CHAINCODE_TYPE_GOLANG),
-                type: common.CHAINCODE_TYPE_GOLANG,
-                peers: JSON.stringify(this._peers)
-            });
         } catch (err) {
             throw err;
         }
