@@ -11,9 +11,9 @@ const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
 const Schema = require('../../libraries/validator/schema/peer-schema');
 
-router.get('/', async ctx => {
+router.get('/:consortiumId', async ctx => {
     try {
-        const peerDetails = await PeerService.list(ctx.query['organizationId']);
+        const peerDetails = await PeerService.list(ctx.query['organizationId'], ctx.params.consortiumId);
         ctx.body = common.success(peerDetails, common.SUCCESS);
     } catch (ex) {
         logger.error(ex);
@@ -22,9 +22,9 @@ router.get('/', async ctx => {
     }
 });
 
-router.get('/:id', async ctx => {
+router.get('/:consortiumId/:id', async ctx => {
     try {
-        const peer = PeerService.findById(ctx.params.id);
+        const peer = await PeerService.findByIdAndConsortiumId(ctx.params.id, ctx.params.consortiumId);
         ctx.body = common.success(peer, common.SUCCESS);
     } catch (err) {
         logger.error(err);

@@ -17,8 +17,12 @@ module.exports = class PeerService {
         return await DbService.findPeerById(id);
     }
 
-    static async list(orgId) {
-        const {peers, channels, organizations} = await this.queryDetails(orgId);
+    static async findByIdAndConsortiumId(id, consortiumId) {
+        return await DbService.findPeerByFilter({_id: id, consortium_id: consortiumId});
+    }
+
+    static async list(orgId, consortiumId) {
+        const {peers, channels, organizations} = await this.queryDetails(orgId, consortiumId);
         const promClient = new PromClient();
         const cpuMetrics = await promClient.queryCpuUsage();
         const memoryMetrics = await promClient.queryMemoryUsage();
@@ -29,8 +33,7 @@ module.exports = class PeerService {
                 org = organizations.find(org => org._id.equals(peer.org_id));
             }
             let organizationName = (org && org.name) || null;
-            let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id)))
-            .map(channel => channel.name);
+            let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id))).map(channel => channel.name);
             let cpuMetric = cpuMetrics.find(data => peer.location.includes(data.metric.name));
             let cpu = 0;
             if (cpuMetric) {
@@ -47,19 +50,19 @@ module.exports = class PeerService {
         });
     }
 
-    static async queryDetails(orgId) {
+    static async queryDetails(orgId, consortiumId) {
         let peers, channels, organizations = [];
         if (orgId) {
             peers = await DbService.findPeersByOrgId(orgId);
             organizations = await DbService.findOrganizationById(orgId);
         } else {
-            peers = await DbService.findPeers();
-            organizations = await DbService.findOrganizations();
+            peers = await DbService.findPeersByConsortiumId(consortiumId);
+            organizations = await DbService.getOrganizationsByFilter({consortium_id: consortiumId});
 
         }
         channels = await DbService.getChannels();
         return {peers, channels, organizations};
-    };
+    }
 
     static async joinChannel(channelName, params) {
         return await ChannelService.joinChannel(channelName, params);
