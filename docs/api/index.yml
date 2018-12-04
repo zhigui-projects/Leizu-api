@@ -211,7 +211,7 @@ paths:
       responses:
         200:
           description: OK
-  /organization:
+  /organization/{consortiumId}:
     get:
       tags:
       - organization
@@ -227,6 +227,11 @@ paths:
         in: query
         description: Channel id
         required: false
+        type: string
+      - name: consortiumId
+        in: path
+        description: Consortium id
+        required: true
         type: string
       responses:
         200:
@@ -253,7 +258,7 @@ paths:
       responses:
         200:
           description: OK
-  /organization/{organizationId}:
+  /organization/{consortiumId}/{organizationId}:
     get:
       tags:
       - organization
@@ -267,6 +272,11 @@ paths:
       - name: organizationId
         in: path
         description: Organization id
+        required: true
+        type: string
+      - name: consortiumId
+        in: path
+        description: Consortium id
         required: true
         type: string
       responses:
@@ -337,10 +347,10 @@ paths:
       - application/json
       parameters:
         - name: consortiumId
-            in: path
-            description: Consortium id
-            required: true
-            type: string
+          in: path
+          description: Consortium id
+          required: true
+          type: string
         - name: channelId
           in: path
           description: Channel id

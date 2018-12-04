@@ -9,16 +9,17 @@ const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
 const Schema = require('../../libraries/validator/schema/organization-shcema');
 
-router.get('/', async ctx => {
+router.get('/:consortiumId', async ctx => {
     let channelId = ctx.query['channelId'];
-    let orgIds = [];
+    let consortiumId = ctx.params.consortiumId;
+    let filter = {consortium_id: consortiumId};
     let orgList = [];
-    let orgId = [];
+    let orgIds = [];
     if (channelId) {
         try {
-            let channel = await DbService.getChannelById(channelId);
+            let channel = await DbService.getChannelByFilter({_id: channelId, consortium_id: consortiumId});
             if (channel) {
-                orgIds = channel.orgs;
+                filter._id = channel.orgs;
             }
         } catch (err) {
             ctx.status = 400;
@@ -26,16 +27,16 @@ router.get('/', async ctx => {
         }
     }
     try {
-        let organizations = await DbService.getOrganizationsByIds(orgIds);
+        let organizations = await DbService.getOrganizationsByFilter(filter);
         if (organizations) {
-            orgId = organizations.map(item => {
+            orgIds = organizations.map(item => {
                 orgList.push({id: item._id, name: item.name, consortium_id: item.consortium_id, peer_count: 0});
                 return item._id;
             });
-            let peerCounts = await DbService.countPeersByOrg(orgId);
-            orgId = orgId.map(id => String(id));
+            let peerCounts = await DbService.countPeersByOrg(orgIds);
+            orgIds = orgIds.map(id => String(id));
             peerCounts.map(item => {
-                let idx = orgId.indexOf(String(item._id));
+                let idx = orgIds.indexOf(String(item._id));
                 orgList[idx].peer_count = item.total;
             });
             ctx.body = common.success(orgList, common.SUCCESS);
@@ -46,10 +47,11 @@ router.get('/', async ctx => {
     }
 });
 
-router.get('/:id', async ctx => {
+router.get('/:consortiumId/:id', async ctx => {
     let id = ctx.params.id;
+    let consortiumId = ctx.params.consortiumId;
     try {
-        let organization = DbService.findOrganizationById(id);
+        let organization = DbService.findOrganizationByFilter({_id: id, consortium_id: consortiumId});
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;

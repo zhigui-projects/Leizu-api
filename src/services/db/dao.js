@@ -11,7 +11,7 @@ const Common = require('../../libraries/common');
 
 module.exports = class DbService {
 
-    static async getChannels(){
+    static async getChannels() {
         let channels = await Channel.find();
         return channels;
     }
@@ -162,6 +162,14 @@ module.exports = class DbService {
         return organizations;
     }
 
+    static async getOrganizationsByFilter(filter) {
+        if (!filter) {
+            filter = {};
+        }
+        let organizations = await Organization.find(filter);
+        return organizations;
+    }
+
     static async countOrgsByConsortiumId(consortiumId) {
         let count = await Organization.countDocuments({consortium_id: consortiumId});
         return count;
@@ -169,6 +177,14 @@ module.exports = class DbService {
 
     static async findOrganizationById(id) {
         let organization = await Organization.findById(id);
+        return organization;
+    }
+
+    static async findOrganizationByFilter(filter){
+        if (!filter){
+            filter={};
+        }
+        let organization=await Organization.find(filter);
         return organization;
     }
 
