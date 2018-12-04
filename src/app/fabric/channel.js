@@ -10,9 +10,10 @@ const {BadRequest} = require('../../libraries/error');
 const Schema = require('../../libraries/validator/schema/channel-schema');
 const router = require('koa-router')({prefix: '/channel'});
 
-router.get('/', async ctx => {
+router.get('/:consortiumId', async ctx => {
+    let consortiumId = ctx.params.consortiumId;
     try {
-        let channels = await DbService.getChannels();
+        let channels = await DbService.getChannelsByFilter({consortium_id: consortiumId});
         ctx.body = common.success(channels, common.SUCCESS);
     } catch (err) {
         logger.error(err);
@@ -21,10 +22,10 @@ router.get('/', async ctx => {
     }
 });
 
-router.get('/:id', async ctx => {
-    let id = ctx.params.id;
+router.get('/:consortiumId/:id', async ctx => {
+    let {consortiumId, id} = ctx.params;
     try {
-        let channel = await DbService.getChannelById(id);
+        let channel = await DbService.getChannelByFilter({consortium_id: consortiumId, _id: id});
         ctx.body = common.success(channel, common.SUCCESS);
     } catch (err) {
         logger.error(err);

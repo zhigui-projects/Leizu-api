@@ -4,7 +4,7 @@ const path = require('path');
 const DbService = require('../db/dao');
 const common = require('../../libraries/common');
 const installChaincode = require('./install-chaincode');
-const instantiateChaincode = require('./instantiate-chaincode');
+// const instantiateChaincode = require('./instantiate-chaincode');
 
 module.exports = class ChaincodeService {
     constructor(chaincodeName, chaincodeVersion) {
@@ -84,8 +84,8 @@ module.exports = class ChaincodeService {
                 if (!organization) {
                     throw new Error('The organization does not exist: ' + orgId);
                 }
-                await instantiateChaincode.instantiateChaincode(this._peers[orgId], channelName, this._chaincode_name,
-                    this._chaincode_version, functionName, common.CHAINCODE_TYPE_GOLANG, args, organization);
+                // await instantiateChaincode.instantiateChaincode(this._peers[orgId], channelName, this._chaincode_name,
+                //     this._chaincode_version, functionName, common.CHAINCODE_TYPE_GOLANG, args, organization);
             }
         } catch (err) {
             throw err;
