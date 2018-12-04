@@ -3,6 +3,15 @@
 const Joi = require('joi');
 const {objectId, string, unRequiredObjectId} = require('./schema-utils');
 
+module.exports.getChannelList = Joi.object().options({abortEarly: true}).keys({
+    consortiumId: objectId
+});
+
+module.exports.getChannelDetail = Joi.object().options({abortEarly: true}).keys({
+    consortiumId: objectId,
+    id: objectId
+});
+
 module.exports.createChannel = Joi.object().keys({
     organizationIds: Joi.array().min(1).items(objectId).required(),
     name: string,

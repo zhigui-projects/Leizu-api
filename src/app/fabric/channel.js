@@ -6,11 +6,13 @@ const ChannelService = require('../../services/fabric/channel');
 const DbService = require('../../services/db/dao');
 const FabricService = require('../../services/db/fabric');
 const Validator = require('../../libraries/validator/validator');
-const {BadRequest} = require('../../libraries/error');
+const {BadRequest,SimpleBadRequest} = require('../../libraries/error');
 const Schema = require('../../libraries/validator/schema/channel-schema');
 const router = require('koa-router')({prefix: '/channel'});
 
 router.get('/:consortiumId', async ctx => {
+    let res = Validator.JoiValidate('channel', ctx.params, Schema.getChannelList);
+    if (!res.result) throw new SimpleBadRequest(res.message);
     let consortiumId = ctx.params.consortiumId;
     try {
         let channels = await DbService.getChannelsByFilter({consortium_id: consortiumId});
@@ -23,6 +25,8 @@ router.get('/:consortiumId', async ctx => {
 });
 
 router.get('/:consortiumId/:id', async ctx => {
+    let res = Validator.JoiValidate('channel', ctx.params, Schema.getChannelDetail);
+    if (!res.result) throw new SimpleBadRequest(res.message);
     let {consortiumId, id} = ctx.params;
     try {
         let channel = await DbService.getChannelByFilter({consortium_id: consortiumId, _id: id});

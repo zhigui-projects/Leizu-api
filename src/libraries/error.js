@@ -26,6 +26,16 @@ exports.BadRequest = class BadRequest extends ExtendableError {
     }
 };
 
+exports.SimpleBadRequest = class BadRequest extends ExtendableError {
+    constructor(errorMessage) {
+        super('Bad Request');
+        this.body = {
+            errors: errorMessage,
+        };
+        this.status = 400;
+    }
+};
+
 exports.Unauthorized = class Unauthorized extends ExtendableError {
     constructor(message) {
         super(message);
