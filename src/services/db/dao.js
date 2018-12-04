@@ -6,6 +6,7 @@ const Organization = require('../../models/organization');
 const Peer = require('../../models/peer');
 const Consortium = require('../../models/consortium');
 const CertAuthority = require('../../models/certauthority');
+const Chaincode = require('../../models/chaincode');
 const Common = require('../../libraries/common');
 
 module.exports = class DbService {
@@ -20,7 +21,7 @@ module.exports = class DbService {
         return channels;
     }
 
-    static async getChannelByName(channelName){
+    static async getChannelByName(channelName) {
         let channel = await Channel.findOne({name: channelName});
         return channel;
     }
@@ -217,4 +218,20 @@ module.exports = class DbService {
         }
     }
 
+    static async addChaincode(dto) {
+        let cc = new Chaincode();
+        cc.uuid = uuid();
+        cc.name = dto.name;
+        cc.path = dto.path;
+        cc.version = dto.version;
+        cc.language = dto.type;
+        cc.peers = dto.peers;
+        cc = await cc.save();
+        return cc;
+    }
+
+    static async findChaincodeById(id) {
+        let cc = Chaincode.findById(id);
+        return cc;
+    }
 };
