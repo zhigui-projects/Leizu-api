@@ -3,10 +3,10 @@
 const mongoose = require('mongoose');
 const chaincodeSchema = new mongoose.Schema({
     uuid: String,
-    chaincode_name: String,
-    chaincode_path: String,
-    chaincode_version: String,
-    chaincode_type: String,
+    name: String,
+    path: String,
+    version: String,
+    language: String,
     peers: String,
     date: {
         type: Date,

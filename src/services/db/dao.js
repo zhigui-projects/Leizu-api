@@ -221,10 +221,10 @@ module.exports = class DbService {
     static async addChaincode(dto) {
         let cc = new Chaincode();
         cc.uuid = uuid();
-        cc.chaincode_name = dto.name;
-        cc.chaincode_path = dto.path;
-        cc.chaincode_version = dto.version;
-        cc.chaincode_type = dto.type;
+        cc.name = dto.name;
+        cc.path = dto.path;
+        cc.version = dto.version;
+        cc.language = dto.type;
         cc.peers = dto.peers;
         return cc.save();
     }
