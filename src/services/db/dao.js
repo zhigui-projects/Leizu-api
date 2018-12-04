@@ -11,8 +11,16 @@ const Common = require('../../libraries/common');
 
 module.exports = class DbService {
 
-    static async getChannels() {
+    static async getChannels(){
         let channels = await Channel.find();
+        return channels;
+    }
+
+    static async getChannelsByFilter(filter) {
+        if (!filter) {
+            filter = {};
+        }
+        let channels = await Channel.find(filter);
         return channels;
     }
 
@@ -28,6 +36,14 @@ module.exports = class DbService {
 
     static async getChannelById(id) {
         let channel = await Channel.findById(id);
+        return channel;
+    }
+
+    static async getChannelByFilter(filter) {
+        if (!filter) {
+            filter = {};
+        }
+        let channel = await Channel.findOne(filter);
         return channel;
     }
 
