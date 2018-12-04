@@ -120,6 +120,7 @@ module.exports.generatePeerContainerOptions = (options) => {
         '-e', 'CORE_LOGGING_LEVEL=debug',
         '-e', 'CORE_VM_ENDPOINT=unix:///var/run/docker.sock',
         '-e', 'CORE_VM_DOCKER_ATTACHSTDOUT=true',
+        '-e', `CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${common.DEFAULT_NETWORK.NAME}`,
         '-e', 'GODEBUG=netdns=go',
 
         image,
