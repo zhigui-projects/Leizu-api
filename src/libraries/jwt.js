@@ -1,3 +1,9 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 const config = require('../env').jwt;
 const jwt = require('jsonwebtoken');
 

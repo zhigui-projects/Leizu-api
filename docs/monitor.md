@@ -107,3 +107,6 @@ Save the sample payload into `data.json`, then call API with `curl`:
 curl --request PUT --data @payload.json http://127.0.0.1:8500/v1/agent/service/register
 ```
 
+## License
+
+Dashboard API Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the LICENSE file. Dashboard API Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.

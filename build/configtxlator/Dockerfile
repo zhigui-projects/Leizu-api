@@ -1,4 +1,6 @@
-# Dockerfile for Hyperledger fabric configtxlator
+# Copyright Zhigui.com. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
 
 FROM ubuntu:16.04
 

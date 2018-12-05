@@ -1,3 +1,9 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 'use strict';
 
 const request = require('supertest');
@@ -10,11 +16,11 @@ const channel = {
     organizationId: '5bf5b11822b302af25737bdf'
 };
 request(app.callback())
-.post('/api/v1/channel/update')
-.set('Authorization', token)
-.send(channel)
-.end(function (err, response) {
-    if (err) console.error(err);
-    console.log(response.body);
-    app.mongoose.disconnect();
-});
+    .post('/api/v1/channel/update')
+    .set('Authorization', token)
+    .send(channel)
+    .end(function (err, response) {
+        if (err) console.error(err);
+        console.log(response.body);
+        app.mongoose.disconnect();
+    });

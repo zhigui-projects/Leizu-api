@@ -1,8 +1,9 @@
-/**
- * Copyright 2018 zhigui Corp All Rights Reserved.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 'use strict';
 
 const query = require('./query');
@@ -11,8 +12,6 @@ const configtxlator = require('./configtxlator');
 const Client = require('fabric-client');
 const stringUtil = require('../../libraries/string-util');
 const ConfigTxBuilder = require('./configtxgen');
-const utils = require('../../libraries/utils');
-const config = require('../../env');
 const DbService = require('../db/dao');
 const common = require('../../libraries/common');
 
