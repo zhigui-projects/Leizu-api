@@ -81,10 +81,16 @@ module.exports.BLOCKCHAIN_TYPE_LIST = ['fabric'];
 module.exports.CONSENSUS_LIST = [this.CONSENSUS_KAFKA, this.CONSENSUS_SOLO];
 module.exports.VERSION_LIST = ['1.3'];
 
+// chaincode
+module.exports.CHAINCODE_GOPATH = '/tmp/gopath'; // The actual path:/tmp/gopath/src/chaincode
 module.exports.CHAINCODE_PATH = 'chaincode';
 module.exports.CHAINCODE_TYPE_GOLANG = 'golang';
 module.exports.CHAINCODE_TYPE_JAVA = 'java';
 module.exports.CHAINCODE_TYPE_NODE = 'node';
+module.exports.CHAINCODE_STATE_NONE = 0;
+module.exports.CHAINCODE_STATE_INSTALLED = 1; // The chaincode has been installed
+module.exports.CHAINCODE_STATE_DEPLOYED = 2;
+module.exports.CHAINCODE_STATE_UPGRADED = 3;
 
 module.exports.success = (data, msg) => {
     return {

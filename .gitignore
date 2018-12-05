@@ -78,4 +78,7 @@ typings/
 # Serverless directories
 .serverless
 
+# package backups
+package-lock.json
+
 .idea

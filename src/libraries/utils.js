@@ -207,5 +207,7 @@ module.exports.getUrl = (location, enableTls) => {
 };
 
 module.exports.setupChaincodeDeploy = () => {
-    process.env.GOPATH = path.join(__dirname, '../..');
+    if (!process.env.GOPATH) {
+        process.env.GOPATH = common.CHAINCODE_GOPATH;
+    }
 };
