@@ -53,9 +53,9 @@ npm start
 
 5. Check api docs
 
-Swagger UI version visit [localhost:8080](localhost:8080).
+Swagger UI version visit [localhost:8080](http://localhost:8080).
 
-JSON version visit [localhost:8080/api-docs](localhost:8080/api-docs).
+JSON version visit [localhost:8080/api-docs](http://localhost:8080/api-docs).
 
 ## Run it in docker way
 
