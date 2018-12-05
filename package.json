@@ -9,6 +9,7 @@
     "dev": "nodemon index.js",
     "debug": "nodemon --inspect index.js",
     "doc": "node scripts/json-refs.js",
+    "lic": "license-check-and-add",
     "lint": "eslint --ext .js ."
   },
   "author": "zhigui",
@@ -46,8 +47,9 @@
   },
   "devDependencies": {
     "eslint": "^5.7.0",
-    "nodemon": "^1.18.4",
+    "license-check-and-add": "^2.3.6",
     "mocha": "^5.2.0",
+    "nodemon": "^1.18.4",
     "should": "^13.2.3",
     "supertest": "^3.3.0"
   },
@@ -58,5 +60,55 @@
       "src"
     ],
     "ext": "js,json,yml"
+  },
+  "license-check-and-add-config": {
+    "folder": ".",
+    "license": "license.txt",
+    "exact_paths_method": "EXCLUDE",
+    "exact_paths": [
+      ".git",
+      ".idea",
+      "build",
+      "dist",
+      "node_modules",
+      "src/.jsbeautifyrc",
+      "LICENSE",
+      "license.txt",
+      "markdown-license.txt"
+    ],
+    "file_type_method": "EXCLUDE",
+    "file_types": [
+      ".yml",
+      ".yaml",
+      ".log",
+      ".json",
+      ".xmind",
+      ".png",
+      ".txt",
+      ".nosql"
+    ],
+    "insert_license": false,
+    "clear_license": false,
+    "default_format": {
+      "append": "\n",
+      "eachLine": {
+        "prepend": "# "
+      }
+    },
+    "license_formats": {
+      "js": {
+        "prepend": "/*",
+        "append": "*/\n"
+      },
+      "dockerignore|gitignore|env|sh": {
+        "append": "\n",
+        "eachLine": {
+          "prepend": "# "
+        }
+      },
+      "md": {
+        "file": "markdown-license.txt"
+      }
+    }
   }
 }
