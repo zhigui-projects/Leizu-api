@@ -14,8 +14,8 @@ const logger = require('../../libraries/log4js').getLogger('Install-chaincode');
 const Client = require('fabric-client');
 const DbService = require('../db/dao');
 
-module.exports.installChaincode = async (peers, chaincodeName, chaincodePath,
-                                         chaincodeVersion, chaincodeType, org) => {
+module.exports.installChaincode = async function (peers, chaincodeName, chaincodePath,
+                                                  chaincodeVersion, chaincodeType, org) {
     utils.setupChaincodeDeploy();
     try {
         let client = new Client();
@@ -71,7 +71,7 @@ module.exports.installChaincode = async (peers, chaincodeName, chaincodePath,
         if (allGood) {
             logger.info('Successfully install chaincode');
         } else {
-            throw new Error(responses);
+            throw new Error(JSON.stringify(responses));
         }
     } catch (error) {
         logger.error('Failed to install due to error: ', error.stack ? error.stack : error);

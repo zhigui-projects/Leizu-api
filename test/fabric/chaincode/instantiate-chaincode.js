@@ -13,11 +13,12 @@ const token = 'Bearer ' + constants.token;
 
 const chaincode = {
     chaincodeId: '5c07a2149a086a126b7eb090',
-    peers: ['5c0628c75cba28b4e22dc8bb'],
+    channelId: '5c0628d95cba28b4e22dc8bf',
+    args: ['a', '100', 'b', '200']
 };
 
 request(app.callback())
-.post('/api/v1/chaincode/install')
+.post('/api/v1/chaincode/deploy')
 .set('Authorization', token)
 .send(chaincode)
 .end(function (err, response) {

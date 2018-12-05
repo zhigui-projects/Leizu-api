@@ -12,8 +12,13 @@ const chaincodeSchema = new mongoose.Schema({
     name: String,
     path: String,
     version: String,
-    language: String,
-    peers: String,
+    type: String,
+    peers: [mongoose.Schema.ObjectId],
+    state: {
+        type: Number,
+        default: 0
+    },
+    channel_id: mongoose.Schema.ObjectId,
     date: {
         type: Date,
         default: Date.now()

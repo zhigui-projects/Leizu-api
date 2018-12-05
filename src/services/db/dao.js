@@ -278,14 +278,26 @@ module.exports = class DbService {
         cc.name = dto.name;
         cc.path = dto.path;
         cc.version = dto.version;
-        cc.language = dto.type;
+        cc.type = dto.type;
         cc.peers = dto.peers;
+        cc.state = dto.state;
         cc = await cc.save();
         return cc;
     }
 
     static async findChaincodeById(id) {
-        let cc = Chaincode.findById(id);
+        let cc = await Chaincode.findById(id);
+        return cc;
+    }
+
+    static async findChaincodes(where) {
+        let query = {state: 1};
+        let cc = await Chaincode.find(where, query);
+        return cc;
+    }
+
+    static async findChaincodeAndUpdate(id, update) {
+        let cc = await Chaincode.findByIdAndUpdate(id, update);
         return cc;
     }
 };
