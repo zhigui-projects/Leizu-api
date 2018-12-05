@@ -9,7 +9,7 @@ services:
     - mongodb
     ports:
     - "8080:8080"
-    command: /bin/sh -c "cd /usr/src/app  && npm start"
+    command: /bin/sh -c "cd /usr/src/app && npm start"
 
   mongodb:
     image: mongo
