@@ -14,9 +14,9 @@ COPY package*.json ./
 # RUN npm install --only=production
 RUN npm install
 
-RUN npm run doc
-
 COPY . .
+
+RUN npm run doc
 
 EXPOSE 8080
 
