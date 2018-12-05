@@ -1,3 +1,7 @@
+# Copyright Zhigui.com. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 FROM node:8.12
 
 LABEL maintainer="info@ziggurat.cn"

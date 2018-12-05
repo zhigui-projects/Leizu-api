@@ -1,3 +1,9 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 'use strict';
 
 module.exports = {
@@ -6,7 +12,6 @@ module.exports = {
     'version': '1.3',
     'db': 'leveldb',
     'consensus': 'kafka',
-//    'consensus': 'solo',
     'kafka': [
         {
             'name': 'kafka1',
@@ -112,6 +117,6 @@ module.exports = {
     ],
     'channel': {
         'name': 'mychannel',
-        'orgs': ['peer-org1','peer-org2']
+        'orgs': ['peer-org1', 'peer-org2']
     }
 };

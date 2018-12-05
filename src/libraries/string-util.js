@@ -1,3 +1,9 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 const sha1 = require('sha1');
 
 const prefix = '/8Z4{Uj=19uMPRx6Y';

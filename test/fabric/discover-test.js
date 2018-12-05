@@ -1,3 +1,9 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 const Client = require('fabric-client');
 //const fs = require("fs");
 //const path = require("path");

@@ -1,7 +1,13 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 'use strict';
 
 const mongoose = require('../../../src/libraries/db');
-const ActionFactory = require("../../../src/services/action/factory");
+const ActionFactory = require('../../../src/services/action/factory');
 
 (async function(){
     let params = {

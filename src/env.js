@@ -1,17 +1,23 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 module.exports = {
     network: {
-      peer: {
-          tls: false,
-          availableImages:[
-              'hyperledger/fabric-ca-peer',
-          ]
-      },
-      orderer: {
-          tls: false,
-          availableImages:[
-              'hyperledger/fabric-ca-orderer',
-          ]
-      }
+        peer: {
+            tls: false,
+            availableImages: [
+                'hyperledger/fabric-ca-peer',
+            ]
+        },
+        orderer: {
+            tls: false,
+            availableImages: [
+                'hyperledger/fabric-ca-orderer',
+            ]
+        }
     },
     koaLogger: true,
     jwt: {

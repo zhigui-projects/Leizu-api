@@ -1,3 +1,9 @@
+/*
+Copyright Zhigui.com. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 const SshProvider = require('../../src/services/docker/ssh-provider');
 
 var connectionOptions = {
@@ -29,7 +35,7 @@ sshProvider.transferDirectory(transferDir).then(result => {
     console.log('Upload file succeed');
 }, err => {
     console.log('Upload file failed: ', err);
-}).catch(err =>{
+}).catch(err => {
     console.log('Upload catch err: ', err);
 });
 
