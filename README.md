@@ -1,6 +1,4 @@
-# Dashboard
-
-[![pipeline status](http://gitlab.ziggurat.cn/zhigui/dashboard-api/badges/master/pipeline.svg)](http://gitlab.ziggurat.cn/zhigui/dashboard-api/commits/master)
+# Dashboard API
 
 Ledger Management Dashboard
 
@@ -12,21 +10,34 @@ Ledger Management Dashboard
 * Docker-compose
 * Mongo
 
-## How to run
+> **Before start the api server**
+>
+> Add an environment file called `.env` to the root folder of the project, with the required project settings and credentials. For a starter environment file, you can use this one:
+> ```
+> cp .env.sample .env
+> ```
 
-* Start mongo
+## Run it manually
+
+1. Start mongo
 
 ```
 mongod --dbpath ~/mongo &
 ```
 
-* Install dependencies
+2. Install dependencies
 
 ```
 npm install
 ```
 
-* Start dashboard api server
+3. Generate api docs
+
+```
+npm run doc
+```
+
+4. Start dashboard api server
 
 Dev mode:
 
@@ -40,43 +51,18 @@ Prod mode:
 npm start
 ```
 
-* Sanity check
+5. Check api docs
 
-check api connectivity:
+Swagger UI version visit [localhost:8080](http://localhost:8080).
 
+JSON version visit [localhost:8080/api-docs](http://localhost:8080/api-docs).
+
+## Run it in docker way
+
+Just one click:
 ```
-curl localhost:8080/api/v1
+docker-compose -f docker-compose-dev.yml up --build -d
 ```
-
-`welcome to ledger dashboard!` should be returned.
-
-```
-curl localhost:8080/api/v1/demo
-```
-
-An error message asks for token should be returned as below:
-
-```
-{
-    "errors": [
-        {
-            "message": "Missing Auth Token"
-        }
-    ]
-}
-```
-
-* Check api docs
-
-> Run `npm run doc` before start the server.
-
-Swagger UI version visit [localhost:8080](localhost:8080).
-
-JSON version see `curl localhost:8080/api-docs`.
-
-* Start in docker way
-
-Just one click `docker-compose -f docker-compose-dev.yml up --build -d`.
 
 ## License
 
