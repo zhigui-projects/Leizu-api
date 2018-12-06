@@ -5,64 +5,41 @@ Ledger Management Dashboard
 ## Pre-requisitions
 
 * Node 8.9 <= version < 9.0
-* NPM
-* Docker
-* Docker-compose
-* Mongo
+* NPM v6.4+
+* Docker v18.06+
+* Docker-compose v1.18+
+* Mongo v4.0+
+
+## Quick Start
 
 > **Before start the api server**
 >
 > Add an environment file called `.env` to the root folder of the project, with the required project settings and credentials. For a starter environment file, you can use this one:
 > ```
-> cp .env.sample .env
+> cp .env.dev .env
 > ```
 
-## Run it manually
-
-1. Start mongo
+1. Start all the services:
 
 ```
-mongod --dbpath ~/mongo &
+docker-compose -f docker-compose-dev.yml up --build -d
 ```
 
-2. Install dependencies
+2. initialize the default user: admin/passw0rd
 
 ```
-npm install
+docker exec -it dashboard-mongodb mongo
+
+use zigdb;
+
+db.user.insert({username:'admin',password:'5c604fdbe7060760ab75d54c042d71f0e49e621a'});
 ```
 
-3. Generate api docs
-
-```
-npm run doc
-```
-
-4. Start dashboard api server
-
-Dev mode:
-
-```
-npm run dev
-```
-
-Prod mode:
-
-```
-npm start
-```
-
-5. Check api docs
+3. Check api docs
 
 Swagger UI version visit [localhost:8080](http://localhost:8080).
 
 JSON version visit [localhost:8080/api-docs](http://localhost:8080/api-docs).
-
-## Run it in docker way
-
-Just one click:
-```
-docker-compose -f docker-compose-dev.yml up --build -d
-```
 
 ## License
 
