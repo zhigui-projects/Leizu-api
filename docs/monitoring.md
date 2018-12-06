@@ -15,14 +15,14 @@ Master node need to install the following components:
 * Prometheus - pull and store time series metrics data
 * Grafana - the leading open source software for time series analytics
 * cAdvisor - collect metrics data of the containers
-* Consul - consul server agent for Prometheus to discover targets automatically
+* Consul - [Optional] consul server agent for Prometheus to discover targets automatically
 
 ## Worker node
 
 Worker node need to install the following components:
 
 * cAdvisor - collect metrics data of the containers
-* Consul - consul client agent registered in consul server as a service
+* Consul - [Optional] consul client agent registered in consul server as a service
 
 ## Installation
 
@@ -57,7 +57,7 @@ sudo docker run \
   --volume=/sys:/sys:ro \
   --volume=/var/lib/docker/:/var/lib/docker:ro \
   --volume=/dev/disk/:/dev/disk:ro \
-  --publish=8080:8080 \
+  --publish=9080:8080 \
   --detach=true \
   --name=cadvisor \
   google/cadvisor:latest
@@ -65,7 +65,7 @@ sudo docker run \
 
 ### Consul
 
-We need to install Consul on both master node and worker node.
+We need to install Consul on both master node and worker node for service discovery.
 
 * Consul server
 

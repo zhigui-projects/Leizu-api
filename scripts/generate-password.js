@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 const stringUtil = require('../src/libraries/string-util');
 
-const password = 'pasw0rd';
+const password = 'passw0rd';
 
-var hashedPassword = stringUtil.generatePasswordHash(password);
+const hashedPassword = stringUtil.generatePasswordHash(password);
 
 console.log(hashedPassword);

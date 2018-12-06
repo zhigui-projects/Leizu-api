@@ -1,0 +1,10 @@
+[
+  {
+    "labels": {
+      "job": "dashboard-api"
+    },
+    "targets": [
+      "cadvisor:8080"
+    ]
+  }
+]
