@@ -10,7 +10,7 @@ const request = require('supertest');
 const app = require('../src/index');
 const user = {
     username: 'admin',
-    password: 'pasw0rd'
+    password: 'passw0rd'
 };
 request(app.callback())
     .post('/api/v1/user/login')
