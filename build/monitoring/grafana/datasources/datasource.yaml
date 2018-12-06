@@ -5,12 +5,12 @@ apiVersion: 1
 # what's available in the database
 datasources:
 # <string, required> name of the datasource. Required
-- name: Prometheus Demo
+- name: Default Datasource
   # <string, required> datasource type. Required
   type: prometheus
   # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
-  access: direct
+  access: proxy
   # <string> url
-  url: http://47.254.85.168:9090
+  url: http://prometheus:9090
   # <bool> mark as default datasource. Max one per org
   isDefault: true

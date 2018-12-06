@@ -24,7 +24,7 @@ Ledger Management Dashboard
 docker-compose -f docker-compose-dev.yml up --build -d
 ```
 
-2. initialize the default user: admin/passw0rd
+2. Initialize the default user: `admin/passw0rd`
 ```
 docker exec -it dashboard-mongodb mongo
 use zigdb;
@@ -36,6 +36,24 @@ db.user.insert({username:'admin',password:'5c604fdbe7060760ab75d54c042d71f0e49e6
 Swagger UI version visit [localhost:8080](http://localhost:8080).
 
 JSON version visit [localhost:8080/api-docs](http://localhost:8080/api-docs).
+
+## Monitoring setup
+
+1. Start Grafana, Prometheus and cAdvisor
+```
+cd build/monitoring
+docker-compose up -d
+```
+
+2. Setup Grafana
+
+ 2.1. Visit [localhost:3000](http://localhost:3000) and login with `admin/admin`.
+
+ 2.2. Import `build/monitoring/grafana/dashboards/dashboard.json` and select the default datasource which has been provisioned during the startup.
+
+ 2.3. Enjoy your dashboard in the `Cycle view mode`.
+
+> If you want to know more about the monitoring, please follow the instructions [here](./docs/monitoring.md).
 
 ## License
 
