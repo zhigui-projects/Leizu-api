@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
+var fs = require('fs');
 var request = require('request');
 var log4js = require('log4js');
 var logger = log4js.getLogger('Configtxlator');
@@ -98,6 +99,23 @@ var Configtxlator = class {
             'printOrg': printOrg,
             'configtx': configtx,
             'configPath': configPath
+        };
+
+        return Configtxlator.postFormRequest(url, formData);
+    }
+
+    upload(consortiumId, orgName, archive) {
+        var url = this.endpoint.concat('/configtxlator/upload');
+        logger.debug('Upload msp files %s, request url: %s', archive, url);
+
+        const formData = {
+            destination: `./data/${consortiumId}/${orgName}/`,
+            msp: {
+                value: fs.createReadStream(archive),
+                options: {
+                    contentType: 'multipart/form-data'
+                }
+            }
         };
 
         return Configtxlator.postFormRequest(url, formData);
