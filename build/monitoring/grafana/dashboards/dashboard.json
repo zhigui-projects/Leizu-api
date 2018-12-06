@@ -1,34 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS_DEMO",
-      "label": "Prometheus Demo",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "5.1.4"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": "5.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "5.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -45,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -53,7 +23,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS_DEMO}",
+      "datasource": "Default Datasource",
       "fill": 1,
       "gridPos": {
         "h": 8,
@@ -87,7 +57,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "container_cpu_user_seconds_total{name=~\"a9e82c4c3d6f43029122898bd22b7052.*|prometheus|cadvisor\"}",
+          "expr": "container_cpu_user_seconds_total{name=~\"dashboard.*\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{name}}",
@@ -96,8 +66,9 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "CPU User Seconds",
+      "title": "Used CPU Seconds",
       "tooltip": {
         "shared": false,
         "sort": 0,
@@ -140,7 +111,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS_DEMO}",
+      "datasource": "Default Datasource",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -174,7 +145,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "container_memory_usage_bytes{name=~\"a9e82c4c3d6f43029122898bd22b7052.*|prometheus|cadvisor\"}",
+          "expr": "container_memory_usage_bytes{name=~\"dashboard.*\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -186,6 +157,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Memory Usage",
       "tooltip": {
@@ -263,7 +235,7 @@
     ]
   },
   "timezone": "",
-  "title": "Prometheus Demo",
+  "title": "Dashboard Monitoring",
   "uid": "QMbDZYAik",
-  "version": 8
+  "version": 1
 }
