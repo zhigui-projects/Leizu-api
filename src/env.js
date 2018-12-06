@@ -36,14 +36,6 @@ module.exports = {
     },
     configtxlator: {
         url: 'http://127.0.0.1:7059',
-        dataPath: '/tmp/configtxlator/data',
-        connectionOptions: {
-            mode: 'ssh',
-            host: '59.110.164.211',
-            username: 'root',
-            password: 'Zigcompile-passw0rd',
-            port: 22
-        }
     },
     cryptoConfig: {
         name: 'configtx.yaml',
