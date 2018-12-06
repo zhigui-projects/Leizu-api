@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
+const fs = require('fs');
 const uuid = require('uuid/v1');
 const logger = require('../../libraries/log4js');
 const common = require('../../libraries/common');
@@ -15,9 +16,8 @@ const Orderer = require('../../models/orderer');
 const Peer = require('../../models/peer');
 const stringUtil = require('../../libraries/string-util');
 const CredentialHelper = require('../fabric/credential-helper');
-const config = require('../../env');
-const SSHClient = require('../ssh/client');
 const DbService = require('./dao');
+const configtxlator = require('../fabric/configtxlator');
 
 module.exports = class FabricService {
 
@@ -222,28 +222,16 @@ module.exports = class FabricService {
                 let org = results.organizations[index];
                 org.name = stringUtil.getOrgName(org.id);
                 let organization = await DbService.findOrganizationByName(this.consortiumId, org.name);
-                if (!organization) {
-                    await FabricService.getOrgAdminKey(networkConfig, org);
-                    await this.storeCredentials(org);
-                    organization = await this.addOrganization(org);
-                    await FabricService.addCertAuthority(networkConfig, organization);
-                }
+                if (organization) continue;
+                await FabricService.getOrgAdminKey(networkConfig, org);
+                await this.storeCredentials(org);
+                organization = await this.addOrganization(org);
+                await FabricService.addCertAuthority(networkConfig, organization);
                 result.organizations.push(organization);
+                // transfer certs file to configtxlator for update channel
+                await configtxlator.upload(organization.consortium_id, organization.name, `${organization.msp_path}.zip`);
+                fs.unlinkSync(`${organization.msp_path}.zip`);
             }
-            // transfer certs file to configtxlator for update channel
-            let connectionOptions = config.configtxlator.connectionOptions;
-            if (process.env.CONFIGTXLATOR_HOST && process.env.CONFIGTXLATOR_USERNAME && process.env.CONFIGTXLATOR_PASSWORD) {
-                connectionOptions = {
-                    host: process.env.CONFIGTXLATOR_HOST,
-                    username: process.env.CONFIGTXLATOR_USERNAME,
-                    password: process.env.CONFIGTXLATOR_PASSWORD,
-                    port: process.env.CONFIGTXLATOR_PORT || 22
-                };
-            }
-            await SSHClient.getInstance(connectionOptions).transferDirectory({
-                localDir: `${config.cryptoConfig.path}/${this.consortiumId}`,
-                remoteDir: `${config.configtxlator.dataPath}/${this.consortiumId}`
-            });
             for (let index = 0; index < results.orderers.length; index++) {
                 let orderer = await this.addOrdererPeer(networkConfig, results.orderers[index]);
                 result.orderers.push(orderer);

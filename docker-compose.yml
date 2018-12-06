@@ -7,7 +7,7 @@ services:
     volumes:
     - ./nginx/nginx.conf.raw:/etc/nginx/nginx.conf.raw
     - /etc/letsencrypt:/etc/nginx/cert
-    env_file: .env
+    env_file: .env.sample
     ports:
     - "80:80"
     - "443:443"
@@ -40,6 +40,8 @@ services:
     container_name: dashboard-configtxlator
     ports:
     - "7059:7059"
+    volumes:
+    - /tmp/configtxlator/data:/work/data
 
 volumes:
   dbdata: {}

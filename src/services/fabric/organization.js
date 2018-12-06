@@ -6,14 +6,15 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
+const fs = require('fs');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const stringUtil = require('../../libraries/string-util');
-const config = require('../../env');
 const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
 const SSHClient = require('../ssh/client');
+const configtxlator = require('./configtxlator');
 
 module.exports = class OrganizationService {
 
@@ -71,20 +72,8 @@ module.exports = class OrganizationService {
                     orgDto.tlsRootCert = result.enrollment.rootCertificate;
                     orgDto.mspPath = await CredentialHelper.storeOrgCredentials(orgDto);
                     // transfer certs file to configtxlator for update channel
-                    let connectionOptions = config.configtxlator.connectionOptions;
-                    if (process.env.CONFIGTXLATOR_HOST && process.env.CONFIGTXLATOR_USERNAME && process.env.CONFIGTXLATOR_PASSWORD) {
-                        connectionOptions = {
-                            host: process.env.CONFIGTXLATOR_HOST,
-                            username: process.env.CONFIGTXLATOR_USERNAME,
-                            password: process.env.CONFIGTXLATOR_PASSWORD,
-                            port: process.env.CONFIGTXLATOR_PORT || 22
-                        };
-                    }
-                    const configTxPath = `${config.configtxlator.dataPath}/${consortiumId}/${name}`;
-                    await SSHClient.getInstance(connectionOptions).transferDirectory({
-                        localDir: orgDto.mspPath,
-                        remoteDir: configTxPath
-                    });
+                    await configtxlator.upload(orgDto.consortiumId, orgDto.orgName, `${orgDto.mspPath}.zip`);
+                    fs.unlinkSync(`${orgDto.mspPath}.zip`);
                 }
                 let organization = await DbService.addOrganization(orgDto);
                 if (organization) {
