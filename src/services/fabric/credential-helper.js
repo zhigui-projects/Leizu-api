@@ -155,7 +155,7 @@ const storeCredentials = async (credential, isPeer) => {
         if (isPeer && isPeer === true) {
             return credentialHelper.zipDirectoryFiles(isPeer, credential.name);
         }
-        return credentialHelper.dirName;
+        return credentialHelper.zipDirectoryFiles();
     } catch (e) {
         logger.error(e);
         return Promise.reject(`Failed storeCredentials: ${e}`);
