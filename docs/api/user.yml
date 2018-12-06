@@ -6,7 +6,7 @@ User:
       example: admin
     password:
       type: string
-      example: pasw0rd
+      example: passw0rd
 ResetPasswordRequest:
   type: object
   properties:
@@ -15,10 +15,10 @@ ResetPasswordRequest:
       example: admin
     password:
       type: string
-      example: pasw0rd
+      example: passw0rd
     newPassword:
       type: string
-      example: pasw0rd123
+      example: passw0rd123
 ResetPasswordResponse:
   type: object
   properties:

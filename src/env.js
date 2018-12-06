@@ -32,10 +32,18 @@ module.exports = {
         port: 22
     },
     prometheus: {
-        url: 'http://47.94.200.47:9090'
+        url: 'http://127.0.0.1:9090'
     },
     configtxlator: {
-        url: 'http://127.0.0.1:7059'
+        url: 'http://127.0.0.1:7059',
+        dataPath: '/tmp/configtxlator/data',
+        connectionOptions: {
+            mode: 'ssh',
+            host: '59.110.164.211',
+            username: 'root',
+            password: 'Zigcompile-passw0rd',
+            port: 22
+        }
     },
     cryptoConfig: {
         name: 'configtx.yaml',

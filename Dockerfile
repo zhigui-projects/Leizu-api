@@ -4,7 +4,7 @@
 
 FROM node:8.12
 
-LABEL maintainer="info@ziggurat.cn"
+LABEL maintainer="info@zhigui.com"
 
 WORKDIR /usr/src/app
 

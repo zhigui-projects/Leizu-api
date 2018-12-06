@@ -50,7 +50,7 @@ module.exports.createChannel = async function (channelCreateTx, channelName, org
         logger.debug('Response ::%j', response);
         if (response && response.status === 'SUCCESS') {
             logger.debug('Successfully created the channel \'' + channelName + '\'');
-            await utils.sleep(1000);
+            await utils.sleep(3000);
             const configEnvelope = await channel.getChannelConfigFromOrderer();
             if (configEnvelope) {
                 let configJson = BlockDecoder.HeaderType.decodePayloadBasedOnType(configEnvelope.toBuffer(), 1);
