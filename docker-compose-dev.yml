@@ -4,7 +4,7 @@ services:
     build: .
     image: dashboard
     container_name: dashboard-api
-    env_file: .env.sample
+    env_file: .env.dev
     links:
     - mongodb
     ports:
