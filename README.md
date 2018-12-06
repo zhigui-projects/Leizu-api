@@ -19,18 +19,18 @@ Ledger Management Dashboard
 > cp .env.dev .env
 > ```
 
-1. Start all the services:
- ```
- docker-compose -f docker-compose-dev.yml up --build -d
- ```
+1. Start all the services
+```
+docker-compose -f docker-compose-dev.yml up --build -d
+```
+
 2. initialize the default user: admin/passw0rd
- ```
- docker exec -it dashboard-mongodb mongo
+```
+docker exec -it dashboard-mongodb mongo
+use zigdb;
+db.user.insert({username:'admin',password:'5c604fdbe7060760ab75d54c042d71f0e49e621a'});
+```
 
- use zigdb;
-
- db.user.insert({username:'admin',password:'5c604fdbe7060760ab75d54c042d71f0e49e621a'});
- ```
 3. Check api docs
 
 Swagger UI version visit [localhost:8080](http://localhost:8080).
