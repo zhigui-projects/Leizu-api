@@ -10,12 +10,13 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install
-
 # If you are building your code for production
 # RUN npm install --only=production
+RUN npm install
 
 COPY . .
+
+RUN npm run doc
 
 EXPOSE 8080
 
