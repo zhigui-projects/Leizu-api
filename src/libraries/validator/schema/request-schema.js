@@ -36,13 +36,13 @@ module.exports.requestSchema = Joi.object().options({}).keys({
     kafka: Joi.array().items(Joi.object().keys(serverSchema)).when('consensus', consensusCondition),
     zookeeper: Joi.array().items(Joi.object().keys(serverSchema)).when('consensus', consensusCondition),
     ordererOrg: Joi.object().keys(Object.assign({
-        orderer: Joi.array().min(1).items(Joi.object().keys(serverSchema)).required()
+        orderer: Joi.array().min(1).items(Joi.object().keys(serverSchema)).required().sparse(false)
     }, orgSchema)).required(),
     peerOrgs: Joi.array().min(1).items(Object.assign({
-        peers: Joi.array().min(1).items(Joi.object().keys(serverSchema)).required()
+        peers: Joi.array().min(1).items(Joi.object().keys(serverSchema)).required().sparse(false)
     }, orgSchema)).required(),
     channel: Joi.object().keys({
         name: string,
-        orgs: Joi.array().min(1).unique().items(string).required()
+        orgs: Joi.array().min(1).unique().items(string).required().sparse(false)
     }).required()
 });
