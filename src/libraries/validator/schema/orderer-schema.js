@@ -28,7 +28,7 @@ module.exports.newOrdererSchema = Joi.object().keys({
             name: string,
             mspId: string,
             anchorPeer: Joi.object().keys(hostSchema).required()
-        })).required(),
+        })).required().sparse(false),
         ordererType: Joi.string().valid(Common.CONSENSUS_LIST).required(),
         kafka: Joi.array().min(1).items(Joi.object().keys(hostSchema)).when('ordererType', {
             is: Common.CONSENSUS_KAFKA,
