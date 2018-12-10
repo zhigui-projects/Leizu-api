@@ -167,10 +167,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: common.yml#/401Error
+  /peer:
     post:
       tags:
       - peer
-      - TODO
       summary: Create peer
       consumes:
       - application/json
@@ -257,6 +257,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: common.yml#/401Error
+  /organization:
     post:
       tags:
       - organization
@@ -319,6 +320,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: "channel.yml#/Error"
+  /channel:
     post:
       tags:
       - channel
