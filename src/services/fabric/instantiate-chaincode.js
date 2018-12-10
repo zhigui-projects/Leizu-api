@@ -14,7 +14,7 @@ const Client = require('fabric-client');
 const DbService = require('../db/dao');
 
 module.exports.instantiateChaincode = async function (peers, channelName, chaincodeName, chaincodeVersion,
-                                                      functionName, chaincodeType, args, org) {
+                                                      functionName, chaincodeType, args, org, endorsementPolicy) {
     var error_message = null;
     try {
         let client = new Client();
@@ -60,6 +60,7 @@ module.exports.instantiateChaincode = async function (peers, channelName, chainc
             txId: tx_id
         };
         if (functionName) request.fcn = functionName;
+        if (endorsementPolicy) request['endorsement-policy'] = endorsementPolicy;
 
         let results = await channel.sendInstantiateProposal(request, 60000);
         var proposalResponses = results[0];
