@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const Action = require('./action');
-const SshClient = require('../ssh/client');
+const Client = require('../transport/client');
 
 module.exports = class KafkaProvisionAction extends Action {
 
@@ -17,7 +17,7 @@ module.exports = class KafkaProvisionAction extends Action {
 
     async execute() {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
-        let sshClient = new SshClient({});
+        let client = Client.getInstance({});
         let zookeepers = params.zookeepers;
         let zooServers = [];
         let kafkaZooKeeperConnect = [];
@@ -30,7 +30,7 @@ module.exports = class KafkaProvisionAction extends Action {
         }
         let zooServersString = 'ZOO_SERVERS=' + zooServers.join(' ');
         for(let zk of zookeepers){
-            sshClient.setOptions(zk);
+            client.setOptions(zk);
             let hostName = zk.name;
             let clusterString = zooServersString.replace(zk.host,hostName);
             let parameters = [
@@ -43,7 +43,7 @@ module.exports = class KafkaProvisionAction extends Action {
                 '-p', '2181:2181','-p', '2888:2888','-p', '3888:3888',
                 'hyperledger/fabric-zookeeper'
             ];
-            await sshClient.createContainer(parameters);
+            await client.createContainer(parameters);
         }
 
         let brokerId = 0;
@@ -55,7 +55,7 @@ module.exports = class KafkaProvisionAction extends Action {
             hostnames.push(kafka.name + ':' + kafka.host );
         }
         for(let kafka of params.kafkas){
-            sshClient.setOptions(kafka);
+            client.setOptions(kafka);
             let hostname = kafka.name;
             let parameters = [
                 '--name', kafka.name,
@@ -78,7 +78,7 @@ module.exports = class KafkaProvisionAction extends Action {
                 'hyperledger/fabric-kafka'
             ];
             parameters = hostnames.concat(parameters);
-            await sshClient.createContainer(parameters);
+            await client.createContainer(parameters);
             brokerId = brokerId + 1;
             brokerList.push({
                 host: kafka.host,
@@ -87,5 +87,4 @@ module.exports = class KafkaProvisionAction extends Action {
         }
         return brokerList;
     }
-
 };

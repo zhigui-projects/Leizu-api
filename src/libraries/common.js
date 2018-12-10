@@ -92,6 +92,11 @@ module.exports.CHAINCODE_STATE_INSTALLED = 1; // The chaincode has been installe
 module.exports.CHAINCODE_STATE_DEPLOYED = 2;
 module.exports.CHAINCODE_STATE_UPGRADED = 3;
 
+module.exports.RUN_MODE = {
+    LOCAL: 'local',
+    REMOTE: 'remote'
+};
+
 module.exports.success = (data, msg) => {
     return {
         code: 200,

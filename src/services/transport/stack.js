@@ -22,5 +22,3 @@ module.exports = class StackPlan {
         plan.run(planName,target);
     }
 };
-
-
