@@ -7,10 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const NodeSSH = require('node-ssh');
-const AbstractSSH = require('./ssh');
+const BaseClient = require('./base');
 const logger = require('log4js').getLogger('SSHClient');
 
-module.exports = class SSHClient extends AbstractSSH {
+module.exports = class SSHClient extends BaseClient {
 
     constructor(options) {
         super(options);
