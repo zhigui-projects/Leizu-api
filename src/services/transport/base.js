@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
-module.exports = class AbstractSSH {
+module.exports = class BaseClient {
 
     constructor(options) {
         this.options = options;

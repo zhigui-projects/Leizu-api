@@ -113,13 +113,13 @@ module.exports.generatePeerContainerOptions = (options) => {
         '-e', `CORE_PEER_ID=${peerName}.${domainName}`,
         '-e', `CORE_PEER_ADDRESS=${peerName}.${domainName}:${port}`,
         '-e', `CORE_PEER_LOCALMSPID=${mspId}`,
-        '-e', `CORE_PEER_MSPCONFIGPATH=/data/msp`,
+        '-e', 'CORE_PEER_MSPCONFIGPATH=/data/msp',
         '-e', `CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerName}.${domainName}:${port}`,
         '-e', 'CORE_PEER_GOSSIP_USELEADERELECTION=true',
         '-e', 'CORE_PEER_GOSSIP_ORGLEADER=false',
         '-e', `CORE_PEER_TLS_ENABLED=${enableTls}`,
-        '-e', `CORE_PEER_TLS_CERT_FILE=/data/tls/server.crt`,
-        '-e', `CORE_PEER_TLS_KEY_FILE=/data/tls/server.key`,
+        '-e', 'CORE_PEER_TLS_CERT_FILE=/data/tls/server.crt',
+        '-e', 'CORE_PEER_TLS_KEY_FILE=/data/tls/server.key',
         '-e', 'CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca.pem',
         '-e', `CORE_PEER_TLS_CLIENTAUTHREQUIRED=${enableTls}`,
         '-e', 'CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/tls/ca.pem',
@@ -146,7 +146,7 @@ module.exports.generateOrdererContainerOptions = (options) => {
         '-v', `${workingDir}:/data`,
         '-v', '/var/run:/var/run',
         '-e', 'ORDERER_GENERAL_LOGLEVEL=debug',
-        '-e', `ORDERER_GENERAL_LISTENADDRESS=0.0.0.0`,
+        '-e', 'ORDERER_GENERAL_LISTENADDRESS=0.0.0.0',
         '-e', 'ORDERER_GENERAL_GENESISMETHOD=file',
         '-e', 'ORDERER_GENERAL_GENESISFILE=/data/genesis.block',
         '-e', `ORDERER_GENERAL_LOCALMSPID=${mspId}`,
@@ -191,7 +191,7 @@ module.exports.generateRandomInteger = (low, high) => {
 };
 
 module.exports.isSingleMachineTest = () => {
-    return false;
+    return process.env.ALL_IN_ONE || false;
 };
 
 module.exports.makeHostRecord = (hostName, ipAddress) => {
