@@ -13,10 +13,8 @@ const stringUtil = require('../../libraries/string-util');
 const CredentialHelper = require('./tools/credential-helper');
 const CryptoCaService = require('./tools/crypto-ca');
 const DbService = require('../db/dao');
-const SSHClient = require('../ssh/client');
-const configtxlator = require('./tools/configtxlator');
 const Client = require('../transport/client');
-const configtxlator = require('./configtxlator');
+const configtxlator = require('./tools/configtxlator');
 
 module.exports = class OrganizationService {
 

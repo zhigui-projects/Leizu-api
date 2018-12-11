@@ -14,12 +14,9 @@ const common = require('../../libraries/common');
 const CredentialHelper = require('./tools/credential-helper');
 const CryptoCaService = require('./tools/crypto-ca');
 const DbService = require('../db/dao');
-const SSHClient = require('../ssh/client');
+const Client = require('../transport/client');
 const ConfigTxlator = require('./tools/configtxlator');
 const CreateConfigTx = require('./tools/configtxgen');
-const Client = require('../transport/client');
-const ConfigTxlator = require('./configtxlator');
-const CreateConfigTx = require('./configtxgen');
 
 module.exports = class OrdererService {
 
