@@ -14,7 +14,7 @@ const Client = require('fabric-client');
 const DbService = require('../db/dao');
 
 module.exports.upgradeChaincode = async function (peers, channelName, chaincodeName, chaincodeVersion,
-                                                      functionName, chaincodeType, args, org) {
+                                                  functionName, chaincodeType, args, org, endorsementPolicy) {
     var error_message = null;
     try {
         let client = new Client();
@@ -60,6 +60,7 @@ module.exports.upgradeChaincode = async function (peers, channelName, chaincodeN
             txId: tx_id
         };
         if (functionName) request.fcn = functionName;
+        if (endorsementPolicy) request['endorsement-policy'] = endorsementPolicy;
 
         let results = await channel.sendUpgradeProposal(request, 60000);
         var proposalResponses = results[0];
