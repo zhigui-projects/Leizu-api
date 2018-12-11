@@ -68,6 +68,41 @@ module.exports = class ChaincodeService {
         }
     }
 
+    /*Roles allowed in the endorsement policy to be checked by VSCC:
+     i. peer
+     ii. client
+     iii. member
+     iv. admin
+    {
+        "identities": [
+            { "role": { "name": "member", "mspId": "Org1MSP" }},
+            { "role": { "name": "member", "mspId": "Org2MSP" }}
+            ],
+        "policy": {
+            "1-of": [{ "signed-by": 0 }, { "signed-by": 1 }]
+        }
+    }*/
+    static async buildEndorsementPolicy(orgIds) {
+        if (!orgIds || orgIds.length === 0) {
+            throw new Error('No organization was found');
+        }
+        let endorsementPolicy = {identities: [], policy: {}};
+        for (let orgId of orgIds) {
+            let organization = await DbService.findOrganizationById(orgId);
+            if (!organization) {
+                throw new Error('The organization does not exist: ' + orgId);
+            }
+            endorsementPolicy.identities.push({role: {name: 'peer', mspId: organization.msp_id}});
+        }
+        let signRoles = [];
+        for (let i in endorsementPolicy.identities) {
+            signRoles.push({'signed-by': parseInt(i)});
+        }
+        let signNum = Math.ceil(endorsementPolicy.identities.length / 2);
+        endorsementPolicy.policy[`${signNum}-of`] = signRoles;
+        return endorsementPolicy;
+    }
+
     static async uploadChaincode(params) {
         let {chaincodeName, chaincodeVersion, chaincodeType, chaincodePath} = params;
         chaincodeType = chaincodeType ? chaincodeType : common.CHAINCODE_TYPE_GOLANG;
@@ -120,6 +155,7 @@ module.exports = class ChaincodeService {
             if (!channel) {
                 throw new Error('The channel does not exist: ' + channelId);
             }
+            let endorsementPolicy = await ChaincodeService.buildEndorsementPolicy(channel.orgs);
 
             let orgIds = Object.getOwnPropertyNames(this._peersInfo);
             if (!orgIds || orgIds.length === 0) {
@@ -133,11 +169,11 @@ module.exports = class ChaincodeService {
             let chaincodeState;
             if (opt === 'instantiate') {
                 await instantiateChaincode.instantiateChaincode(this._peersInfo[orgId], channel.name, this._chaincodeName,
-                    this._chaincodeVersion, functionName, common.CHAINCODE_TYPE_GOLANG, args, organization);
+                    this._chaincodeVersion, functionName, common.CHAINCODE_TYPE_GOLANG, args, organization, endorsementPolicy);
                 chaincodeState = common.CHAINCODE_STATE_DEPLOYED;
             } else if (opt === 'upgrade') {
                 await upgradeChaincode.upgradeChaincode(this._peersInfo[orgId], channel.name, this._chaincodeName,
-                    this._chaincodeVersion, functionName, common.CHAINCODE_TYPE_GOLANG, args, organization);
+                    this._chaincodeVersion, functionName, common.CHAINCODE_TYPE_GOLANG, args, organization, endorsementPolicy);
                 chaincodeState = common.CHAINCODE_STATE_UPGRADED;
             }
             let cc = await DbService.findChaincodeAndUpdate(this._chaincodeId, {
