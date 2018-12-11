@@ -17,6 +17,9 @@ const DbService = require('../db/dao');
 const SSHClient = require('../ssh/client');
 const ConfigTxlator = require('./tools/configtxlator');
 const CreateConfigTx = require('./tools/configtxgen');
+const Client = require('../transport/client');
+const ConfigTxlator = require('./configtxlator');
+const CreateConfigTx = require('./configtxgen');
 
 module.exports = class OrdererService {
 
@@ -55,7 +58,7 @@ module.exports = class OrdererService {
 
         const ordererDto = await this.preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options});
 
-        const client = SSHClient.getInstance(connectionOptions);
+        const client = Client.getInstance(connectionOptions);
         const parameters = utils.generateOrdererContainerOptions(containerOptions);
         const container = await client.createContainer(parameters);
         await utils.wait(`${common.PROTOCOL.TCP}:${host}:${ordererPort}`);
@@ -80,19 +83,19 @@ module.exports = class OrdererService {
         const certFile = `${ordererDto.credentialsPath}.zip`;
         const remoteFile = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}.zip`;
         const remotePath = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`;
-        const client = SSHClient.getInstance(connectionOptions);
+        const client = Client.getInstance(connectionOptions);
         await client.transferFile({local: certFile, remote: remoteFile});
         await client.transferFile({local: genesisBlockFile, remote: `${remotePath}/genesis.block`});
 
 
-        const bash = SSHClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
+        const bash = Client.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
         await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}`]);
         return ordererDto;
     }
 
     static async createContainerNetwork(connectionOptions) {
         const parameters = utils.generateContainerNetworkOptions({name: common.DEFAULT_NETWORK.NAME});
-        await SSHClient.getInstance(connectionOptions).createContainerNetwork(parameters);
+        await Client.getInstance(connectionOptions).createContainerNetwork(parameters);
     }
 
     static async prepareCerts(org, consortium, ordererName) {

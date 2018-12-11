@@ -44,6 +44,7 @@ JSON version visit [localhost:8080/api-docs](http://localhost:8080/api-docs).
 cd build/monitoring
 docker-compose up -d
 ```
+Then you can visit [localhost:9090](http://localhost:9090) to explore the prometheus features.
 
 2. Setup Grafana
 

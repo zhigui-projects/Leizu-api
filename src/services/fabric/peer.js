@@ -12,7 +12,7 @@ const CredentialHelper = require('./tools/credential-helper');
 const CryptoCaService = require('./tools/crypto-ca');
 const DbService = require('../db/dao');
 const PromClient = require('../prometheus/client');
-const SSHClient = require('../ssh/client');
+const Client = require('../transport/client');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const config = require('../../env');
@@ -102,7 +102,7 @@ module.exports = class PeerService {
 
         const peerDto = await this.preContainerStart({org, peerName, connectionOptions});
 
-        const client = SSHClient.getInstance(connectionOptions);
+        const client = Client.getInstance(connectionOptions);
         const parameters = utils.generatePeerContainerOptions(containerOptions);
         const container = await client.createContainer(parameters);
         await utils.wait(`${common.PROTOCOL.TCP}:${host}:${peerPort}`);
@@ -125,18 +125,18 @@ module.exports = class PeerService {
         const certFile = `${peerDto.credentialsPath}.zip`;
         const remoteFile = `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}.zip`;
         const remotePath = `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`;
-        await SSHClient.getInstance(connectionOptions).transferFile({
+        await Client.getInstance(connectionOptions).transferFile({
             local: certFile,
             remote: remoteFile
         });
-        const bash = SSHClient.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
+        const bash = Client.getInstance(Object.assign({}, connectionOptions, {cmd: 'bash'}));
         await bash.exec(['-c', `unzip -o ${remoteFile} -d ${remotePath}`]);
         return peerDto;
     }
 
     static async createContainerNetwork(connectionOptions) {
         const parameters = utils.generateContainerNetworkOptions({name: common.DEFAULT_NETWORK.NAME});
-        await SSHClient.getInstance(connectionOptions).createContainerNetwork(parameters);
+        await Client.getInstance(connectionOptions).createContainerNetwork(parameters);
     }
 
     static async prepareCerts(org, peerName) {
