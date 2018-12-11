@@ -6,15 +6,15 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
-const query = require('./query');
-const configtxlator = require('./configtxlator');
-const logger = require('../../libraries/log4js').getLogger('Create-Channel');
+const query = require('../query');
+const configtxlator = require('../tools/configtxlator');
+const logger = require('../../../libraries/log4js').getLogger('Create-Channel');
 const Client = require('fabric-client');
-const ConfigTxBuilder = require('./configtxgen');
-const common = require('../../libraries/common');
-const utils = require('../../libraries/utils');
+const ConfigTxBuilder = require('../tools/configtxgen');
+const common = require('../../../libraries/common');
+const utils = require('../../../libraries/utils');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
-const DbService = require('../db/dao');
+const DbService = require('../../db/dao');
 
 module.exports.createChannel = async function (channelCreateTx, channelName, org) {
     try {

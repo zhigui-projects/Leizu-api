@@ -6,11 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
-const DbService = require('../db/dao');
+const DbService = require('../../db/dao');
 const CreateChannel = require('./create-channel');
 const JoinChannel = require('./join-channel');
 const UpdateChannel = require('./update-channel');
-const common = require('../../libraries/common');
+const common = require('../../../libraries/common');
 
 module.exports = class ChannelService {
     constructor(organizationId, channelName) {

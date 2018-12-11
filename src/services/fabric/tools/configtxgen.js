@@ -9,9 +9,9 @@ SPDX-License-Identifier: Apache-2.0
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const cryptoConfig = require('../../env').cryptoConfig;
-const common = require('../../libraries/common');
-const utils = require('../../libraries/utils');
+const cryptoConfig = require('../../../env').cryptoConfig;
+const common = require('../../../libraries/common');
+const utils = require('../../../libraries/utils');
 
 const batch_default = {
     BatchTimeout: '2s',

@@ -7,9 +7,9 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const {HFCAIdentityType} = require('fabric-ca-client/lib/IdentityService');
-const ChannelService = require('./join-channel');
-const CredentialHelper = require('./credential-helper');
-const CryptoCaService = require('./crypto-ca');
+const ChannelService = require('./channel/join-channel');
+const CredentialHelper = require('./tools/credential-helper');
+const CryptoCaService = require('./tools/crypto-ca');
 const DbService = require('../db/dao');
 const PromClient = require('../prometheus/client');
 const SSHClient = require('../ssh/client');

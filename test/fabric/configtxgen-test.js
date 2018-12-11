@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
-let ConfigTxBuilder = require('../../src/services/fabric/configtxgen');
+let ConfigTxBuilder = require('../../src/services/fabric/tools/configtxgen');
 
 let config = {
     Consortium: 'SampleConsortium',

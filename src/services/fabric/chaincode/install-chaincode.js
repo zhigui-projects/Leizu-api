@@ -7,12 +7,12 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 var util = require('util');
-const query = require('./query');
-const utils = require('../../libraries/utils');
-const common = require('../../libraries/common');
-const logger = require('../../libraries/log4js').getLogger('Install-chaincode');
+const query = require('../query');
+const utils = require('../../../libraries/utils');
+const common = require('../../../libraries/common');
+const logger = require('../../../libraries/log4js').getLogger('Install-chaincode');
 const Client = require('fabric-client');
-const DbService = require('../db/dao');
+const DbService = require('../../db/dao');
 
 module.exports.installChaincode = async function (peers, chaincodeName, chaincodePath,
                                                   chaincodeVersion, chaincodeType, org) {
