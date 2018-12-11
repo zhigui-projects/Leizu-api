@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const Action = require('./action');
-const ChannelService = require('../fabric/channel');
+const ChannelService = require('../fabric/channel/channel');
 const FabricService = require('../db/fabric');
 
 

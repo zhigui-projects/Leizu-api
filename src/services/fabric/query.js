@@ -26,7 +26,7 @@ const FabricCAServices = require('fabric-ca-client');
 const DbService = require('../db/dao');
 const utils = require('../../libraries/utils');
 const env = require('../../env');
-const CredentialHelper = require('./credential-helper').CredentialHelper;
+const CredentialHelper = require('./tools/credential-helper').CredentialHelper;
 
 module.exports.getBlockChainInfo = async (channelName, peerConfig, caConfig) => {
     let client = new Client();

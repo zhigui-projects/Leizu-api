@@ -7,11 +7,11 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const util = require('util');
-const query = require('./query');
-const common = require('../../libraries/common');
-const logger = require('../../libraries/log4js').getLogger('Join-Channel');
+const query = require('../query');
+const common = require('../../../libraries/common');
+const logger = require('../../../libraries/log4js').getLogger('Join-Channel');
 const Client = require('fabric-client');
-const DbService = require('../db/dao');
+const DbService = require('../../db/dao');
 
 const joinChannel = async function (channelName, org, peers) {
     let errorMessage = null;

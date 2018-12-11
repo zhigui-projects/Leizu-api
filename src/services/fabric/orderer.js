@@ -11,12 +11,12 @@ const {HFCAIdentityType} = require('fabric-ca-client/lib/IdentityService');
 const utils = require('../../libraries/utils');
 const config = require('../../env');
 const common = require('../../libraries/common');
-const CredentialHelper = require('./credential-helper');
-const CryptoCaService = require('./crypto-ca');
+const CredentialHelper = require('./tools/credential-helper');
+const CryptoCaService = require('./tools/crypto-ca');
 const DbService = require('../db/dao');
 const Client = require('../transport/client');
-const ConfigTxlator = require('./configtxlator');
-const CreateConfigTx = require('./configtxgen');
+const ConfigTxlator = require('./tools/configtxlator');
+const CreateConfigTx = require('./tools/configtxgen');
 
 module.exports = class OrdererService {
 

@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
-const CryptoCaService = require('../../src/services/fabric/crypto-ca');
-const CredentialHelper = require('../../src/services/fabric/credential-helper');
+const CryptoCaService = require('../../src/services/fabric/tools/crypto-ca');
+const CredentialHelper = require('../../src/services/fabric/tools/credential-helper');
 const stringUtil = require('../../src/libraries/string-util');
 const common = require('../../src/libraries/common');
 
