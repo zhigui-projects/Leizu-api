@@ -7,19 +7,16 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const Action = require('./action');
-const utils = require('../../libraries/utils');
-const common = require('../../libraries/common');
-const DaoService = require('../db/dao');
-const ChannelService = require('../fabric/channel');
+const ChannelService = require('../fabric/channel/channel');
 const FabricService = require('../db/fabric');
 
 module.exports = class PeerJoinAction extends Action {
 
-    constructor(){
+    constructor() {
         super();
     }
 
-    async execute(){
+    async execute() {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
         let channelName = params.channelName;
         let organizationId = params.organization._id;

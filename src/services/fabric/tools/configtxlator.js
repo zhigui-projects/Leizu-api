@@ -10,7 +10,7 @@ var fs = require('fs');
 var request = require('request');
 var log4js = require('log4js');
 var logger = log4js.getLogger('Configtxlator');
-var host = require('../../env').configtxlator;
+var host = require('../../../env').configtxlator;
 
 var Configtxlator = class {
     constructor(endpoint) {
@@ -104,7 +104,7 @@ var Configtxlator = class {
         return Configtxlator.postFormRequest(url, formData);
     }
 
-    upload(consortiumId, orgName, archive) {
+    async upload(consortiumId, orgName, archive) {
         var url = this.endpoint.concat('/configtxlator/upload');
         logger.debug('Upload msp files %s, request url: %s', archive, url);
 
@@ -118,7 +118,7 @@ var Configtxlator = class {
             }
         };
 
-        return Configtxlator.postFormRequest(url, formData);
+        return await Configtxlator.postFormRequest(url, formData);
     }
 
     static postBodyRequest(url, message) {

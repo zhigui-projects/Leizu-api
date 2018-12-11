@@ -9,8 +9,8 @@ SPDX-License-Identifier: Apache-2.0
 const FabricCAServices = require('fabric-ca-client');
 const User = require('fabric-ca-client/lib/User');
 const { HFCAIdentityAttributes, HFCAIdentityType } = require('fabric-ca-client/lib/IdentityService');
-const common = require('../../libraries/common');
-const stringUtil = require('../../libraries/string-util');
+const common = require('../../../libraries/common');
+const stringUtil = require('../../../libraries/string-util');
 
 module.exports = class CryptoCA {
 

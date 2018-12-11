@@ -12,7 +12,7 @@ const Multer = require('koa-multer');
 const ChainCode = require('../../models/chaincode');
 const utils = require('../../libraries/utils');
 const common = require('../../libraries/common');
-const ChaincodeService = require('../../services/fabric/chaincode');
+const ChaincodeService = require('../../services/fabric/chaincode/chaincode');
 const chaincodeGoPath = path.join(process.env.GOPATH ? process.env.GOPATH : common.CHAINCODE_GOPATH, 'src');
 
 const router = require('koa-router')({prefix: '/chaincode'});
@@ -114,6 +114,30 @@ router.post('/upgrade', async ctx => {
     try {
         let chaincodeService = await ChaincodeService.getInstance(chaincodeId);
         let result = await chaincodeService.instantiateAndUpgradeChaincode(channelId, functionName, args, 'upgrade');
+        ctx.body = common.success(result, common.SUCCESS);
+    } catch (err) {
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }
+});
+
+router.post('/invoke', async ctx => {
+    let {chaincodeId, channelId, functionName, args} = ctx.request.body;
+    try {
+        let chaincodeService = await ChaincodeService.getInstance(chaincodeId);
+        let result = await chaincodeService.invokeChaincode(channelId, functionName, args);
+        ctx.body = common.success(result, common.SUCCESS);
+    } catch (err) {
+        ctx.status = 400;
+        ctx.body = common.error({}, err.message);
+    }
+});
+
+router.post('/query', async ctx => {
+    let {chaincodeId, channelId, functionName, args} = ctx.request.body;
+    try {
+        let chaincodeService = await ChaincodeService.getInstance(chaincodeId);
+        let result = await chaincodeService.queryChaincode(channelId, functionName, args);
         ctx.body = common.success(result, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;

@@ -6,14 +6,14 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
-const query = require('./query');
-const logger = require('../../libraries/log4js').getLogger('Update-Channel');
-const configtxlator = require('./configtxlator');
+const query = require('../query');
+const logger = require('../../../libraries/log4js').getLogger('Update-Channel');
+const configtxlator = require('../tools/configtxlator');
 const Client = require('fabric-client');
-const stringUtil = require('../../libraries/string-util');
-const ConfigTxBuilder = require('./configtxgen');
-const DbService = require('../db/dao');
-const common = require('../../libraries/common');
+const stringUtil = require('../../../libraries/string-util');
+const ConfigTxBuilder = require('../tools/configtxgen');
+const DbService = require('../../db/dao');
+const common = require('../../../libraries/common');
 
 async function updateAppChannel(channelId, orgId, org) {
     try {
