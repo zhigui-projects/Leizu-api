@@ -13,7 +13,7 @@ const stringUtil = require('../../libraries/string-util');
 const CredentialHelper = require('./credential-helper');
 const CryptoCaService = require('./crypto-ca');
 const DbService = require('../db/dao');
-const SSHClient = require('../ssh/client');
+const Client = require('../transport/client');
 const configtxlator = require('./configtxlator');
 
 module.exports = class OrganizationService {
@@ -54,7 +54,7 @@ module.exports = class OrganizationService {
             };
             const parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
 
-            let container = await SSHClient.getInstance(connectOptions).createContainer(parameters);
+            let container = await Client.getInstance(connectOptions).createContainer(parameters);
             if (container) {
                 let options = {
                     caName: stringUtil.getCaName(name),
