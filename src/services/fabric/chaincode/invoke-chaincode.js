@@ -20,7 +20,6 @@ module.exports.invokeChaincode = async function (peers, org, channelName, chainc
     try {
         let client = new Client();
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
-        console.log('====================', org.msp_id);
         let channel = client.newChannel(channelName);
         const orderer = await DbService.findOrdererByConsortium(org.consortium_id);
         const newOrderer = await query.newOrderer(client, orderer);
