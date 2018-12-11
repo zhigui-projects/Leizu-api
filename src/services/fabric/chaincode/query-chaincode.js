@@ -43,7 +43,6 @@ module.exports.queryChaincode = async function (peers, org, channelName, chainco
             args: args
         };
         let responsePayloads = await channel.queryByChaincode(request, true);
-        console.log('=================', responsePayloads);
         return compareQueryResponseResults(responsePayloads);
     } catch (error) {
         logger.error(error.stack ? error.stack : error);
