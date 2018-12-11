@@ -10,11 +10,11 @@ const fs = require('fs');
 const common = require('../../libraries/common');
 const utils = require('../../libraries/utils');
 const stringUtil = require('../../libraries/string-util');
-const CredentialHelper = require('./credential-helper');
-const CryptoCaService = require('./crypto-ca');
+const CredentialHelper = require('./tools/credential-helper');
+const CryptoCaService = require('./tools/crypto-ca');
 const DbService = require('../db/dao');
 const SSHClient = require('../ssh/client');
-const configtxlator = require('./configtxlator');
+const configtxlator = require('./tools/configtxlator');
 
 module.exports = class OrganizationService {
 

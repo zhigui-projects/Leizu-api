@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 const common = require('../../libraries/common');
 const logger = require('../../libraries/log4js');
-const ChannelService = require('../../services/fabric/channel');
+const ChannelService = require('../../services/fabric/channel/channel');
 const DbService = require('../../services/db/dao');
 const FabricService = require('../../services/db/fabric');
 const Validator = require('../../libraries/validator/validator');

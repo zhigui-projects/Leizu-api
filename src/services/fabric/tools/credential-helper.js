@@ -10,9 +10,9 @@ const fs = require('fs');
 const shell = require('shelljs');
 const path = require('path');
 const archiver = require('archiver');
-const stringUtil = require('../../libraries/string-util');
-const cryptoConfig = require('../../env').cryptoConfig;
-const logger = require('../../libraries/log4js').getLogger('CredentialHelper');
+const stringUtil = require('../../../libraries/string-util');
+const cryptoConfig = require('../../../env').cryptoConfig;
+const logger = require('../../../libraries/log4js').getLogger('CredentialHelper');
 
 const certPath = {
     cacerts: 'cacerts',

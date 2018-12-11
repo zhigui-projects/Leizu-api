@@ -6,11 +6,13 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
-const DbService = require('../db/dao');
-const common = require('../../libraries/common');
+const DbService = require('../../db/dao');
+const common = require('../../../libraries/common');
 const installChaincode = require('./install-chaincode');
 const instantiateChaincode = require('./instantiate-chaincode');
 const upgradeChaincode = require('./upgrade-chaincode');
+const invokeChaincode = require('./invoke-chaincode');
+const queryChaincode = require('./query-chaincode');
 
 module.exports = class ChaincodeService {
     constructor(chaincodeId, peers) {
@@ -155,7 +157,8 @@ module.exports = class ChaincodeService {
             if (!channel) {
                 throw new Error('The channel does not exist: ' + channelId);
             }
-            let endorsementPolicy = await ChaincodeService.buildEndorsementPolicy(channel.orgs);
+            let endorsementPolicy = null;
+            // endorsementPolicy = await ChaincodeService.buildEndorsementPolicy(channel.orgs);
 
             let orgIds = Object.getOwnPropertyNames(this._peersInfo);
             if (!orgIds || orgIds.length === 0) {
@@ -182,6 +185,56 @@ module.exports = class ChaincodeService {
             });
             cc.state = chaincodeState;
             return cc;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async invokeChaincode(channelId, functionName, args) {
+        try {
+            if (this._chaincodeState < common.CHAINCODE_STATE_DEPLOYED) {
+                throw new Error('The chaincode has not been instantiated, state: ' + this._chaincodeState);
+            }
+            let channel = await DbService.getChannelById(channelId);
+            if (!channel) {
+                throw new Error('The channel does not exist: ' + channelId);
+            }
+
+            let orgIds = Object.getOwnPropertyNames(this._peersInfo);
+            if (!orgIds || orgIds.length === 0) {
+                throw new Error('No organization was found');
+            }
+            let orgId = orgIds[1];
+            let organization = await DbService.findOrganizationById(orgId);
+            if (!organization) {
+                throw new Error('The organization does not exist: ' + orgId);
+            }
+            return invokeChaincode.invokeChaincode(this._peers, organization, channel.name, this._chaincodeName, functionName, args);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async queryChaincode(channelId, functionName, args) {
+        try {
+            if (this._chaincodeState < common.CHAINCODE_STATE_DEPLOYED) {
+                throw new Error('The chaincode has not been instantiated, state: ' + this._chaincodeState);
+            }
+            let channel = await DbService.getChannelById(channelId);
+            if (!channel) {
+                throw new Error('The channel does not exist: ' + channelId);
+            }
+
+            let orgIds = Object.getOwnPropertyNames(this._peersInfo);
+            if (!orgIds || orgIds.length === 0) {
+                throw new Error('No organization was found');
+            }
+            let orgId = orgIds[0];
+            let organization = await DbService.findOrganizationById(orgId);
+            if (!organization) {
+                throw new Error('The organization does not exist: ' + orgId);
+            }
+            return queryChaincode.queryChaincode(this._peers, organization, channel.name, this._chaincodeName, functionName, args);
         } catch (err) {
             throw err;
         }

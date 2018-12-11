@@ -15,9 +15,9 @@ const Organization = require('../../models/organization');
 const Orderer = require('../../models/orderer');
 const Peer = require('../../models/peer');
 const stringUtil = require('../../libraries/string-util');
-const CredentialHelper = require('../fabric/credential-helper');
+const CredentialHelper = require('../fabric/tools/credential-helper');
 const DbService = require('./dao');
-const configtxlator = require('../fabric/configtxlator');
+const configtxlator = require('../fabric/tools/configtxlator');
 
 module.exports = class FabricService {
 
@@ -65,6 +65,13 @@ module.exports = class FabricService {
         try {
             let orgs = result.organizations.map(org => org._id);
             let peers = result.peers.map(peer => peer._id);
+            let oldChannel = await Channel.findById(channelId);
+            if (oldChannel.orgs && oldChannel.orgs.length > 0) {
+                orgs = orgs.concat(oldChannel.orgs);
+            }
+            if (oldChannel.peers && oldChannel.peers.length > 0) {
+                peers = peers.concat(oldChannel.peers);
+            }
             let channel = await Channel.findByIdAndUpdate(channelId, {orgs: orgs, peers: peers});
             return channel;
         } catch (err) {
