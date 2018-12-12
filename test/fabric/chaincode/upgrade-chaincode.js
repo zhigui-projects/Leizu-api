@@ -12,8 +12,8 @@ const constants = require('../constants');
 const token = 'Bearer ' + constants.token;
 
 const chaincode = {
-    chaincodeId: '5c07a2149a086a126b7eb090',
-    channelId: '5c0628d95cba28b4e22dc8bf',
+    chaincodeId: constants.chaincodeId,
+    channelId: constants.channelId,
     args: ['a', '100', 'b', '200']
 };
 

@@ -71,9 +71,6 @@ module.exports = class OrganizationService {
                     orgDto.rootCert = result.enrollment.rootCertificate;
                     orgDto.tlsRootCert = result.enrollment.rootCertificate;
                     orgDto.mspPath = await CredentialHelper.storeOrgCredentials(orgDto);
-                    // transfer certs file to configtxlator for update channel
-                    await configtxlator.upload(orgDto.consortiumId, orgDto.orgName, `${orgDto.mspPath}.zip`);
-                    fs.unlinkSync(`${orgDto.mspPath}.zip`);
                 }
                 let organization = await DbService.addOrganization(orgDto);
                 if (organization) {
@@ -83,6 +80,9 @@ module.exports = class OrganizationService {
                         orgId: organization._id,
                         consortiumId: consortiumId
                     });
+                    // transfer certs file to configtxlator for update channel
+                    await configtxlator.upload(orgDto.consortiumId, orgDto.orgName, `${orgDto.mspPath}.zip`);
+                    fs.unlinkSync(`${orgDto.mspPath}.zip`);
                 }
                 return organization;
             }

@@ -94,7 +94,7 @@ module.exports = class ChaincodeService {
             if (!organization) {
                 throw new Error('The organization does not exist: ' + orgId);
             }
-            endorsementPolicy.identities.push({role: {name: 'peer', mspId: organization.msp_id}});
+            endorsementPolicy.identities.push({role: {name: 'member', mspId: organization.msp_id}});
         }
         let signRoles = [];
         for (let i in endorsementPolicy.identities) {
@@ -157,8 +157,7 @@ module.exports = class ChaincodeService {
             if (!channel) {
                 throw new Error('The channel does not exist: ' + channelId);
             }
-            let endorsementPolicy = null;
-            // endorsementPolicy = await ChaincodeService.buildEndorsementPolicy(channel.orgs);
+            let endorsementPolicy = await ChaincodeService.buildEndorsementPolicy(channel.orgs);
 
             let orgIds = Object.getOwnPropertyNames(this._peersInfo);
             if (!orgIds || orgIds.length === 0) {
