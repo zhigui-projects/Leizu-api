@@ -79,13 +79,17 @@ module.exports = class PeerService {
         const org = await DbService.findOrganizationById(organizationId);
         const peerName = `peer-${host.replace(/\./g, '-')}`;
         let peerPort = common.PORT.PEER;
+        let peerHome = common.PEER_HOME;
+        if (process.env.RUN_MODE === common.RUN_MODE.LOCAL) {
+            peerHome = '/tmp' + peerHome;
+        }
         if (utils.isSingleMachineTest()) {
             peerPort = utils.generateRandomHttpPort();
         }
 
         let containerOptions = {
             image: image || config.network.peer.availableImages[0],
-            workingDir: `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`,
+            workingDir: `${peerHome}/${org.consortium_id}/${org.name}/peers/${peerName}`,
             peerName,
             domainName: org.domain_name,
             mspId: org.msp_id,
@@ -100,7 +104,7 @@ module.exports = class PeerService {
             port: port || config.ssh.port
         };
 
-        const peerDto = await this.preContainerStart({org, peerName, connectionOptions});
+        const peerDto = await this.preContainerStart({org, peerName, peerHome, connectionOptions});
 
         const client = Client.getInstance(connectionOptions);
         const parameters = utils.generatePeerContainerOptions(containerOptions);
@@ -118,13 +122,13 @@ module.exports = class PeerService {
         }
     }
 
-    static async preContainerStart({org, peerName, connectionOptions}) {
+    static async preContainerStart({org, peerName, peerHome, connectionOptions}) {
         await this.createContainerNetwork(connectionOptions);
 
         const peerDto = await this.prepareCerts(org, peerName);
         const certFile = `${peerDto.credentialsPath}.zip`;
-        const remoteFile = `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}.zip`;
-        const remotePath = `${common.PEER_HOME}/${org.consortium_id}/${org.name}/peers/${peerName}`;
+        const remoteFile = `${peerHome}/${org.consortium_id}/${org.name}/peers/${peerName}.zip`;
+        const remotePath = `${peerHome}/${org.consortium_id}/${org.name}/peers/${peerName}`;
         await Client.getInstance(connectionOptions).transferFile({
             local: certFile,
             remote: remoteFile

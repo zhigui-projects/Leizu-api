@@ -35,10 +35,14 @@ module.exports = class OrdererService {
         const consortium = await DbService.getConsortiumById(org.consortium_id);
         const ordererName = `orderer-${host.replace(/\./g, '-')}`;
         const ordererPort = common.PORT.ORDERER;
+        let ordererHome = common.ORDERER_HOME;
+        if (process.env.RUN_MODE === common.RUN_MODE.LOCAL) {
+            ordererHome = '/tmp'+ordererHome;
+        }
 
         let containerOptions = {
             image: image || config.network.orderer.availableImages[0],
-            workingDir: `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`,
+            workingDir: `${ordererHome}/${consortium._id}/${org.name}/peers/${ordererName}`,
             ordererName,
             domainName: org.domain_name,
             mspId: org.msp_id,
@@ -53,7 +57,7 @@ module.exports = class OrdererService {
             port: port || config.ssh.port
         };
 
-        const ordererDto = await this.preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options});
+        const ordererDto = await this.preContainerStart({org, consortium, ordererName, ordererHome, ordererPort, connectionOptions, options});
 
         const client = Client.getInstance(connectionOptions);
         const parameters = utils.generateOrdererContainerOptions(containerOptions);
@@ -71,15 +75,15 @@ module.exports = class OrdererService {
         }
     }
 
-    static async preContainerStart({org, consortium, ordererName, ordererPort, connectionOptions, options}) {
+    static async preContainerStart({org, consortium, ordererName, ordererHome, ordererPort, connectionOptions, options}) {
         await this.createContainerNetwork(connectionOptions);
         let ordererDto = await this.prepareCerts(org, consortium, ordererName);
         options.host = connectionOptions.host;
         const genesisBlockFile = await this.prepareGenesisBlock({org, consortium, ordererName, ordererPort, configtx: options});
 
         const certFile = `${ordererDto.credentialsPath}.zip`;
-        const remoteFile = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}.zip`;
-        const remotePath = `${common.ORDERER_HOME}/${consortium._id}/${org.name}/peers/${ordererName}`;
+        const remoteFile = `${ordererHome}/${consortium._id}/${org.name}/peers/${ordererName}.zip`;
+        const remotePath = `${ordererHome}/${consortium._id}/${org.name}/peers/${ordererName}`;
         const client = Client.getInstance(connectionOptions);
         await client.transferFile({local: certFile, remote: remoteFile});
         await client.transferFile({local: genesisBlockFile, remote: `${remotePath}/genesis.block`});
