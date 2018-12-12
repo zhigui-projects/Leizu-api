@@ -33,7 +33,7 @@ db.user.insert({username:'admin',password:'5c604fdbe7060760ab75d54c042d71f0e49e6
 
 3. Start dashboard api server
 ```
-npm install && npm run dev
+npm install && npm run doc && npm run dev
 ```
 
 4. Check api docs
