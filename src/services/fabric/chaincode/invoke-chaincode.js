@@ -65,13 +65,14 @@ module.exports.invokeChaincode = async function (peers, org, channelName, chainc
         var proposal = results[1];
 
         var one_good = false;
+        var validPeers = [];
         for (var i in proposalResponses) {
             if (proposalResponses && proposalResponses[i].response &&
                 proposalResponses[i].response.status === 200) {
                 one_good = true;
+                validPeers.push(targets[i]);
                 logger.info('invoke chaincode proposal was good');
             } else {
-                targets.splice(i, 1);
                 if (proposalResponses[i].details) {
                     logger.error(util.format('invoke chaincode proposal was bad on %s, %s', targets[i], proposalResponses[i].details));
                 } else {
@@ -82,7 +83,7 @@ module.exports.invokeChaincode = async function (peers, org, channelName, chainc
 
         if (one_good) {
             var promises = [];
-            let eventHubs = targets.map(peer => channel.newChannelEventHub(peer));
+            let eventHubs = validPeers.map(peer => channel.newChannelEventHub(peer));
             eventHubs.forEach((eh) => {
                 let invokeEventPromise = new Promise((resolve, reject) => {
                     let event_timeout = setTimeout(() => {

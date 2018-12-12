@@ -100,7 +100,7 @@ module.exports = class ChaincodeService {
         for (let i in endorsementPolicy.identities) {
             signRoles.push({'signed-by': parseInt(i)});
         }
-        let signNum = Math.ceil(endorsementPolicy.identities.length / 2) + 1;
+        let signNum = Math.ceil(endorsementPolicy.identities.length / 2);
         endorsementPolicy.policy[`${signNum}-of`] = signRoles;
         return endorsementPolicy;
     }

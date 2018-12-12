@@ -35,6 +35,7 @@ module.exports.upgradeChaincode = async function (peers, channelName, chaincodeN
                 let newPeer = await query.newPeer(client, peer, org);
                 channel.addPeer(newPeer);
                 targets.push(newPeer);
+                break;
             }
         } else {
             peers = await DbService.findPeersByOrgId(org._id, common.PEER_TYPE_PEER);
@@ -43,6 +44,7 @@ module.exports.upgradeChaincode = async function (peers, channelName, chaincodeN
                     let newPeer = await query.newPeer(client, peer, org);
                     channel.addPeer(newPeer);
                     targets.push(newPeer);
+                    break;
                 }
             }
         }
@@ -62,7 +64,7 @@ module.exports.upgradeChaincode = async function (peers, channelName, chaincodeN
         if (functionName) request.fcn = functionName;
         if (endorsementPolicy) request['endorsement-policy'] = endorsementPolicy;
 
-        let results = await channel.sendUpgradeProposal(request, 60000);
+        let results = await channel.sendUpgradeProposal(request, 90000);
         var proposalResponses = results[0];
         var proposal = results[1];
 
