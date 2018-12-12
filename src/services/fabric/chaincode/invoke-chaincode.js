@@ -20,7 +20,6 @@ module.exports.invokeChaincode = async function (peers, org, channelName, chainc
     try {
         let client = new Client();
         client.setAdminSigningIdentity(org.admin_key, org.admin_cert, org.msp_id);
-        console.log('====================', org.msp_id);
         let channel = client.newChannel(channelName);
         const orderer = await DbService.findOrdererByConsortium(org.consortium_id);
         const newOrderer = await query.newOrderer(client, orderer);
@@ -66,24 +65,25 @@ module.exports.invokeChaincode = async function (peers, org, channelName, chainc
         var proposal = results[1];
 
         var one_good = false;
+        var validPeers = [];
         for (var i in proposalResponses) {
             if (proposalResponses && proposalResponses[i].response &&
                 proposalResponses[i].response.status === 200) {
                 one_good = true;
+                validPeers.push(targets[i]);
                 logger.info('invoke chaincode proposal was good');
             } else {
                 if (proposalResponses[i].details) {
-                    errMessage = 'invoke chaincode  proposal was bad, ' + proposalResponses[i].details;
+                    logger.error(util.format('invoke chaincode proposal was bad on %s, %s', targets[i], proposalResponses[i].details));
                 } else {
-                    errMessage = 'invoke chaincode  proposal was bad, ' + proposalResponses[i].toString();
+                    logger.error(util.format('invoke chaincode proposal was bad on %s, %s', targets[i], proposalResponses[i].toString()));
                 }
-                logger.error(errMessage);
             }
         }
 
         if (one_good) {
             var promises = [];
-            let eventHubs = channel.getChannelEventHubsForOrg();
+            let eventHubs = validPeers.map(peer => channel.newChannelEventHub(peer));
             eventHubs.forEach((eh) => {
                 let invokeEventPromise = new Promise((resolve, reject) => {
                     let event_timeout = setTimeout(() => {
@@ -148,6 +148,8 @@ module.exports.invokeChaincode = async function (peers, org, channelName, chainc
                     logger.debug(eventHubResult.toString());
                 }
             }
+        } else {
+            errMessage = 'invoke transaction proposalResponse all bad';
         }
     } catch (error) {
         logger.error(error.stack ? error.stack : error);
