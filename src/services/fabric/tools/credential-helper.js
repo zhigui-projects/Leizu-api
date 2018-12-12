@@ -110,22 +110,30 @@ module.exports.CredentialHelper = class CredentialHelper {
     }
 
     async zipDirectoryFiles(isPeer, peerName) {
-        let archiveFileName = this.archiveFileName;
-        let dirName = this.dirName;
-        if (isPeer && isPeer === true) {
-            archiveFileName = path.join(dirName, 'peers', peerName + '.zip');
-            dirName = path.join(dirName, 'peers', peerName);
-        }
-        let output = fs.createWriteStream(archiveFileName);
-        let archive = archiver('zip', {
-            zlib: {level: 9}
-        });
-        archive.pipe(output);
-        archive.directory(dirName, false);
-        await archive.finalize();
-        return dirName;
-    }
+        return new Promise((resolve, reject) => {
+            let archiveFileName = this.archiveFileName;
+            let dirName = this.dirName;
+            if (isPeer && isPeer === true) {
+                archiveFileName = path.join(dirName, 'peers', peerName + '.zip');
+                dirName = path.join(dirName, 'peers', peerName);
+            }
+            let output = fs.createWriteStream(archiveFileName);
+            let archive = archiver('zip', {
+                zlib: {level: 9}
+            });
+            archive.pipe(output);
+            archive.directory(dirName, false);
+            output.on('close', () => {
+                logger.debug(`${archiveFileName}: ${archive.pointer()} total bytes`);
+                resolve(dirName);
+            });
 
+            archive.on('error', (err) => {
+                reject(err);
+            });
+            archive.finalize();
+        });
+    }
 };
 
 module.exports.storePeerCredentials = async (credential) => {
@@ -153,9 +161,9 @@ const storeCredentials = async (credential, isPeer) => {
         credentialHelper.writeMspCert(path.join(dirName, 'msp', certPath.tlsintermediatecerts), credential.tlsintermediatecerts);
         credentialHelper.writeTlsCert(path.join(dirName, 'tls'), credential.tls);
         if (isPeer && isPeer === true) {
-            return credentialHelper.zipDirectoryFiles(isPeer, credential.name);
+            return await credentialHelper.zipDirectoryFiles(isPeer, credential.name);
         }
-        return credentialHelper.zipDirectoryFiles();
+        return await credentialHelper.zipDirectoryFiles();
     } catch (e) {
         logger.error(e);
         return Promise.reject(`Failed storeCredentials: ${e}`);

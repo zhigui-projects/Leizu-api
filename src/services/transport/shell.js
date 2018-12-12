@@ -16,6 +16,7 @@ module.exports = class ShellClient extends BaseClient {
     constructor(options) {
         super(options);
         this.cmd = options.cmd || 'docker';
+        shell.config.silent = true;
     }
 
     static getInstance(options) {
@@ -25,7 +26,7 @@ module.exports = class ShellClient extends BaseClient {
     async createContainer(parameters) {
         try {
             let containerId = await this.exec(parameters);
-            return await this.exec(['start', containerId]);
+            return this.exec(['start', containerId]);
         } catch (ex) {
             logger.error(ex);
             throw ex;
@@ -34,7 +35,7 @@ module.exports = class ShellClient extends BaseClient {
 
     async createContainerNetwork(parameters) {
         try {
-            const networkId = await this.exec(parameters);
+            const networkId = this.exec(parameters);
             logger.info(`Docker container network ${networkId} created.`);
             return networkId;
         } catch (ex) {
@@ -49,7 +50,9 @@ module.exports = class ShellClient extends BaseClient {
 
     async transferFile(parameters) {
         try {
-            shell.cp(parameters.local, parameters.remote);
+            const remote = parameters.remote;
+            shell.mkdir('-p', remote.substr(0, remote.lastIndexOf('/')));
+            shell.cp(parameters.local, remote);
         } catch (ex) {
             logger.error(ex);
             throw ex;
@@ -58,7 +61,7 @@ module.exports = class ShellClient extends BaseClient {
 
     async transferDirectory(parameters) {
         try {
-            await shell.cp('-R', parameters.localDir, parameters.remoteDir);
+            shell.cp('-R', parameters.localDir, parameters.remoteDir);
         } catch (ex) {
             logger.error(ex);
             throw ex;
@@ -67,7 +70,7 @@ module.exports = class ShellClient extends BaseClient {
 
     async exec(parameters) {
         try {
-            return await shell.exec(this.buildCommand(parameters), {async: true}).stdout;
+            return shell.exec(this.buildCommand(parameters)).stdout.trim();
         } catch (ex) {
             logger.error(ex);
             throw ex;
@@ -75,6 +78,8 @@ module.exports = class ShellClient extends BaseClient {
     }
 
     buildCommand(parameters = []) {
-        return [this.cmd].concat(escape(parameters)).join(' ');
+        const command = [this.cmd].concat(escape(parameters)).join(' ');
+        logger.debug('The full command to be run: %s', command);
+        return command;
     }
 };
