@@ -7,13 +7,13 @@ SPDX-License-Identifier: Apache-2.0
 module.exports = {
     network: {
         peer: {
-            tls: false,
+            tls: true,
             availableImages: [
                 'hyperledger/fabric-ca-peer',
             ]
         },
         orderer: {
-            tls: false,
+            tls: true,
             availableImages: [
                 'hyperledger/fabric-ca-orderer',
             ]
