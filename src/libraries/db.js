@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 const mongoose = require('mongoose');
 const config = require('../env').database;
+const logger = require('log4js').getLogger('mongoose');
 
 const options = {
     useNewUrlParser: true,
@@ -20,9 +21,13 @@ const options = {
     family: 4 // Use IPv4, skip trying IPv6
 };
 
-mongoose.connect(process.env.MONGODB_URI || config.url, options);
-if (config.debug) {
-    mongoose.set('debug', true);
-}
+mongoose.connect(process.env.MONGODB_URI || config.url, options)
+    .then(() => {
+        logger.info('MongoDB is connected');
+    })
+    .catch((err) => {
+        logger.error(`MongoDB connection error: ${err}`);
+    });
+mongoose.set('debug', config.debug || false);
 
 module.exports = mongoose;
