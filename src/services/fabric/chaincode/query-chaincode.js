@@ -43,14 +43,14 @@ module.exports.queryChaincode = async function (peers, org, channelName, chainco
             args: args
         };
         let responsePayloads = await channel.queryByChaincode(request, true);
-        return compareQueryResponseResults(responsePayloads);
+        return compareQueryResponseResults(responsePayloads, targets);
     } catch (error) {
         logger.error(error.stack ? error.stack : error);
         throw error;
     }
 };
 
-function compareQueryResponseResults(responsePayloads) {
+function compareQueryResponseResults(responsePayloads, targets) {
     if (!responsePayloads || responsePayloads.length === 0) {
         throw new Error('responsePayloads is null');
     }
@@ -61,16 +61,24 @@ function compareQueryResponseResults(responsePayloads) {
     let firstOne = null;
     for (let i = 0; i < responsePayloads.length; i++) {
         if (Buffer.isBuffer(responsePayloads[i])) {
+            logger.info('compareQueryResponseResults - payloads was good on %s, payload:%s', targets[i], responsePayloads[i]);
             if (firstOne) {
                 if (!responsePayloads[i].equals(firstOne)) {
-                    logger.error('compareQueryResponseResults - payloads do not match index=%s', i);
+                    logger.error('compareQueryResponseResults - payloads do not match index=%s, [%s:%s]',
+                        i, responsePayloads[i].toString(), firstOne.toString());
                     throw new Error('compareQueryResponseResults - payloads do not match');
                 }
             } else {
                 firstOne = responsePayloads[i];
             }
+        } else {
+            logger.error('compareQueryResponseResults - payloads was bad on %s, payload:%s', targets[i], responsePayloads[i]);
         }
     }
 
-    return firstOne.toString();
+    if (firstOne) {
+        return firstOne.toString();
+    } else {
+        throw new Error('compareQueryResponseResults - payloads was all bad');
+    }
 }

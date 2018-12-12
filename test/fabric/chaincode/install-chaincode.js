@@ -12,16 +12,16 @@ const constants = require('../constants');
 const token = 'Bearer ' + constants.token;
 
 const chaincode = {
-    chaincodeId: '5c07a2149a086a126b7eb090',
-    peers: ['5c0628c75cba28b4e22dc8bb'],
+    chaincodeId: constants.chaincodeId,
+    peers: ['5c0fc7a89a59d126784d1721', '5c0fc7b29a59d126784d1722', '5c0fc7bb9a59d126784d1723'],
 };
 
 request(app.callback())
-.post('/api/v1/chaincode/install')
-.set('Authorization', token)
-.send(chaincode)
-.end(function (err, response) {
-    if (err) console.error(err);
-    console.log(response.body);
-    app.mongoose.disconnect();
-});
+    .post('/api/v1/chaincode/install')
+    .set('Authorization', token)
+    .send(chaincode)
+    .end(function (err, response) {
+        if (err) console.error(err);
+        console.log(response.body);
+        app.mongoose.disconnect();
+    });
