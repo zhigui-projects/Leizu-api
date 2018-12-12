@@ -1,25 +1,14 @@
 version: "3"
 services:
-  dashboard:
-    build: .
-    image: dashboard
-    container_name: dashboard-api
-    env_file: .env.dev
-    links:
-    - mongodb
-    ports:
-    - "8080:8080"
-    command: /bin/sh -c "cd /usr/src/app && npm start"
-
-  mongodb:
+  dashboard-mongo:
     image: mongo
-    container_name: dashboard-mongodb
+    container_name: dashboard-mongo
     ports:
     - "27017:27017"
     volumes:
     - dbdata:/data/db
 
-  configtxlator:
+  dashboard-configtxlator:
     image: zhigui/configtxlator
     container_name: dashboard-configtxlator
     ports:

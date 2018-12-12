@@ -19,9 +19,9 @@ Ledger Management Dashboard
 > cp .env.dev .env
 > ```
 
-1. Start all the services
+1. Start all the dependencies
 ```
-docker-compose -f docker-compose-dev.yml up --build -d
+docker-compose -f docker-compose-dev.yml up -d
 ```
 
 2. Initialize the default user: `admin/passw0rd`
@@ -31,7 +31,12 @@ use zigdb;
 db.user.insert({username:'admin',password:'5c604fdbe7060760ab75d54c042d71f0e49e621a'});
 ```
 
-3. Check api docs
+3. Start dashboard api server
+```
+npm install && npm run dev
+```
+
+4. Check api docs
 
 Swagger UI version visit [localhost:8080](http://localhost:8080).
 
