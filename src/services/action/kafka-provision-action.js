@@ -10,7 +10,6 @@ const Action = require('./action');
 const Client = require('../transport/client');
 
 module.exports = class KafkaProvisionAction extends Action {
-
     constructor() {
         super();
     }

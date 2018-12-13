@@ -48,6 +48,10 @@ module.exports = class TransportClient {
         await this.client.transferDirectory(parameters);
     }
 
+    async setOptions(parameters){
+        await this.client.setOptions(parameters);
+    }
+
     async exec(parameters) {
         await this.client.exec(parameters);
     }
