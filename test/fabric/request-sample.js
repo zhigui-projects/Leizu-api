@@ -16,13 +16,13 @@ module.exports = {
         'name': 'kafka1',
         'ip': '47.254.88.92',
         'ssh_username': 'root',
-        'ssh_password': 'Jia@163.com'
+        'ssh_password': ''
     }],
     'zookeeper': [{
         'name': 'zookeeper1',
         'ip': '47.254.88.92',
         'ssh_username': 'root',
-        'ssh_password': 'Jia@163.com'
+        'ssh_password': ''
     }],
     'ordererOrg': {
         'name': 'orderer-org',
@@ -30,13 +30,13 @@ module.exports = {
             'name': 'ca-1',
             'ip': '39.104.189.169',
             'ssh_username': 'root',
-            'ssh_password': 'irisnet-passw0rd-#(U1(*V7MTNU'
+            'ssh_password': ''
         },
         'orderer': [{
             'name': 'orderer1',
             'ip': '39.104.189.169',
             'ssh_username': 'root',
-            'ssh_password': 'irisnet-passw0rd-#(U1(*V7MTNU'
+            'ssh_password': ''
         }]
     },
     'peerOrgs': [{
@@ -45,18 +45,18 @@ module.exports = {
             'name': 'ca-2',
             'ip': '39.104.152.81',
             'ssh_username': 'root',
-            'ssh_password': 'irisnet-passw0rd-#(U1(*V7MTNU'
+            'ssh_password': ''
         },
         'peers': [{
             'name': 'peer0',
             'ip': '39.104.51.94',
             'ssh_username': 'root',
-            'ssh_password': 'irisnet-passw0rd-#(U1(*V7MTNU'
+            'ssh_password': ''
         }, {
             'name': 'peer1',
             'ip': '39.104.145.229',
             'ssh_username': 'root',
-            'ssh_password': 'irisnet-passw0rd-#(U1(*V7MTNU'
+            'ssh_password': ''
         }]
     }],
     'channel': {

@@ -17,25 +17,25 @@ module.exports = {
             'name': 'kafka1',
             'ip': '39.104.132.206',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         },
         {
             'name': 'kafka2',
             'ip': '39.104.122.83',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         },
         {
             'name': 'kafka3',
             'ip': '39.104.134.22',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         },
         {
             'name': 'kafka4',
             'ip': '39.104.170.33',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         }
     ],
     'zookeeper': [
@@ -43,19 +43,19 @@ module.exports = {
             'name': 'zookeeper1',
             'ip': '39.104.132.206',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         },
         {
             'name': 'zookeeper2',
             'ip': '39.104.122.83',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         },
         {
             'name': 'zookeeper3',
             'ip': '39.104.134.22',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         }
     ],
     'ordererOrg': {
@@ -64,13 +64,13 @@ module.exports = {
             'name': 'ca-1',
             'ip': '39.104.132.206',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         },
         'orderer': [{
             'name': 'orderer1',
             'ip': '39.104.132.206',
             'ssh_username': 'root',
-            'ssh_password': 'FaVm&zu2mxFtkGwK'
+            'ssh_password': ''
         }]
     },
     'peerOrgs': [
@@ -80,18 +80,18 @@ module.exports = {
                 'name': 'ca-2',
                 'ip': '39.104.170.33',
                 'ssh_username': 'root',
-                'ssh_password': 'FaVm&zu2mxFtkGwK'
+                'ssh_password': ''
             },
             'peers': [{
                 'name': 'peer0',
                 'ip': '39.104.132.206',
                 'ssh_username': 'root',
-                'ssh_password': 'FaVm&zu2mxFtkGwK'
+                'ssh_password': ''
             }, {
                 'name': 'peer1',
                 'ip': '39.104.170.33',
                 'ssh_username': 'root',
-                'ssh_password': 'FaVm&zu2mxFtkGwK'
+                'ssh_password': ''
             }]
         },
         {
@@ -100,18 +100,18 @@ module.exports = {
                 'name': 'ca-3',
                 'ip': '39.104.134.22',
                 'ssh_username': 'root',
-                'ssh_password': 'FaVm&zu2mxFtkGwK'
+                'ssh_password': ''
             },
             'peers': [{
                 'name': 'peer0',
                 'ip': '39.104.134.22',
                 'ssh_username': 'root',
-                'ssh_password': 'FaVm&zu2mxFtkGwK'
+                'ssh_password': ''
             }, {
                 'name': 'peer1',
                 'ip': '39.104.122.83',
                 'ssh_username': 'root',
-                'ssh_password': 'FaVm&zu2mxFtkGwK'
+                'ssh_password': ''
             }]
         }
     ],

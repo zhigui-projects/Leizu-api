@@ -15,7 +15,7 @@ const organization = {
     domainName: 'org3.example.com',
     host: '39.106.149.201',
     username: 'root',
-    password: 'Inkchain-passw0rd',
+    password: '',
     port: 22,
     consortiumId: constants.consortiumId,
 };
