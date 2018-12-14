@@ -13,6 +13,7 @@ const config = require('../../../env');
 module.exports.newPeerSchema = Joi.object().keys({
     organizationId: objectId,
     peers: Joi.array().min(1).items(Joi.object().keys({
+        name: string,
         image: Joi.string().valid(config.network.peer.availableImages),
         host: ip,
         port: port,
