@@ -18,7 +18,7 @@ const peer = {
         host: '39.106.149.201',
         port: 22,
         username: 'root',
-        password: '***REMOVED***',
+        password: '',
     }]
 };
 

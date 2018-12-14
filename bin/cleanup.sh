@@ -14,7 +14,7 @@ fi
 while read -r host
 do
     echo "The host is $host"
-	sshpass -p '***REMOVED***' ssh -n $host "docker ps -qa | xargs docker rm -f"
+	sshpass -p '' ssh -n $host "docker ps -qa | xargs docker rm -f"
 	echo "finish the remote task"
 done < "$file"
 
