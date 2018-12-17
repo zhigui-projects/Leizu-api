@@ -19,7 +19,7 @@ const configtxlator = require('./tools/configtxlator');
 module.exports = class OrganizationService {
 
     static async create(payload) {
-        const {name, consortiumId, domainName, host, port, username, password} = payload;
+        const {name, type, consortiumId, domainName, host, port, username, password} = payload;
         let consortium = await DbService.getConsortiumById(consortiumId);
         if (!consortium) {
             throw  new Error('The consortium not exist');
@@ -33,7 +33,8 @@ module.exports = class OrganizationService {
             orgName: name,
             domainName: domainName,
             mspId: stringUtil.getMspId(name),
-            consortiumId: consortiumId
+            consortiumId: consortiumId,
+            type: type ? type : common.PEER_TYPE_PEER
         };
         let caPort = common.PORT.CA;
         if (utils.isSingleMachineTest()) {

@@ -36,7 +36,13 @@ router.get('/:consortiumId', async ctx => {
         let organizations = await DbService.getOrganizationsByFilter(filter);
         if (organizations) {
             orgIds = organizations.map(item => {
-                orgList.push({id: item._id, name: item.name, consortium_id: item.consortium_id, peer_count: 0});
+                orgList.push({
+                    id: item._id,
+                    name: item.name,
+                    type: item.type,
+                    consortium_id: item.consortium_id,
+                    peer_count: 0
+                });
                 return item._id;
             });
             let peerCounts = await DbService.countPeersByOrg(orgIds);

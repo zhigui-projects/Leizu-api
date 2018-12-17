@@ -18,6 +18,10 @@ const organizationSchema = new mongoose.Schema({
     msp_path: String,
     consortium_id: mongoose.Schema.ObjectId,
     ca_id: mongoose.Schema.ObjectId,
+    type: {
+        type: Number,
+        default: 0
+    },
     date: {
         type: Date,
         default: Date.now()
