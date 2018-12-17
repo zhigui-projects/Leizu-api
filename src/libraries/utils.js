@@ -165,6 +165,38 @@ module.exports.generateOrdererContainerOptions = (options) => {
     ];
 };
 
+module.exports.generateCadvisorContainerOptions = (options) => {
+    const {image, cAdvisorName, port} = options;
+    return [
+        'create',
+        '--name', `${cAdvisorName}`,
+        '--network', common.DEFAULT_NETWORK.NAME,
+        '-p', `${port}:8080`,
+        '-v', '/:/rootfs:ro',
+        '-v', '/var/run:/var/run:rw',
+        '-v', '/sys:/sys:ro',
+        '-v', '/var/lib/docker/:/var/lib/docker:ro',
+        image,
+    ];
+};
+
+module.exports.generateConsulContainerOptions = (options) => {
+    const {image, consulName, host, consulServer} = options;
+    return [
+        'create',
+        '--name', `${consulName}`,
+        '--network', common.DEFAULT_NETWORK.NAME,
+        '--net', 'host',
+        // '-p', '8400:8400',
+        // '-p', '8500:8500',
+        // '-p', '8600:53/udp',
+        // '-p', '8301:8301/udp',
+        // '-p', '8302:8302/udp',
+        image,
+        'agent', '-client=0.0.0.0', '-data-dir=/tmp/consul', `-join=${consulServer}`, `-advertise=${host}`,
+    ];
+};
+
 module.exports.createDir = (dirpath, mode) => {
     try {
         let pathTmp;

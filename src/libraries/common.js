@@ -57,6 +57,8 @@ module.exports.PORT = {
     CA: 7054,
     ORDERER: 7050,
     PEER: 7051,
+    CADVISOR: 8080,
+    CONSUL_PORT: 8500,
 };
 
 module.exports.PEER_HOME = '/etc/hyperledger/crypto';
@@ -98,6 +100,8 @@ module.exports.RUN_MODE = {
     LOCAL: 'local',
     REMOTE: 'remote'
 };
+
+module.exports.CADVISOR_SERVICE_NAME = 'cadvisor';
 
 module.exports.success = (data, msg) => {
     return {
