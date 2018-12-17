@@ -18,6 +18,7 @@ router.post('/', async ctx => {
     let res = Validator.JoiValidate('request', ctx.request.body, Schema.requestSchema);
     if (!res.result) throw new BadRequest(res.errMsg);
     try {
+        ctx.request.socket.setTimeout(common.REQUEST_TIMEOUT_UNLIMITED);
         let requestHandler = new RequestHandler(ctx);
         let request = await requestHandler.handle();
         let simpleResponse = {

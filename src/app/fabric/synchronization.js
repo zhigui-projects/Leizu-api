@@ -11,14 +11,8 @@ const logger = require('../../libraries/log4js');
 const Consortium = require('../../models/consortium');
 const syncService = require('../../services/fabric/synchronize');
 const common = require('../../libraries/common');
-const Validator = require('../../libraries/validator/validator');
-const {BadRequest} = require('../../libraries/error');
-const Schema = require('../../libraries/validator/schema/consortium-schema');
 
 router.post('/fabric/sync/:id', async ctx => {
-    let res = Validator.JoiValidate('synchronization', ctx.params.id, Schema.consortiumId);
-    if (!res.result) throw new BadRequest(res.errMsg);
-
     let consortiumId = ctx.params.id;
     logger.debug('The consortium id is %s', consortiumId);
     try {
@@ -39,6 +33,7 @@ router.post('/fabric/sync/:id', async ctx => {
             ctx.body = common.error([], 'The consortium does not exist.');
         }
     } catch (err) {
+        logger.error(err);
         ctx.response.status = 400;
         ctx.body = common.error([], err.message);
     }
