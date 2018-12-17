@@ -19,6 +19,8 @@ router.get('/:consortiumId', async ctx => {
     let channelId = ctx.query['channelId'];
     let consortiumId = ctx.params.consortiumId;
     let filter = {consortium_id: consortiumId};
+    let type = ctx.query['type'];
+    if (type) filter.type = type;
     let orgList = [];
     let orgIds = [];
     if (channelId) {
@@ -36,7 +38,13 @@ router.get('/:consortiumId', async ctx => {
         let organizations = await DbService.getOrganizationsByFilter(filter);
         if (organizations) {
             orgIds = organizations.map(item => {
-                orgList.push({id: item._id, name: item.name, consortium_id: item.consortium_id, peer_count: 0});
+                orgList.push({
+                    id: item._id,
+                    name: item.name,
+                    type: item.type,
+                    consortium_id: item.consortium_id,
+                    peer_count: 0
+                });
                 return item._id;
             });
             let peerCounts = await DbService.countPeersByOrg(orgIds);
@@ -57,7 +65,7 @@ router.get('/:consortiumId/:id', async ctx => {
     let id = ctx.params.id;
     let consortiumId = ctx.params.consortiumId;
     try {
-        let organization = DbService.findOrganizationByFilter({_id: id, consortium_id: consortiumId});
+        let organization = await DbService.findOrganizationByFilter({_id: id, consortium_id: consortiumId});
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;

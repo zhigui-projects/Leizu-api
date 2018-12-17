@@ -221,8 +221,17 @@ module.exports = class DbService {
         organization.root_cert = dto.rootCert;
         organization.msp_path = dto.mspPath;
         organization.consortium_id = dto.consortiumId;
+        organization.type = dto.type;
         organization = await organization.save();
         return organization;
+    }
+
+    static async findOrganizationAndUpdate(id, update) {
+        if (!update) {
+            update = {};
+        }
+        let org = await Organization.findByIdAndUpdate(id, update);
+        return org;
     }
 
     static async addCertAuthority(dto) {

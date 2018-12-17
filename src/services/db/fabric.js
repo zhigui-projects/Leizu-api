@@ -91,6 +91,7 @@ module.exports = class FabricService {
         organization.admin_cert = dto.admins;
         organization.root_cert = dto.rootCerts;
         organization.msp_path = dto.mspPath;
+        organization.type = dto.type;
         try {
             organization = await organization.save();
             return organization;
@@ -151,9 +152,12 @@ module.exports = class FabricService {
         peer.location = dto.location || dto.host + common.SEPARATOR_COLON + dto.port;
         peer.name = dto.host;
         peer.consortium_id = this.consortiumId;
-        peer.type = 1;
+        peer.type = common.PEER_TYPE_ORDER;
         let organization = await DbService.findOrganizationByName(this.consortiumId, stringUtil.getOrgName(dto.mspid));
-        if (organization) peer.org_id = organization._id;
+        if (organization) {
+            peer.org_id = organization._id;
+            await DbService.findOrganizationAndUpdate(organization._id, {type: common.PEER_TYPE_ORDER});
+        }
         try {
             peer = await peer.save();
             return peer;

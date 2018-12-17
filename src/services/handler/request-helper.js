@@ -30,6 +30,7 @@ module.exports = class RequestHelper {
         if (configuration.ordererOrg) {
             let ordererOrg = configuration.ordererOrg;
             orderer.orgName = ordererOrg.name;
+            orderer.type = common.PEER_TYPE_ORDER;
             orderer.caName = ordererOrg.ca.name;
             orderer.caUrl = stringUtil.getUrl(common.PROTOCOL.HTTP, ordererOrg.ca.ip, common.PORT.CA);
             orderer.caNode = {
@@ -58,6 +59,7 @@ module.exports = class RequestHelper {
             for (let item of configuration.peerOrgs) {
                 let peer = {};
                 peer.orgName = item.name;
+                peer.type = common.PEER_TYPE_PEER;
                 peer.caName = item.ca.name;
                 peer.caUrl = stringUtil.getUrl(common.PROTOCOL.HTTP, item.ca.ip, common.PORT.CA);
                 peer.caNode = {

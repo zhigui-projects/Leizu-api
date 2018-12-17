@@ -13,20 +13,21 @@ const OrganizationService = require('../fabric/organization');
 
 module.exports = class CAProvisionAction extends Action {
 
-    constructor(){
+    constructor() {
         super();
     }
 
-    async execute(){
+    async execute() {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
         let options = {
             name: params.caName,
+            type: params.type,
             consortiumId: params.consortiumId.toString(),
             domainName: utils.generateDomainName(params.caName),
             caPort: common.PORT.CA
         };
-        utils.extend(options,params.caNode);
-        if(this.isDebugMode){
+        utils.extend(options, params.caNode);
+        if (this.isDebugMode) {
             options.caPort = utils.generateRandomHttpPort();
         }
         return await OrganizationService.create(options);
