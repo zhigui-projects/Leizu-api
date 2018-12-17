@@ -19,6 +19,8 @@ router.get('/:consortiumId', async ctx => {
     let channelId = ctx.query['channelId'];
     let consortiumId = ctx.params.consortiumId;
     let filter = {consortium_id: consortiumId};
+    let type = ctx.query['type'];
+    if (type) filter.type = type;
     let orgList = [];
     let orgIds = [];
     if (channelId) {
