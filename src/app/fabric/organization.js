@@ -63,7 +63,7 @@ router.get('/:consortiumId/:id', async ctx => {
     let id = ctx.params.id;
     let consortiumId = ctx.params.consortiumId;
     try {
-        let organization = DbService.findOrganizationByFilter({_id: id, consortium_id: consortiumId});
+        let organization = await DbService.findOrganizationByFilter({_id: id, consortium_id: consortiumId});
         ctx.body = common.success(organization, common.SUCCESS);
     } catch (err) {
         ctx.status = 400;
