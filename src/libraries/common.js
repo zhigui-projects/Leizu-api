@@ -57,7 +57,7 @@ module.exports.PORT = {
     CA: 7054,
     ORDERER: 7050,
     PEER: 7051,
-    CADVISOR: 8080,
+    CADVISOR: 8081,
     CONSUL_PORT: 8500,
 };
 

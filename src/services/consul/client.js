@@ -12,6 +12,7 @@ const logger = require('../../libraries/log4js');
 module.exports = class ConsulClient {
 
     constructor(host, port) {
+        logger.info(`create consul client: baseUrl: http://${host}:${port}/v1`);
         this.client = axios.create({
             baseURL: `http://${host}:${port}/v1`,
             timeout: 3000,
@@ -27,7 +28,7 @@ module.exports = class ConsulClient {
     }
 
     async putService(options) {
-        logger.info('register services:', options);
+        logger.info(`putService: server:${options.Address},service name:${options.Service.Service}`);
         let result = await this.put('/catalog/register', options);
         if (result) {
             return true;

@@ -63,10 +63,14 @@ module.exports = class CAdvisorService {
         let result = await client.querySelf();
         let options = {
             Datacenter: result.Datacenter,
-            Node: result.NodeName,
+            Node: result.NodeID,
             Address: params.host,
+            TaggedAddresses: {
+                lan: params.host,
+                wan: params.host
+            },
             Service: {
-                Service: process.env.PROMETHEUS_HOST || config.prometheus.host,
+                Service: common.CADVISOR_SERVICE_NAME,
                 Address: params.host,
                 Port: common.PORT.CADVISOR
             }
