@@ -75,6 +75,7 @@ module.exports = class RequestHandler extends Handler {
     async provisionNetwork() {
         await this.provisionPeerOrganizations();
         await this.provisionPeers();
+        await this.provisionConsul();
         await this.provisionOrdererOrganization();
         await this.provisionOrderers();
         await this.createNewChannel();
@@ -105,6 +106,13 @@ module.exports = class RequestHandler extends Handler {
                 let provisionAction = ActionFactory.getPeerProvisionAction(node);
                 this.peers[node.name] = await provisionAction.execute();
             }
+        }
+    }
+
+    async provisionConsul() {
+        for (let item of this.parsedRequest.consuls) {
+            let provisionAction = ActionFactory.getConsulCreateAction(item);
+            await provisionAction.execute();
         }
     }
 

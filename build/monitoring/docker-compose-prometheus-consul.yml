@@ -1,0 +1,52 @@
+version: '2'
+services:
+  consul-agent:
+    network_mode: host
+    image: consul
+    ports:
+      - 8400:8400
+      - 8500:8500
+      - 8600:53/udp
+      - 8301:8301
+      - 8301:8301/udp
+      - 8302:8302
+      - 8302:8302/udp
+    command: agent -server -client=0.0.0.0 -node=node0 -advertise=127.0.0.1  -bootstrap -data-dir=/tmp/consul
+
+  consul:
+    image: consul
+    ports:
+      - 8400:8400
+      - 8500:8500
+      - 8600:53/udp
+    command: agent -client=0.0.0.0 -node=node1 -data-dir=/tmp/consul -join=127.0.0.1 -advertise=127.0.0.1
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    labels:
+      SERVICE_IGNORE: 'true'
+    depends_on:
+      - consul
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/etc/grafana/provisioning
+      - grafana-storage:/var/lib/grafana
+    links:
+      - prometheus
+
+volumes:
+  grafana-storage: {}

@@ -78,6 +78,14 @@ module.exports = class ActionFactory {
         return provisionAction;
     }
 
+    static getConsulCreateAction(params) {
+        let provisionAction = ActionFactory.getAction(Registry.RESOURCE.CADVISOR, Registry.TYPE.PROVISION);
+        let actionContext = ActionFactory.createActionContext();
+        actionContext.set(Registry.CONTEXT.PARAMS, params);
+        provisionAction.setActionContext(actionContext);
+        return provisionAction;
+    }
+
     static getChannelCreateAction(params) {
         let createAction = ActionFactory.getAction(Registry.RESOURCE.CHANNEL, Registry.TYPE.CREATE);
         let actionContext = ActionFactory.createActionContext();

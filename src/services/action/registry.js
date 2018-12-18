@@ -14,7 +14,8 @@ module.exports = {
         REQUEST: 'request',
         CA: 'ca',
         KAFKA: 'kafka',
-        CHANNEL: 'channel'
+        CHANNEL: 'channel',
+        CADVISOR: 'cadvisor',
     },
     TYPE: {
         PROVISION: 'provision',

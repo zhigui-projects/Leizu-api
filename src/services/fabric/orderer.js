@@ -33,7 +33,11 @@ module.exports = class OrdererService {
 
         const org = await DbService.findOrganizationById(organizationId);
         const consortium = await DbService.getConsortiumById(org.consortium_id);
-        const ordererName = `orderer-${host.replace(/\./g, '-')}`;
+        let ordererNamePrefix = 'orderer';
+        if(params.name){
+            ordererNamePrefix = params.name;
+        }
+        const ordererName = `${ordererNamePrefix}-${host.replace(/\./g, '-')}`;
         const ordererPort = common.PORT.ORDERER;
         let ordererHome = common.ORDERER_HOME;
         if (process.env.RUN_MODE === common.RUN_MODE.LOCAL) {

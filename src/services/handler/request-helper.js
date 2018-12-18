@@ -16,6 +16,7 @@ module.exports = class RequestHelper {
         let configuration = utils.extend({}, ctx.request.body);
         configuration.orderer = RequestHelper.getOrderer(configuration);
         configuration.peers = RequestHelper.getPeers(configuration);
+        configuration.consuls = RequestHelper.getConsuls(configuration);
         configuration.isKafkaConsensus = RequestHelper.isKafkaConsensus(configuration);
         if (configuration.isKafkaConsensus) {
             configuration.kafkaCluster = RequestHelper.getKafkaCluster(configuration);
@@ -81,6 +82,31 @@ module.exports = class RequestHelper {
             }
         }
         return peers;
+    }
+
+    static getConsuls(configuration) {
+        let consuls = [];
+        if (configuration.peerOrgs) {
+            for (let item of configuration.peerOrgs) {
+                item.peers.map((element) => {
+                    consuls.push({
+                        host: element.ip,
+                        username: element.ssh_username,
+                        password: element.ssh_password
+                    });
+                });
+            }
+        }
+        if (configuration.ordererOrg.orderer) {
+            configuration.ordererOrg.orderer.map((item) => {
+                consuls.push({
+                    host: item.ip,
+                    username: item.ssh_username,
+                    password: item.ssh_password
+                });
+            });
+        }
+        return consuls;
     }
 
     static getKafkaCluster(configuration) {

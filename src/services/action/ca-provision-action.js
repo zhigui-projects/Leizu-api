@@ -20,10 +20,11 @@ module.exports = class CAProvisionAction extends Action {
     async execute() {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
         let options = {
-            name: params.caName,
+            //name: params.caName,
+            name: params.orgName,
             type: params.type,
             consortiumId: params.consortiumId.toString(),
-            domainName: utils.generateDomainName(params.caName),
+            domainName: utils.generateDomainName(params.orgName),
             caPort: common.PORT.CA
         };
         utils.extend(options, params.caNode);

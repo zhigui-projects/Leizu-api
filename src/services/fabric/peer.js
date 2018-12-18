@@ -77,7 +77,11 @@ module.exports = class PeerService {
     static async create(params) {
         const {organizationId, image, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
-        const peerName = `peer-${host.replace(/\./g, '-')}`;
+        let peerNamePrefix = 'peer';
+        if(params.peerName){
+            peerNamePrefix = params.peerName;
+        }
+        const peerName = `${peerNamePrefix}-${host.replace(/\./g, '-')}`;
         let peerPort = common.PORT.PEER;
         let peerHome = common.PEER_HOME;
         if (process.env.RUN_MODE === common.RUN_MODE.LOCAL) {

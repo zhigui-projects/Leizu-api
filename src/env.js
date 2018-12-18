@@ -17,6 +17,16 @@ module.exports = {
             availableImages: [
                 'hyperledger/fabric-ca-orderer',
             ]
+        },
+        cadvisor: {
+            availableImages: [
+                'google/cadvisor'
+            ]
+        },
+        consul: {
+            availableImages: [
+                'consul'
+            ]
         }
     },
     koaLogger: true,
@@ -32,6 +42,7 @@ module.exports = {
         port: 22
     },
     prometheus: {
+        host: '127.0.0.1',
         url: 'http://127.0.0.1:9090'
     },
     configtxlator: {
