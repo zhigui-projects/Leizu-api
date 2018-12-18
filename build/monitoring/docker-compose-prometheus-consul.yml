@@ -1,17 +1,17 @@
 version: '2'
 services:
-  consul-agent:
-    network_mode: host
-    image: consul
-    ports:
-      - 8400:8400
-      - 8500:8500
-      - 8600:53/udp
-      - 8301:8301
-      - 8301:8301/udp
-      - 8302:8302
-      - 8302:8302/udp
-    command: agent -server -client=0.0.0.0 -node=node0 -advertise=127.0.0.1  -bootstrap -data-dir=/tmp/consul
+  #  consul-agent:
+  #    network_mode: host
+  #    image: consul
+  #    ports:
+  #      - 8400:8400
+  #      - 8500:8500
+  #      - 8600:53/udp
+  #      - 8301:8301
+  #      - 8301:8301/udp
+  #      - 8302:8302
+  #      - 8302:8302/udp
+  #    command: agent -server -client=0.0.0.0 -advertise=127.0.0.1  -bootstrap -data-dir=/tmp/consul -join=127.0.0.1
 
   consul:
     image: consul
@@ -19,7 +19,7 @@ services:
       - 8400:8400
       - 8500:8500
       - 8600:53/udp
-    command: agent -client=0.0.0.0 -node=node1 -data-dir=/tmp/consul -join=127.0.0.1 -advertise=127.0.0.1
+    command: agent -server -client=0.0.0.0 -dev -data-dir=/tmp/consul
 
   prometheus:
     image: prom/prometheus

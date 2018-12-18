@@ -75,7 +75,9 @@ module.exports = class RequestHandler extends Handler {
     async provisionNetwork() {
         await this.provisionPeerOrganizations();
         await this.provisionPeers();
-        await this.provisionConsul();
+        if (process.env.RUN_MODE === common.RUN_MODE.REMOTE) {
+            await this.provisionConsul();
+        }
         await this.provisionOrdererOrganization();
         await this.provisionOrderers();
         await this.createNewChannel();
@@ -110,9 +112,14 @@ module.exports = class RequestHandler extends Handler {
     }
 
     async provisionConsul() {
+        let ipList = [];
         for (let item of this.parsedRequest.consuls) {
-            let provisionAction = ActionFactory.getConsulCreateAction(item);
-            await provisionAction.execute();
+            if (!ipList.indexOf(item.host)) {
+                let provisionAction = ActionFactory.getConsulCreateAction(item);
+                await provisionAction.execute();
+                ipList.push(item.host);
+            }
+
         }
     }
 

@@ -7,6 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const PeerService = require('../../services/fabric/peer');
+const CAdvisorService = require('../../services/fabric/cadvisor');
 const common = require('../../libraries/common');
 const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
@@ -50,10 +51,20 @@ router.post('/', async ctx => {
                 try {
                     item.organizationId = organizationId;
                     resolve(PeerService.create(item));
+
                 } catch (e) {
                     reject(e.message);
                 }
             });
+
+            if (process.env.RUN_MODE === common.RUN_MODE.REMOTE) {
+                let cadvisorItem = {
+                    host: item.host,
+                    username: item.username,
+                    password: item.password
+                };
+                CAdvisorService.create(cadvisorItem);
+            }
             eventPromises.push(txPromise);
         }
         await Promise.all(eventPromises).then(result => {
