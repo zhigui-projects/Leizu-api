@@ -102,7 +102,7 @@ module.exports = class ChannelService {
 
     async updateAppChannel(channelId) {
         let organizations = await this.buildOrganization(this._organization_id);
-        return UpdateChannel.updateAppChannel(channelId, this._organization_id, {
+        return UpdateChannel.updateAppChannel(channelId, {
             ConsortiumId: this._consortium_id,
             Organizations: [organizations]
         });
