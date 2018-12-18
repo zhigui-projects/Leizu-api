@@ -44,7 +44,7 @@ module.exports = class CAdvisorService {
             image: config.network.consul.availableImages[0],
             consulName,
             host: host,
-            consulServer: common.CONSUL_SERVER
+            consulServer: process.env.PROMETHEUS_HOST || config.prometheus.host
         };
         let consulPort = common.PORT.CONSUL_PORT;
         const consulParameters = utils.generateConsulContainerOptions(consulOptions);
@@ -66,7 +66,7 @@ module.exports = class CAdvisorService {
             Node: result.NodeName,
             Address: params.host,
             Service: {
-                Service: config.prometheus.host,
+                Service: process.env.PROMETHEUS_HOST || config.prometheus.host,
                 Address: params.host,
                 Port: common.PORT.CADVISOR
             }
