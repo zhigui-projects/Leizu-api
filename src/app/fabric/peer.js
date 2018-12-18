@@ -9,6 +9,7 @@ SPDX-License-Identifier: Apache-2.0
 const PeerService = require('../../services/fabric/peer');
 const CAdvisorService = require('../../services/fabric/cadvisor');
 const common = require('../../libraries/common');
+const utils = require('../../libraries/utils');
 const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
 
@@ -30,6 +31,7 @@ router.get('/:consortiumId', async ctx => {
 router.get('/:consortiumId/:id', async ctx => {
     try {
         const peer = await PeerService.findByIdAndConsortiumId(ctx.params.id, ctx.params.consortiumId);
+        peer.name = utils.replacePeerName(peer.name);
         ctx.body = common.success(peer, common.SUCCESS);
     } catch (err) {
         logger.error(err);

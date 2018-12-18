@@ -230,3 +230,12 @@ module.exports.setupChaincodeDeploy = () => {
         process.env.GOPATH = common.CHAINCODE_GOPATH;
     }
 };
+
+module.exports.replacePeerName = (name) => {
+    if(name){
+        let pattern = /-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}/;
+        return name.replace(pattern,'');
+    }else{
+        return name;
+    }
+};
