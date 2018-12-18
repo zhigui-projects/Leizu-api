@@ -12,6 +12,7 @@ const configtxlator = require('../tools/configtxlator');
 const Client = require('fabric-client');
 const ConfigTxBuilder = require('../tools/configtxgen');
 const DbService = require('../../db/dao');
+
 // const common = require('../../../libraries/common');
 
 async function updateAppChannel(channelId, options) {
@@ -132,6 +133,7 @@ async function updateSysChannel(options) {
         let newOrderer = await query.newOrderer(client, orderer);
         let consortium = await DbService.getConsortiumById(options.ConsortiumId);
         let networkConfig = JSON.parse(consortium.network_config);
+        let consortiumName = consortium.name;
         let channelName = networkConfig.sysChannel;
         let channel = client.newChannel(channelName);
         channel.addOrderer(newOrderer);
@@ -157,7 +159,7 @@ async function updateSysChannel(options) {
         var configtx = Buffer.from(configtxgen.buildPrintOrg());
         let orgName = options.Organizations[0].Name;
         let orgBytes = await configtxlator.printOrg(orgName, configtx, '');
-        updatedConfig.channel_group.groups.Consortiums.groups.SampleConsortium.groups[orgName] = JSON.parse(orgBytes);
+        updatedConfig.channel_group.groups.Consortiums.groups[consortiumName].groups[orgName] = JSON.parse(orgBytes);
 
         updatedConfigJson = JSON.stringify(updatedConfig);
         // logger.debug(' updated_config_json :: %s', updatedConfigJson);
