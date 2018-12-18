@@ -11,8 +11,6 @@ const CAdvisorService = require('../../services/fabric/cadvisor');
 const common = require('../../libraries/common');
 const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
-const Client = require('../../services/transport/client');
-const config = require('../../env');
 
 const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
@@ -92,27 +90,15 @@ router.put('/:id', async ctx => {
 });
 
 router.post('/check', async ctx => {
-    const {host, username, password, port} = ctx.request.body;
-    if (host && username && password) {
-        try {
-            let connectionOptions = {
-                cmd: 'date',
-                host: host,
-                username: username,
-                password: password,
-                port: port || config.ssh.port
-            };
-            const client = Client.getInstance(connectionOptions);
-            await client.exec();
-            ctx.body = common.success('Successful connection detection.', common.SUCCESS);
-        } catch (err) {
-            logger.error(err);
-            ctx.status = 400;
-            ctx.body = common.error({}, err.message);
-        }
-    } else {
+    let res = Validator.JoiValidate('check peer status', ctx.request.body, Schema.checkPeerStatusSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
+    try {
+        await PeerService.checkStatus(ctx.request.body);
+        ctx.body = common.success('Successful connection detection.', common.SUCCESS);
+    } catch (err) {
+        logger.error(err);
         ctx.status = 400;
-        ctx.body = common.error({}, 'Missing peer ip, transport user name or password.');
+        ctx.body = common.error({}, err.message);
     }
 });
 

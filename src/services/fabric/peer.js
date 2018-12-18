@@ -70,6 +70,19 @@ module.exports = class PeerService {
         return {peers, channels, organizations};
     }
 
+    static async checkStatus(params) {
+        const {host, username, password, port} = params;
+        let connectionOptions = {
+            host: host,
+            username: username,
+            password: password,
+            port: port || config.ssh.port,
+            cmd: 'bash'
+        };
+        const bash = Client.getInstance(connectionOptions);
+        await bash.exec(['-c', 'date']);
+    }
+
     static async joinChannel(channelName, params) {
         return await ChannelService.joinChannel(channelName, params);
     }
