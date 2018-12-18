@@ -62,20 +62,7 @@ module.exports.generateDomainName = (prefixName) => {
     return parts.join(common.SEPARATOR_DOT);
 };
 
-module.exports.generateCertAuthContainerOptions = (options) => {
-    return {
-        Image: 'hyperledger/fabric-ca',
-        Cmd: ['/bin/bash', '-c', 'fabric-ca-server start -b admin:adminpw -d'],
-        Env: [
-            'FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server',
-            'FABRIC_CA_SERVER_CA_NAME=ca-' + options.name,
-            'FABRIC_CA_SERVER_CSR_HOSTS=ca-' + options.domainName
-        ],
-    };
-};
-
-
-module.exports.generateCertAuthContainerCreateOptions = (options) => {
+module.exports.generateCAContainerOptions = (options) => {
     return [
         'create',
         '--name', 'ca-' + options.name,
