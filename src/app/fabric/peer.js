@@ -7,11 +7,11 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const PeerService = require('../../services/fabric/peer');
+const CAdvisorService = require('../../services/fabric/cadvisor');
 const common = require('../../libraries/common');
+const utils = require('../../libraries/utils');
 const logger = require('../../libraries/log4js');
 const router = require('koa-router')({prefix: '/peer'});
-const Client = require('../../services/transport/client');
-const config = require('../../env');
 
 const {BadRequest} = require('../../libraries/error');
 const Validator = require('../../libraries/validator/validator');
@@ -31,6 +31,7 @@ router.get('/:consortiumId', async ctx => {
 router.get('/:consortiumId/:id', async ctx => {
     try {
         const peer = await PeerService.findByIdAndConsortiumId(ctx.params.id, ctx.params.consortiumId);
+        peer.name = utils.replacePeerName(peer.name);
         ctx.body = common.success(peer, common.SUCCESS);
     } catch (err) {
         logger.error(err);
@@ -50,10 +51,20 @@ router.post('/', async ctx => {
                 try {
                     item.organizationId = organizationId;
                     resolve(PeerService.create(item));
+
                 } catch (e) {
                     reject(e.message);
                 }
             });
+
+            if (process.env.RUN_MODE === common.RUN_MODE.REMOTE) {
+                let cadvisorItem = {
+                    host: item.host,
+                    username: item.username,
+                    password: item.password
+                };
+                CAdvisorService.create(cadvisorItem);
+            }
             eventPromises.push(txPromise);
         }
         await Promise.all(eventPromises).then(result => {
@@ -81,27 +92,15 @@ router.put('/:id', async ctx => {
 });
 
 router.post('/check', async ctx => {
-    const {host, username, password, port} = ctx.request.body;
-    if (host && username && password) {
-        try {
-            let connectionOptions = {
-                cmd: 'date',
-                host: host,
-                username: username,
-                password: password,
-                port: port || config.ssh.port
-            };
-            const client = Client.getInstance(connectionOptions);
-            await client.exec();
-            ctx.body = common.success('Successful connection detection.', common.SUCCESS);
-        } catch (err) {
-            logger.error(err);
-            ctx.status = 400;
-            ctx.body = common.error({}, err.message);
-        }
-    } else {
+    let res = Validator.JoiValidate('check peer status', ctx.request.body, Schema.checkPeerStatusSchema);
+    if (!res.result) throw new BadRequest(res.errMsg);
+    try {
+        await PeerService.checkStatus(ctx.request.body);
+        ctx.body = common.success('Successful connection detection.', common.SUCCESS);
+    } catch (err) {
+        logger.error(err);
         ctx.status = 400;
-        ctx.body = common.error({}, 'Missing peer ip, transport user name or password.');
+        ctx.body = common.error({}, err.message);
     }
 });
 

@@ -53,7 +53,7 @@ module.exports = class OrganizationService {
                 host: host,
                 port: port
             };
-            const parameters = utils.generateCertAuthContainerCreateOptions(containerOptions);
+            const parameters = utils.generateCAContainerOptions(containerOptions);
 
             let container = await Client.getInstance(connectOptions).createContainer(parameters);
             if (container) {

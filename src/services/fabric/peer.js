@@ -52,6 +52,7 @@ module.exports = class PeerService {
             }
             //TODO: need to detect docker container status
             let status = 'running';
+            peer.name = utils.replacePeerName(peer.name);
             return {...peer.toJSON(), organizationName, channelNames, status, cpu, memory};
         });
     }
@@ -68,6 +69,19 @@ module.exports = class PeerService {
         }
         channels = await DbService.getChannels();
         return {peers, channels, organizations};
+    }
+
+    static async checkStatus(params) {
+        const {host, username, password, port} = params;
+        let connectionOptions = {
+            host: host,
+            username: username,
+            password: password,
+            port: port || config.ssh.port,
+            cmd: 'bash'
+        };
+        const bash = Client.getInstance(connectionOptions);
+        await bash.exec(['-c', 'date']);
     }
 
     static async joinChannel(channelName, params) {
