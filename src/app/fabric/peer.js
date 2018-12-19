@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 'use strict';
 
+const DbService = require('../../services/db/dao');
 const PeerService = require('../../services/fabric/peer');
 const CAdvisorService = require('../../services/fabric/cadvisor');
 const common = require('../../libraries/common');
@@ -45,6 +46,12 @@ router.post('/', async ctx => {
     if (!res.result) throw new BadRequest(res.errMsg);
     try {
         let {organizationId, peers, channelId} = ctx.request.body;
+        if (channelId) {
+            const channel = await DbService.getChannelById(channelId);
+            if (!channel) {
+                throw new Error('The channel does not exist: ' + channelId);
+            }
+        }
         var eventPromises = [];
         for (let item of peers) {
             let txPromise = new Promise((resolve, reject) => {

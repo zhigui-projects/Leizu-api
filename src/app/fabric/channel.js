@@ -87,7 +87,7 @@ router.post('/join', async ctx => {
         }
         let channelService = await ChannelService.getInstance(organizationId, channelInfo.name);
         let result = await channelService.joinChannel(peers);
-        let channel = await FabricService.findChannelAndUpdate(channelId, {peers: peers});
+        let channel = await FabricService.findChannelAndUpdate(channelId, {peers: result.peers});
         ctx.body = common.success({
             _id: channel._id,
             orgs: result.organizations,
