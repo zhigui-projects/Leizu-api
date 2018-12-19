@@ -37,12 +37,12 @@ module.exports = class PeerService {
             }
             let organizationName = (org && org.name) || null;
             let channelNames = channels.filter(channel => channel.peers.some(id => peer._id.equals(id))).map(channel => channel.name);
-            let cpuMetric = cpuMetrics.find(data => peer.location.includes(data.metric.name));
+            let cpuMetric = cpuMetrics.find(data => data.metric.name.includes(peer.name));
             let cpu = 0;
             if (cpuMetric) {
                 cpu = cpuMetric.value[1];
             }
-            let memoryMetric = memoryMetrics.find(data => peer.location.includes(data.metric.name));
+            let memoryMetric = memoryMetrics.find(data => data.metric.name.includes(peer.name));
             let memory = 0;
             if (memoryMetric) {
                 memory = memoryMetric.value[1];
