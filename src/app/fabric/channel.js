@@ -12,7 +12,7 @@ const ChannelService = require('../../services/fabric/channel/channel');
 const DbService = require('../../services/db/dao');
 const FabricService = require('../../services/db/fabric');
 const Validator = require('../../libraries/validator/validator');
-const {BadRequest,SimpleBadRequest} = require('../../libraries/error');
+const {BadRequest, SimpleBadRequest} = require('../../libraries/error');
 const Schema = require('../../libraries/validator/schema/channel-schema');
 const router = require('koa-router')({prefix: '/channel'});
 
@@ -58,6 +58,7 @@ router.post('/', async ctx => {
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: name,
+            orgIds: organizationIds,
             configuration: configEnvelope
         });
         ctx.body = common.success({
@@ -86,7 +87,7 @@ router.post('/join', async ctx => {
         }
         let channelService = await ChannelService.getInstance(organizationId, channelInfo.name);
         let result = await channelService.joinChannel(peers);
-        let channel = await FabricService.findChannelAndUpdate(channelId, result);
+        let channel = await FabricService.findChannelAndUpdate(channelId, {peers: peers});
         ctx.body = common.success({
             _id: channel._id,
             orgs: result.organizations,
@@ -116,7 +117,13 @@ router.post('/update', async ctx => {
         } else {
             let channelService = await ChannelService.getInstance(organizationId);
             await channelService.updateAppChannel(channelId);
-            ctx.body = common.success({}, common.SUCCESS);
+            let channel = await FabricService.findChannelAndUpdate(channelId, {orgs: [organizationId]});
+            ctx.body = common.success({
+                _id: channel._id,
+                name: channel.name,
+                uuid: channel.uuid,
+                date: channel.date
+            }, common.SUCCESS);
         }
     } catch (err) {
         logger.error(err);

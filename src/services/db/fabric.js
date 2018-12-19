@@ -40,17 +40,17 @@ module.exports = class FabricService {
         }
     }
 
-    async addChannel(dto, result) {
+    async addChannel(dto) {
         let channel = new Channel();
         channel.uuid = uuid();
         channel.name = dto.name;
+        channel.consortium_id = this.consortiumId;
+        channel.orgs = dto.orgIds;
+        if (dto.peers) {
+            channel.peers = dto.peers;
+        }
         if (dto.configuration && dto.configuration.config) {
             channel.configuration = JSON.stringify(dto.configuration.config.channel_group);
-        }
-        channel.consortium_id = this.consortiumId;
-        if (result) {
-            channel.orgs = result.organizations.map(org => org._id);
-            channel.peers = result.peers.map(peer => peer._id);
         }
         try {
             channel = await channel.save();
@@ -61,18 +61,24 @@ module.exports = class FabricService {
         }
     }
 
-    static async findChannelAndUpdate(channelId, result) {
+    static async findChannelAndUpdate(channelId, update) {
         try {
-            let orgs = result.organizations.map(org => org._id);
-            let peers = result.peers.map(peer => peer._id);
+            let orgs = update.orgs;
+            let peers = update.peers;
             let oldChannel = await Channel.findById(channelId);
+            if (!oldChannel) {
+                throw new Error('The channel does not exist: ' + channelId);
+            }
             if (oldChannel.orgs && oldChannel.orgs.length > 0) {
-                orgs = orgs.concat(oldChannel.orgs);
+                orgs = orgs ? orgs.concat(oldChannel.orgs) : oldChannel.orgs;
             }
             if (oldChannel.peers && oldChannel.peers.length > 0) {
-                peers = peers.concat(oldChannel.peers);
+                peers = peers ? peers.concat(oldChannel.peers) : oldChannel.peers;
             }
-            let channel = await Channel.findByIdAndUpdate(channelId, {orgs: orgs, peers: peers});
+            let data = {};
+            if (orgs) data.orgs = orgs;
+            if (peers) data.peers = peers;
+            let channel = await Channel.findByIdAndUpdate(channelId, data);
             return channel;
         } catch (err) {
             logger.error(err);
@@ -254,39 +260,14 @@ module.exports = class FabricService {
         }
         let channelDto = {
             name: channelInfo.channel_id,
+            orgIds: result.organizations.map(org => org._id),
+            peers: result.peers.map(peer => peer._id),
             configuration: channelInfo.channelConfig
         };
-        let channelDb = await this.addChannel(channelDto, result);
+        let channelDb = await this.addChannel(channelDto);
         result.channel_id = channelDb._id;
 
         return result;
     }
 
-    async updateChannel(channelId, mapData) {
-        let peerIds = [];
-        let orgIds = [];
-
-        if (mapData.peers) {
-            for (let peer of mapData.peers) {
-                peerIds.push(peer._id);
-            }
-        }
-
-        if (mapData.orderers) {
-            for (let orderer of mapData.orderers) {
-                peerIds.push(orderer._id);
-            }
-        }
-
-        if (mapData.organizations) {
-            for (let organization of mapData.organizations) {
-                orgIds.push(organization._id);
-            }
-        }
-        let updateItems = {
-            peers: peerIds,
-            orgs: orgIds
-        };
-        await Channel.findByIdAndUpdate(channelId, updateItems);
-    }
 };

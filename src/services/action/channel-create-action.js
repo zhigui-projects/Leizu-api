@@ -10,14 +10,13 @@ const Action = require('./action');
 const ChannelService = require('../fabric/channel/channel');
 const FabricService = require('../db/fabric');
 
-
 module.exports = class ChannelCreateAction extends Action {
 
-    constructor(){
+    constructor() {
         super();
     }
 
-    async execute(){
+    async execute() {
         let parameters = this.context.get(this.registry.CONTEXT.PARAMS);
         let organizationId = parameters.organizationIds[0];
         let channelName = parameters.name;
@@ -26,6 +25,7 @@ module.exports = class ChannelCreateAction extends Action {
         let fabricService = new FabricService(channelService._consortium_id);
         let channel = await fabricService.addChannel({
             name: parameters.name,
+            orgIds: parameters.organizationIds,
             configuration: configEnvelope
         });
         return channel;
