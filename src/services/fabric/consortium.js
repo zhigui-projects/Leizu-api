@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 const DbService = require('../db/dao');
 const common = require('../../libraries/common');
-const PromClient = require('../../services/prometheus/client');
+const utils = require('../../libraries/utils');
 
 module.exports.getConsortiumInfo = async (consortiumId, consortium,) => {
     let result = initConsortiumDetail(consortiumId);
@@ -21,8 +21,9 @@ module.exports.getConsortiumInfo = async (consortiumId, consortium,) => {
         result.consensus_type = getConsensusType(channelList[0]);
     }
     result.org_count = await DbService.countOrgsByConsortiumId(consortiumId);
-    result.peer_count = await DbService.countPeersByConsortiumId(consortiumId);
-    result.status = await getNetworkStatus();
+    let peerList = await DbService.findPeersByConsortiumId(consortiumId);
+    result.peer_count = peerList.length;
+    result.status = await getNetworkStatus(peerList);
     return result;
 };
 
@@ -53,15 +54,12 @@ const getConsensusType = (channel) => {
     }
 };
 
-const getNetworkStatus = async () => {
-    const promClient = new PromClient();
-    const memoryMetrics = await promClient.queryMemoryUsage();
-    if (memoryMetrics && memoryMetrics.length > 0) {
-        for (let idx in memoryMetrics) {
-            let data = memoryMetrics[idx];
-            if (data.metric.container_label_com_docker_compose_container_number > 0) {
-                return 1;
-            }
+const getNetworkStatus = async (peerList) => {
+    for (let item of peerList) {
+        try {
+            await utils.wait(`${common.PROTOCOL.TCP}:${item.location}`);
+            return 1;
+        } catch (err) {
         }
     }
     return 0;
