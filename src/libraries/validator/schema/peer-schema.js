@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const Joi = require('joi');
-const {objectId, string, ip, port} = require('./schema-utils');
+const {objectId, string, ip, port, unRequiredObjectId} = require('./schema-utils');
 const config = require('../../../env');
 const common = require('../../common');
 
@@ -35,7 +35,8 @@ module.exports.newPeerSchema = Joi.object().keys({
     peers: Joi.array().min(1).items(Joi.object().keys(Object.assign({
         name: string,
         image: Joi.string().valid(config.network.peer.availableImages),
-    }, serverSchema()))).required()
+    }, serverSchema()))).required(),
+    channelId: unRequiredObjectId,
 });
 
 module.exports.checkPeerStatusSchema = Joi.object().keys(serverSchema());

@@ -44,7 +44,7 @@ router.post('/', async ctx => {
     let res = Validator.JoiValidate('create peer', ctx.request.body, Schema.newPeerSchema);
     if (!res.result) throw new BadRequest(res.errMsg);
     try {
-        let {organizationId, peers} = ctx.request.body;
+        let {organizationId, peers, channelId} = ctx.request.body;
         var eventPromises = [];
         for (let item of peers) {
             let txPromise = new Promise((resolve, reject) => {
@@ -67,23 +67,13 @@ router.post('/', async ctx => {
             }
             eventPromises.push(txPromise);
         }
-        await Promise.all(eventPromises).then(result => {
+        await Promise.all(eventPromises).then(async result => {
+            let peerIds = result.map(item => String(item._id));
+            await PeerService.checkChannel(organizationId, peerIds, channelId);
             ctx.body = common.success(result, common.SUCCESS);
         }, err => {
             throw err;
         });
-    } catch (err) {
-        logger.error(err);
-        ctx.status = 400;
-        ctx.body = common.error({}, err.message);
-    }
-});
-
-router.put('/:id', async ctx => {
-    const id = ctx.params.id;
-    try {
-        await PeerService.joinChannel(id, ctx.request.body);
-        ctx.body = common.success({id: id}, common.SUCCESS);
     } catch (err) {
         logger.error(err);
         ctx.status = 400;

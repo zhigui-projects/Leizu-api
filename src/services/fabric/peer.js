@@ -7,10 +7,11 @@ SPDX-License-Identifier: Apache-2.0
 'use strict';
 
 const {HFCAIdentityType} = require('fabric-ca-client/lib/IdentityService');
-const ChannelService = require('./channel/join-channel');
+const ChannelService = require('./channel/channel');
 const CredentialHelper = require('./tools/credential-helper');
 const CryptoCaService = require('./tools/crypto-ca');
 const DbService = require('../db/dao');
+const FabricService = require('../db/fabric');
 const PromClient = require('../prometheus/client');
 const Client = require('../transport/client');
 const common = require('../../libraries/common');
@@ -18,10 +19,6 @@ const utils = require('../../libraries/utils');
 const config = require('../../env');
 
 module.exports = class PeerService {
-
-    static async findById(id) {
-        return await DbService.findPeerById(id);
-    }
 
     static async findByIdAndConsortiumId(id, consortiumId) {
         return await DbService.findPeerByFilter({_id: id, consortium_id: consortiumId});
@@ -84,15 +81,17 @@ module.exports = class PeerService {
         await bash.exec(['-c', 'date']);
     }
 
-    static async joinChannel(channelName, params) {
-        return await ChannelService.joinChannel(channelName, params);
-    }
-
     static async create(params) {
         const {organizationId, image, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
+        if (!org) {
+            throw new Error('The organization does not exist: ' + organizationId);
+        }
+        if (org.type !== common.PEER_TYPE_PEER) {
+            throw new Error('The organization type can not orderer');
+        }
         let peerNamePrefix = 'peer';
-        if(params.peerName){
+        if (params.peerName) {
             peerNamePrefix = params.peerName;
         }
         const peerName = `${peerNamePrefix}-${host.replace(/\./g, '-')}`;
@@ -195,4 +194,31 @@ module.exports = class PeerService {
         peerDto.credentialsPath = await CredentialHelper.storePeerCredentials(peerDto);
         return peerDto;
     }
+
+    static async checkChannel(organizationId, peers, channelId) {
+        try {
+            if (!channelId) return;
+            const org = await DbService.findOrganizationById(organizationId);
+            if (!org) {
+                throw new Error('The organization does not exist: ' + organizationId);
+            }
+            if (org.type !== common.PEER_TYPE_PEER) {
+                throw new Error('The organization type can not orderer');
+            }
+            const channel = await DbService.getChannelById(channelId);
+            if (!channel) {
+                throw new Error('The channel does not exist: ' + channelId);
+            }
+            if (channel.orgs.indexOf(organizationId) !== -1) {
+                return;
+            }
+            let channelService = await ChannelService.getInstance(organizationId, channel.name);
+            await channelService.updateAppChannel(channelId);
+            await channelService.joinChannel(peers);
+            await FabricService.findChannelAndUpdate(channelId, {orgs: [organizationId], peers: peers});
+        } catch (err) {
+            throw err;
+        }
+    }
+
 };
