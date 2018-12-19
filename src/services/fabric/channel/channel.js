@@ -74,6 +74,9 @@ module.exports = class ChannelService {
         if (!organization) {
             throw new Error('The organization does not exist: ' + organizationId);
         }
+        if (organization.type !== common.PEER_TYPE_PEER) {
+            throw new Error('The organization type can not orderer');
+        }
         return {
             Name: organization.name,
             MspId: organization.msp_id,
@@ -86,7 +89,11 @@ module.exports = class ChannelService {
         let organizations = [];
         for (let organizationId of orgIds) {
             let org = await this.buildOrganization(organizationId);
-            organizations.push(org);
+            if (org.AnchorPeers && org.AnchorPeers.length > 0) {
+                organizations.push(org);
+            } else {
+                throw new Error('Not found anchor peers in the organization:' + org.Name);
+            }
         }
         let channelCreateTx = {
             Consortium: this._consortium_name,
@@ -108,13 +115,14 @@ module.exports = class ChannelService {
         });
     }
 
-    updateSysChannel() {
+    async updateSysChannel() {
         return UpdateChannel.updateSysChannel({
             ConsortiumId: this._consortium_id,
             Organizations: [{
                 Name: this._organization.name,
                 MspId: this._organization.msp_id,
-                Type: common.PEER_TYPE_PEER
+                Type: common.PEER_TYPE_PEER,
+                AnchorPeers: await this.getOrgAnchorPeers(this._organization_id)
             }]
         });
     }

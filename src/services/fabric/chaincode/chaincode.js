@@ -203,10 +203,9 @@ module.exports = class ChaincodeService {
             if (!orgIds || orgIds.length === 0) {
                 throw new Error('No organization was found');
             }
-            let orgId = orgIds[1];
-            let organization = await DbService.findOrganizationById(orgId);
+            let organization = await DbService.findOrganizationById(orgIds[0]);
             if (!organization) {
-                throw new Error('The organization does not exist: ' + orgId);
+                throw new Error('The organization does not exist: ' + orgIds[0]);
             }
             return invokeChaincode.invokeChaincode(this._peers, organization, channel.name, this._chaincodeName, functionName, args);
         } catch (err) {
