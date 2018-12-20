@@ -79,20 +79,40 @@ router.post('/join', async ctx => {
     let res = Validator.JoiValidate('channel', ctx.request.body, Schema.joinChannel);
     if (!res.result) throw new BadRequest(res.errMsg);
 
-    let {organizationId, channelId, peers} = ctx.request.body;
+    let {organizationIds, channelId, peers} = ctx.request.body;
     try {
         let channelInfo = await DbService.getChannelById(channelId);
         if (!channelInfo) {
             throw new Error('The channel does not exist.');
         }
-        let channelService = await ChannelService.getInstance(organizationId, channelInfo.name);
-        let result = await channelService.joinChannel(peers);
-        let channel = await FabricService.findChannelAndUpdate(channelId, {peers: result.peers});
-        ctx.body = common.success({
-            _id: channel._id,
-            orgs: result.organizations,
-            peers: result.peers
-        }, common.SUCCESS);
+        var eventPromises = [];
+        for (let orgId of organizationIds) {
+            let joinPromise = new Promise(async (resolve, reject) => {
+                try {
+                    let channelService = await ChannelService.getInstance(orgId, channelInfo.name);
+                    resolve(channelService.joinChannel(peers));
+                } catch (e) {
+                    reject(e.message);
+                }
+            });
+            eventPromises.push(joinPromise);
+        }
+        await Promise.all(eventPromises).then(async results => {
+            let peerIds = [];
+            for (let item of results) {
+                if (item.peers) {
+                    peerIds = peerIds.concat(item.peers);
+                }
+            }
+            let channel = await FabricService.findChannelAndUpdate(channelId, {peers: peerIds});
+            ctx.body = common.success({
+                _id: channel._id,
+                orgs: channel.orgs,
+                peers: channel.peers.concat(peerIds)
+            }, common.SUCCESS);
+        }, err => {
+            throw err;
+        });
     } catch (err) {
         logger.error(err.stack ? err.stack : err);
         ctx.status = 400;

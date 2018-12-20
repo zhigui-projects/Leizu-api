@@ -24,7 +24,7 @@ module.exports.createChannel = Joi.object().keys({
 });
 
 module.exports.joinChannel = Joi.object().keys({
-    organizationId: objectId,
+    organizationIds: Joi.array().min(1).items(objectId).required().sparse(false),
     channelId: objectId,
     peers: Joi.array().min(1).items(objectId).sparse(false),
 });
