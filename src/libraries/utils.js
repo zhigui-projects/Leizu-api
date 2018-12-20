@@ -191,6 +191,7 @@ module.exports.generateFileBeatContainerOptions = (options) => {
         '--name', filebeatName,
         '--user', 'root',
         '--network', common.DEFAULT_NETWORK.NAME,
+        '--restart', 'always',
         '-v', '/var/lib/docker/containers:/var/lib/docker/containers:ro',
         '-v', '/var/run/docker.sock:/var/run/docker.sock:ro',
         '-e', '-strict.perms=false',
