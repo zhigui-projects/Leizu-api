@@ -206,13 +206,15 @@ module.exports = class PeerService {
             if (!channel) {
                 throw new Error('The channel does not exist: ' + channelId);
             }
-            if (channel.orgs.indexOf(organizationId) !== -1) {
-                return;
-            }
             let channelService = await ChannelService.getInstance(organizationId, channel.name);
-            await channelService.updateAppChannel(channelId);
-            await channelService.joinChannel(peers);
-            await FabricService.findChannelAndUpdate(channelId, {orgs: [organizationId], peers: peers});
+            if (channel.orgs.indexOf(organizationId) === -1) {
+                await channelService.updateAppChannel(channelId);
+                await channelService.joinChannel(peers);
+                await FabricService.findChannelAndUpdate(channelId, {orgs: [organizationId], peers: peers});
+            } else {
+                await channelService.joinChannel(peers);
+                await FabricService.findChannelAndUpdate(channelId, {peers: peers});
+            }
         } catch (err) {
             throw err;
         }
