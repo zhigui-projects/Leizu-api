@@ -82,7 +82,7 @@ module.exports = class PeerService {
     }
 
     static async create(params) {
-        const {organizationId, image, username, password, host, port} = params;
+        const {organizationId, image, name, username, password, host, port} = params;
         const org = await DbService.findOrganizationById(organizationId);
         if (!org) {
             throw new Error('The organization does not exist: ' + organizationId);
@@ -90,10 +90,7 @@ module.exports = class PeerService {
         if (org.type !== common.PEER_TYPE_PEER) {
             throw new Error('The organization type can not orderer');
         }
-        let peerNamePrefix = 'peer';
-        if (params.peerName) {
-            peerNamePrefix = params.peerName;
-        }
+        let peerNamePrefix = name ? name : 'peer';
         const peerName = `${peerNamePrefix}-${host.replace(/\./g, '-')}`;
         let peerPort = common.PORT.PEER;
         let peerHome = common.PEER_HOME;

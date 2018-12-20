@@ -21,7 +21,6 @@ module.exports = class PeerProvisionAction extends Action {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
         let options = {
             name: params.name,
-            peerName: params.name,
             domainName: utils.generateDomainName(params.name),
             peerPort: common.PORT.PEER
         };
