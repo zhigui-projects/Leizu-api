@@ -114,7 +114,7 @@ module.exports = class RequestHandler extends Handler {
     async provisionConsul() {
         let ipList = [];
         for (let item of this.parsedRequest.consuls) {
-            if (!ipList.indexOf(item.host)) {
+            if (ipList.indexOf(item.host) === -1) {
                 let provisionAction = ActionFactory.getConsulCreateAction(item);
                 await provisionAction.execute();
                 ipList.push(item.host);
