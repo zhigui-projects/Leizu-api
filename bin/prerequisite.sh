@@ -49,3 +49,4 @@ docker pull hyperledger/fabric-kafka:${TAG}
 docker pull hyperledger/fabric-zookeeper:${TAG}
 docker pull consul
 docker pull google/cadvisor
+docker pull zhigui/filebeat
