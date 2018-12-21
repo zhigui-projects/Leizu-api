@@ -184,6 +184,22 @@ module.exports.generateConsulContainerOptions = (options) => {
     ];
 };
 
+module.exports.generateFileBeatContainerOptions = (options) => {
+    const {image, filebeatName, elasticsearchHost} = options;
+    return [
+        'create',
+        '--name', filebeatName,
+        '--user', 'root',
+        '--network', common.DEFAULT_NETWORK.NAME,
+        '--restart', 'always',
+        '-v', '/var/lib/docker/containers:/var/lib/docker/containers:ro',
+        '-v', '/var/run/docker.sock:/var/run/docker.sock:ro',
+        '-e', '-strict.perms=false',
+        '-e', `ELASTIC_SEARCH_HOST=${elasticsearchHost}`,
+        image,
+    ];
+};
+
 module.exports.createDir = (dirpath, mode) => {
     try {
         let pathTmp;
@@ -232,10 +248,10 @@ module.exports.setupChaincodeDeploy = () => {
 };
 
 module.exports.replacePeerName = (name) => {
-    if(name){
+    if (name) {
         let pattern = /-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}/;
-        return name.replace(pattern,'');
-    }else{
+        return name.replace(pattern, '');
+    } else {
         return name;
     }
 };

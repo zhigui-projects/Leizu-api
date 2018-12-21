@@ -156,8 +156,15 @@ module.exports = class RequestHandler extends Handler {
         for (let property in this.organizations.peerOrgs) {
             let organization = this.organizations.peerOrgs[property];
             if (organization) {
-                organizationIds.push(organization._id);
+                if (!this.parsedRequest.channel.orgs || this.parsedRequest.channel.orgs.length === 0) {
+                    organizationIds.push(organization._id);
+                } else if (this.parsedRequest.channel.orgs.indexOf(organization.name) !== -1) {
+                    organizationIds.push(organization._id);
+                }
             }
+        }
+        if (organizationIds.length === 0) {
+            throw new Error('no channel orgs definition');
         }
         let parameters = {
             name: this.parsedRequest.channel.name,
@@ -170,8 +177,12 @@ module.exports = class RequestHandler extends Handler {
     async makePeersJoinChannel() {
         let channelName = this.parsedRequest.channel.name;
         for (let property in this.organizations.peerOrgs) {
+            let organization = this.organizations.peerOrgs[property];
+            if (!organization) continue;
+            if (this.parsedRequest.channel.orgs && this.parsedRequest.channel.orgs.length > 0
+                && this.parsedRequest.channel.orgs.indexOf(organization.name) === -1) continue;
             let parameters = {};
-            parameters.organization = this.organizations.peerOrgs[property];
+            parameters.organization = organization;
             parameters.channelName = channelName;
             parameters.channelId = this.channel._id;
             let joinAction = ActionFactory.getPeerJoinAction(parameters);

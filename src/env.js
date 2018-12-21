@@ -27,6 +27,11 @@ module.exports = {
             availableImages: [
                 'consul'
             ]
+        },
+        filebeat: {
+            availableImages: [
+                'zhigui/filebeat'
+            ]
         }
     },
     koaLogger: true,
@@ -44,6 +49,10 @@ module.exports = {
     prometheus: {
         host: '127.0.0.1',
         url: 'http://127.0.0.1:9090'
+    },
+    elasticsearch: {
+        host: '127.0.0.1',
+        port: 9200
     },
     configtxlator: {
         url: 'http://127.0.0.1:7059',

@@ -54,8 +54,19 @@ module.exports = class CAdvisorService {
             throw new Error('create peer failed');
         } else {
             await this.registerService(params);
-            return true;
         }
+        let filebeatOptions = {
+            image: config.network.filebeat.availableImages[0],
+            filebeatName: `filebeat-${host.replace(/\./g, '-')}`,
+            elasticsearchHost: process.env.ELASTICSEARCH_HOST ||
+            `${config.elasticsearch.host}:${config.elasticsearch.port}`,
+        };
+        const filebeatParameters = utils.generateFileBeatContainerOptions(filebeatOptions);
+        const filebeatContainer = await client.createContainer(filebeatParameters);
+        if (!filebeatContainer) {
+            throw new Error('create filebeat server failed');
+        }
+        return true;
     }
 
     static async registerService(params) {
