@@ -14,13 +14,13 @@ const DbService = require('../db/dao');
 
 module.exports = class OrdererProvisionAction extends Action {
 
-    async execute(){
+    async execute() {
         let params = this.context.get(this.registry.CONTEXT.PARAMS);
         let peerOrgs = [];
-        for(let orgId of params.peerOrganizationIds){
+        for (let orgId of params.peerOrganizationIds) {
             let orgDto = {};
             let organization = await DbService.findOrganizationById(orgId);
-            if(organization){
+            if (organization) {
                 orgDto.name = organization.name;
                 orgDto.mspId = organization.msp_id;
                 let peers = await DbService.findPeersByOrgId(orgId, common.PEER_TYPE_PEER);
@@ -29,7 +29,7 @@ module.exports = class OrdererProvisionAction extends Action {
                     let flag = item.location.indexOf(common.SEPARATOR_COLON);
                     let host = item.location.slice(0, flag);
                     let port = item.location.slice(flag + common.SEPARATOR_COLON.length);
-                    orgDto.anchorPeer = {host: host, port: port}
+                    orgDto.anchorPeer = {host: host, port: port};
                 }
             }
             peerOrgs.push(orgDto);
@@ -42,8 +42,8 @@ module.exports = class OrdererProvisionAction extends Action {
                 kafka: params.kafkaBrokers
             }
         };
-        utils.extend(configuration,params);
-        if(this.isDebugMode){
+        utils.extend(configuration, params);
+        if (this.isDebugMode) {
             configuration.ordererPort = utils.generateRandomHttpPort();
         }
         return await OrderService.create(configuration);

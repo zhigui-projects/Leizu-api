@@ -9,6 +9,7 @@ SPDX-License-Identifier: Apache-2.0
 const common = require('./common');
 const path = require('path');
 const fs = require('fs');
+const isReachable = require('is-reachable');
 const logger = require('log4js').getLogger();
 
 module.exports.wait = async (resources) => {
@@ -254,4 +255,12 @@ module.exports.replacePeerName = (name) => {
     } else {
         return name;
     }
+};
+
+module.exports.isReachable = async (host) => {
+    let result = await isReachable(host);
+    if (!result) {
+        logger.error('Service unavailable:', host);
+    }
+    return result;
 };
