@@ -23,7 +23,13 @@ module.exports.getConsortiumInfo = async (consortiumId, consortium,) => {
     result.org_count = await DbService.countOrgsByConsortiumId(consortiumId);
     let peerList = await DbService.findPeersByConsortiumId(consortiumId);
     result.peer_count = peerList.length;
-    result.status = await getNetworkStatus(peerList);
+
+    let allGood = true;
+    for (let item of peerList) {
+        let oneGood = await utils.isReachable(item.location);
+        allGood = allGood & oneGood;
+    }
+    result.status = allGood;
     return result;
 };
 
@@ -52,17 +58,6 @@ const getConsensusType = (channel) => {
     } else if (consensusType === common.CONSENSUS_KAFKA) {
         return common.CONSENSUS_KAFKA_VALUE;
     }
-};
-
-const getNetworkStatus = async (peerList) => {
-    for (let item of peerList) {
-        try {
-            await utils.wait(`${common.PROTOCOL.TCP}:${item.location}`);
-            return 1;
-        } catch (err) {
-        }
-    }
-    return 0;
 };
 
 module.exports.processDiscoveryResults = (rawResults) => {
