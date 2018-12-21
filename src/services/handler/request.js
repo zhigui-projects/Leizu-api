@@ -129,7 +129,6 @@ module.exports = class RequestHandler extends Handler {
             let kafkaAction = ActionFactory.getKafkaProvisionAction(this.parsedRequest.kafkaCluster);
             kafkaBrokers = await kafkaAction.execute();
         }
-        let node = this.parsedRequest.orderer.nodes[0];
 
         let peerOrganizationIds = [];
         for (let property in this.organizations.peerOrgs) {
@@ -138,14 +137,29 @@ module.exports = class RequestHandler extends Handler {
                 peerOrganizationIds.push(organization._id);
             }
         }
-        node.organizationId = this.organizations.ordererOrg[this.parsedRequest.orderer.orgName]._id;
-        // node.organizationId = peerOrganizationIds[0];
-        node.peerOrganizationIds = peerOrganizationIds;
-        node.kafkaBrokers = kafkaBrokers;
-        node.ordererType = this.parsedRequest.consensus;
-        node.image = this.parsedRequest.ordererImage;
-        let provisionAction = ActionFactory.getOrdererProvisionAction(node);
-        this.orderer = await provisionAction.execute();
+
+        var eventPromises = [];
+        for (let node of this.parsedRequest.orderer.nodes) {
+            let exePromise = new Promise((resolve, reject) => {
+                try {
+                    node.organizationId = this.organizations.ordererOrg[this.parsedRequest.orderer.orgName]._id;
+                    node.peerOrganizationIds = peerOrganizationIds;
+                    node.kafkaBrokers = kafkaBrokers;
+                    node.ordererType = this.parsedRequest.consensus;
+                    node.image = this.parsedRequest.ordererImage;
+                    let provisionAction = ActionFactory.getOrdererProvisionAction(node);
+                    resolve(provisionAction.execute());
+                } catch (e) {
+                    reject(e.message);
+                }
+            });
+            eventPromises.push(exePromise);
+        }
+        await Promise.all(eventPromises).then(async orderers => {
+            orderers.map(node => this.orderer[node.name] = node);
+        }, err => {
+            throw err;
+        });
     }
 
     async createNewChannel() {
