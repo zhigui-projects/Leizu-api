@@ -80,4 +80,7 @@ typings/
 # package backups
 package-lock.json
 
+# prometheus local data
+build/monitoring/prometheus/data/
+
 .idea
