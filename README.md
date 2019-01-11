@@ -26,7 +26,7 @@ docker-compose -f docker-compose-dev.yml up -d
 
 2. Initialize the default user: `admin/passw0rd`
 ```
-docker exec -it dashboard-mongodb mongo
+docker exec -it dashboard-mongo mongo
 use zigdb;
 db.user.insert({username:'admin',password:'5c604fdbe7060760ab75d54c042d71f0e49e621a'});
 ```

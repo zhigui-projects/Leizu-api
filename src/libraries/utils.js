@@ -227,7 +227,7 @@ module.exports.generateRandomInteger = (low, high) => {
 };
 
 module.exports.isSingleMachineTest = () => {
-    return process.env.ALL_IN_ONE || false;
+    return process.env.ALL_IN_ONE === 'true';
 };
 
 module.exports.makeHostRecord = (hostName, ipAddress) => {
