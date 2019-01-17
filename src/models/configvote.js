@@ -11,12 +11,12 @@ const confVoteSchema = new mongoose.Schema({
     uuid: String,
     editedConf: Buffer,
     editedConfHash: String,
-    signedConf: String,
+    signature: String,
     status: {
         type: Number,
         default: 0
     },
-    date: {
+    createdAt: {
         type: Date,
         default: Date.now()
     }

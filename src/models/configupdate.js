@@ -11,12 +11,12 @@ const confUptSchema = new mongoose.Schema({
     uuid: String,
     editedConf: Buffer,
     editedConfHash: String,
-    collectedConfs: [String],
+    collectedSigs: [String],
     status: {
         type: Number,
         default: 0
     },
-    date: {
+    createdAt: {
         type: Date,
         default: Date.now()
     }
